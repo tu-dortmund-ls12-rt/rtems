@@ -13,6 +13,13 @@ sample_docs =
 
 support_includes = -I$(top_srcdir)/../support/include
 
+if TEST_application_tristan
+samples += application_tristan
+application_tristan_SOURCES = application_tristan/init.c #$(top_srcdir)/../support/include/../src/spin.c
+application_tristan_CPPFLAGS = $(AM_CPPFLAGS) $(TEST_FLAGS_application_tristan) \
+	$(support_includes)
+endif
+
 if HAS_MP
 if TEST_base_mp
 # base_mp is a sample multiprocessing test

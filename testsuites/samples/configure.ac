@@ -37,6 +37,7 @@ AM_CONDITIONAL(NO_SMP,test "$rtems_cv_RTEMS_SMP" != "yes")
 AM_CONDITIONAL(HAS_SMP,test "$rtems_cv_RTEMS_SMP" = "yes")
 
 # BSP Test configuration
+RTEMS_TEST_CHECK([application_tristan])
 RTEMS_TEST_CHECK([base_mp])
 RTEMS_TEST_CHECK([base_sp])
 RTEMS_TEST_CHECK([capture])
