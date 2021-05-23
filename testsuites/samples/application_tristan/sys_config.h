@@ -10,6 +10,8 @@
 #define CONFIGURE_INIT
 #define CONFIGURE_INIT_TASK_ATTRIBUTES RTEMS_FLOATING_POINT
 
+#define CONFIGURE_MAXIMUM_PARTITIONS 1
+
 #include <rtems/confdefs.h>
 
 #endif
