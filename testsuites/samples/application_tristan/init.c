@@ -2,18 +2,19 @@
 #include "config.h"
 #endif
 
-#include <rtems/cpuuse.h>
-#include <tmacros.h>
+#include "system.h"
 
-#include <rtems/rtems/segtaskdata.h>
-
-const char rtems_test_name[] = "SPRMSCHED 1";
+const char rtems_test_name[] = "APPLICATION TRISTAN";
 
 static rtems_task Task(rtems_task_argument argument) {
-    puts("Hello World");
+    if(abs_double(-3.3) == 3.3) {
+      puts("True");
+    } else {
+      puts("False");
+    }
 }
 
-static rtems_task Init(
+rtems_task Init(
 	rtems_task_argument argument
 )
 {
@@ -31,13 +32,3 @@ static rtems_task Init(
 
   rtems_task_exit();
 }
-
-#define CONFIGURE_APPLICATION_NEEDS_SIMPLE_CONSOLE_DRIVER
-#define CONFIGURE_APPLICATION_NEEDS_CLOCK_DRIVER
-#define CONFIGURE_MICROSECONDS_PER_TICK     1000
-#define CONFIGURE_MAXIMUM_TASKS             2
-#define CONFIGURE_RTEMS_INIT_TASKS_TABLE
-#define CONFIGURE_INITIAL_EXTENSIONS RTEMS_TEST_INITIAL_EXTENSION
-#define CONFIGURE_INIT
-
-#include <rtems/confdefs.h>
