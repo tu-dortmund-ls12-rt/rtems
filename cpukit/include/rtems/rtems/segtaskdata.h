@@ -22,7 +22,7 @@ extern "C" {
 #endif
 
 typedef struct {
-    uintptr_t function;
+    void (*function) (void);
 } Segmented_Task_Segment;
 
 typedef struct {
