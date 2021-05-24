@@ -775,6 +775,7 @@ librtemscpu_a_SOURCES += rtems/src/schedulerident.c
 librtemscpu_a_SOURCES += rtems/src/schedulermapfromposix.c
 librtemscpu_a_SOURCES += rtems/src/schedulermaptoposix.c
 librtemscpu_a_SOURCES += rtems/src/schedulerremoveprocessor.c
+librtemscpu_a_SOURCES += rtems/src/segtaskslfp.c
 librtemscpu_a_SOURCES += rtems/src/sem.c
 librtemscpu_a_SOURCES += rtems/src/semcreate.c
 librtemscpu_a_SOURCES += rtems/src/semdelete.c

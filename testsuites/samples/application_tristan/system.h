@@ -12,6 +12,6 @@
 
 #include "utils/math_sup.h"
 
-#include <rtems/rtems/segtaskdata.h>
+#include <rtems/rtems/segtaskslfp.h>
 
 #endif
