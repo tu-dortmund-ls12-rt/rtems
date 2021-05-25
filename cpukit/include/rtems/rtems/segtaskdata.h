@@ -21,31 +21,42 @@ Example case:
 file1.h
 file2.h
 main.c
+second.c
 
 file1.h -> #define SOMETHING
 file2.h -> #ifndef SOMETHING #define SOMETHINGELSE #endif
 main.c -> #include file1.h #include file2.h
+second.c -> #include file2.h
 
-I expected that in this example case SOMETHING is defined for file2.h, because file1.h defined it
-and was included in main.c before. My understanding of #include is like copy-paste of the included file
-in the file where it is included. Therefor I expected the preprocessor directive #define is also copy-pasted.
-Likewise the #ifndef preprocessor directive would be. Thefore #define and #ifndef would be in the same file
-in the end and the compiler would not execute the #ifndef directive because the definition was there.
-This doesn't seem to be the case tho. The #define preprocessor directive is only known in the file where this
-was written or in files, that include the respective file. It does not transendence file boundarys, even if
-both files were included in another file.
+My expectation for the example case was the following: A datastructure that was defined in
+file2.h is dependet on the definition of SOMETHING or SOMETHINGELSE (depending on if SOMETHING
+was defined). So therefor the actual datastructure, which is used in main.c and second.c, is the
+same, depending on the informations (if defined or not) present in file2.h. I thought SOMETHING was
+defined in file2.h and therefor dictates the actual datastructure in main.c and second.c, because
+it is defined in file1.h which was included first in main.c and afterwards file2.h is included in main.c.
+My thinking was: Well the definition was included first, so it should be present in the second includence.
+And this is actually true (which is also denoted in the IDE when the defintion is inspected), but this is
+only true for main.c, file1.h and file2.h itself! For second.c file2.h was included, but file1.h was never.
+Therefor, from the viewpoint of second.c, SOMETHING was never defined and SOMETHINGELSE is therefor definend
+by file2.h. I got tricked here a little by the support of the IDE.
 
-This is exactly what happens here. I expected CONFIGURE_MAXIMUM_SEGMENTS to be defined, due to it's definition
-in sys_config.h, which is included in main.c before segtaskdata.h (this header file). The above explained scenario
-applies tho. Normaly I would fix it with the extra includence #include "sys_config.h", but the problem is that this
-header file (segtaskdata.h) is part of the rtems operating system and sys_config.h is part of the application. I'm
-unsure how to trandance this border, but it has to be possible, because I can also define informations like
-#define CONFIGURE_MAX_TASK_STACK in sys_config.h and this information is accessed inside the rtems operating system.
+This example case is exactly what is happening for the datastructure Segmented_Task_Task in segtaskdata.h.
+I thought I defined CONFIGURE_MAXIMUM_SEGMENTS in sys_config.h which is (indirectly) included in main.c, which
+also includes segtaskdata.h. Then I wondered why the datastructure was of different size in segtaskslfp.c. Well,
+it's size is dependent on the definition, due to it's determining the size of an array, and from the viewpoint of
+segtaskslfp.c, which only includes segtaskdata.h, not sys_config.h, CONFIGURE_MAXIMUM_SEGMENTS was never defined.
+
+To solve this problem I normaly would just include sys_config.h in segtaskdata.h, so it is always certain for each
+.c file if CONFIGURE_MAXIMUM_SEGMENTS was defined or not. But this is not possible in this case, because sys_config.h
+is part of the application files and segtaskdata.h is part of the RTEMS operating system files. So therefor it can
+not be included. But it has to be possible to access those application defined informations from the operating
+system, because the same is done with for example #define CONFIGURE_MAX_TASK_STACK in sys_config.h and this information
+is accessed inside the rtems operating system.
 
 Need to contact Kuan regarding this...
 
 The current workaround is to just define the configuration again. IMPORTANT: It has to match the informations inside
-sys_config.h otherwise the unintend behavior happens.
+sys_config.h otherwise the unintend behavior happens. HUGE SOURCE OF ERRORS HERE!
 */
 #define CONFIGURE_MAXIMUM_SEGMENTS 20
 

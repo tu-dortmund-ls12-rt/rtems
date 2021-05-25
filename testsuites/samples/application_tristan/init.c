@@ -138,9 +138,9 @@ rtems_task Init(
     printf("Segment: %u\n", i);
     printf("Segments adress: %p\n", &(taskCopy.base.segments[i]));
     
-    printf("Expected taskCopy segment %u function pointer adress: %p -> Received adress: %p\n", i, function1, taskCopy.base.segments[i].function);
+    printf("Expected taskCopy segment %u function pointer adress: %p -> Received adress: %p\n", i, segmentFunctions[i], taskCopy.base.segments[i].function);
     printf("Checkking assertion: ");
-    rtems_test_assert(function1 == taskCopy.base.segments[i].function);
+    rtems_test_assert(segmentFunctions[i] == taskCopy.base.segments[i].function);
     printf("PASS!\n");
 
     printf("Expected taskCopy segment %u priority: %u -> Received priority: %u\n", i, segmentPriorities[i], taskCopy.priorities[i]);
