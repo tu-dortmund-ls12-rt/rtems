@@ -5,6 +5,9 @@
 #include "system.h"
 
 const char rtems_test_name[] = "APPLICATION TRISTAN";
+rtems_name segmentedTaskName = rtems_build_name('S', 'e', 'g', ' ');
+rtems_name bufferTaskName = rtems_build_name('B', 'u', 'f', ' ');
+rtems_name idleTaskName = rtems_build_name('I', 'd', 'l', 'e');
 
 void function1(void);
 void function2(void);
@@ -22,10 +25,14 @@ void function3(void) {
   printf("I'm function3\n");
 }
 
-rtems_name name = rtems_build_name('T', 'r', 'S', 'e');
+static rtems_task buffer(rtems_task_argument argument) {
+  printf("Buffer is entering infinite loop");
+  while(true);
+  rtems_task_exit();
+}
 
-static rtems_task Task(rtems_task_argument argument) {
-
+static rtems_task idle(rtems_task_argument argument) {
+  printf("Non-Idle Task finished. It's missing out rtems_task_exit() directive so the terminal doesn't freeze and the system halts.\n");
 }
 
 rtems_task Init(
@@ -33,13 +40,14 @@ rtems_task Init(
 )
 {
   rtems_status_code status;
-  rtems_id task_id;
+  rtems_id bufferTaskId;
+  rtems_id idleTaskId;
 
   TEST_BEGIN();
 
   /*
   Segmented Task:
-  Name = Seg1
+  Name = Seg
   Priorität = 2
   StackSize = Min
   Modes = Default
@@ -56,29 +64,41 @@ rtems_task Init(
     Function = function3
     Priorität = 5
   */
-  rtems_name taskName = rtems_build_name('S', 'e', 'g', '1');
+
   rtems_task_priority taskPriority = 2;
   size_t taskStackSize = RTEMS_MINIMUM_STACK_SIZE;
   rtems_mode taskModes = RTEMS_DEFAULT_MODES;
   rtems_attribute taskAttributes = RTEMS_DEFAULT_ATTRIBUTES;
   uint32_t numberOfSegments = 3;
   void (*segmentFunctions[]) (void) = {function1, function2, function3};
-  rtems_task_priority segmentPriorities[] = {3, 4, 5};
+  rtems_task_priority segmentPriorities[] = {3, 4, 6};
   
   Segmented_Task_SLFP_Task taskCopy;
 
-  status = rtems_task_create_segmented_slfp(taskName, taskPriority, taskStackSize, taskModes,
+  // Task Creation
+
+  status = rtems_task_create_segmented_slfp(segmentedTaskName, taskPriority, taskStackSize, taskModes,
                                             taskAttributes, numberOfSegments, segmentFunctions,
                                             segmentPriorities, &taskCopy);
-  directive_failed(status, "ErrorMsg: ");
+  directive_failed(status, "Segmented Task creation failed.");
 
-  status = rtems_task_create(rtems_build_name('I', 'D', 'L', 'E'), (rtems_task_priority) 254, RTEMS_MINIMUM_STACK_SIZE, RTEMS_DEFAULT_MODES,
-                                    RTEMS_DEFAULT_ATTRIBUTES, &task_id);
-  directive_failed(status, "Task creation failed");
+  status = rtems_task_create(bufferTaskName, 5, RTEMS_MINIMUM_STACK_SIZE, RTEMS_DEFAULT_MODES, RTEMS_DEFAULT_ATTRIBUTES, &bufferTaskId);
+  directive_failed(status, "Buffer Task creation failed.");
 
-  status = rtems_task_start(task_id, Task, (rtems_task_argument) NULL);
-  directive_failed(status, "Task start failed");
+  status = rtems_task_create(idleTaskName, 254, RTEMS_MINIMUM_STACK_SIZE, RTEMS_DEFAULT_MODES, RTEMS_DEFAULT_ATTRIBUTES, &idleTaskId);
+  directive_failed(status, "Idle Task creation failed.");
 
-  puts("Exiting task");
+  // Task Starting
+
+  status = rtems_task_start_segmented_slfp();
+  directive_failed(status, "Start of segmented Task failed.");
+
+  status = rtems_task_start(bufferTaskId, buffer, (rtems_task_argument) NULL);
+  directive_failed(status, "Start of buffer Task failed.");
+
+  status = rtems_task_start(idleTaskId, idle, (rtems_task_argument) NULL);
+  directive_failed(status, "Start of idle Task failed.");
+
+  puts("Exiting initialization Task");
   rtems_task_exit();
 }

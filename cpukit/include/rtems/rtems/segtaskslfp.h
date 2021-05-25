@@ -16,6 +16,8 @@ rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName,
                 uint32_t numberOfSegments, void (*segmentFunctions[]) (void),
                 rtems_task_priority segmentPriorities[], Segmented_Task_SLFP_Task* taskCopy);
 
+rtems_status_code rtems_task_start_segmented_slfp(/*which task to start*/void);
+
 #ifdef __cplusplus
 }
 #endif
