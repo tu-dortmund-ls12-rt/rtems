@@ -73,7 +73,7 @@ void main(rtems_task_argument arguments) {
             break;
         }
 
-        //rtems_task_suspend(base->taskId);
+        rtems_task_suspend(RTEMS_SELF);
         /*
         Change priority of the task to the priority of the next segment.
         Exact place to apply the change is unknown yet. Temporarly it's

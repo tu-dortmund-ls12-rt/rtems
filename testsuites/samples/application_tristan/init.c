@@ -26,8 +26,37 @@ void function3(void) {
 }
 
 static rtems_task buffer(rtems_task_argument argument) {
-  printf("Buffer is entering infinite loop");
-  while(true);
+  uint32_t secondsToWait = 3;
+
+  rtems_status_code status;
+
+  printf("Buffer is beeing executed.\n");
+
+  for(uint32_t i = 0; i < 2; i++) {
+    rtems_interval waitStart;
+    status = rtems_clock_get_seconds_since_epoch(&waitStart);
+    directive_failed(status, "Receiving start time failed.");
+
+    rtems_interval currentTime;
+    status = rtems_clock_get_seconds_since_epoch(&currentTime);
+    directive_failed(status, "Receiving current time failed.");
+
+    while(currentTime - waitStart < secondsToWait) {
+      status = rtems_clock_get_seconds_since_epoch(&currentTime);
+      directive_failed(status, "Receiving current time failed.");
+    }
+
+    // Unsuspend the segmented task (is there to simulate the external event)
+    rtems_id taskId;
+    status = rtems_task_ident(segmentedTaskName, RTEMS_SEARCH_ALL_NODES, &taskId);
+    directive_failed(status, "Couldn't receive task ID.");
+    
+    status = rtems_task_resume(taskId);
+    directive_failed(status, "Couldn't resume suspended task");
+  }
+
+  /*printf("Buffer is entering infinite loop");
+  while(true);*/
   rtems_task_exit();
 }
 
@@ -44,6 +73,19 @@ rtems_task Init(
   rtems_id idleTaskId;
 
   TEST_BEGIN();
+
+  // Clock init
+  rtems_time_of_day time;
+  time.ticks = 0;
+  time.second = 0;
+  time.minute = 0;
+  time.hour = 0;
+  time.day = 1;
+  time.month = 1;
+  time.year = 2000;
+
+  status = rtems_clock_set(&time);
+  directive_failed(status, "Failed to set the system clock");
 
   /*
   Segmented Task:
