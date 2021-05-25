@@ -14,7 +14,28 @@ void function2(void);
 void function3(void);
 
 void function1(void) {
+  rtems_status_code status;
   printf("I'm function1\n");
+  
+  uint32_t x = 42;
+  printf("Saving the value of %u into the communication memory", x);
+
+  uint8_t* content = (uint8_t*) &x;
+  size_t contentSize = sizeof(x) / sizeof(uint8_t);
+
+  /*
+  TODO:
+  Continue here! The executing task has no reference on the segmented task
+  datastructure and shall not get one. But what it does has is it's own
+  task id.
+
+  Concept change: For the API it is only possible for a segmented task to
+  write to it's own communcation memory! The underlying implementation may
+  look different, but the calling task should not be in need to pass it's
+  own segmented task structure (which it does not have access to), nor it's
+  own id.
+  */
+  //status = rtems_task_segmented_write_communication_memory(content, contentSize);
 }
 
 void function2(void) {

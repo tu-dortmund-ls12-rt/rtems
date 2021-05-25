@@ -7,6 +7,36 @@ rtems_status_code rtems_task_segmented_get_communication_memory_size(Segmented_T
     *size = CONFIGURE_MAXIMUM_COMMUNICATION_MEMORY;
 }
 
+rtems_status_code rtems_task_segmented_read_communication_memory_for_from(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize,
+                                                                        size_t amount, uint32_t startingAtByte) {
+    if(bufferSize < amount) {
+        return RTEMS_INVALID_SIZE;
+    }
+
+    if(startingAtByte + amount > CONFIGURE_MAXIMUM_COMMUNICATION_MEMORY) {
+        return RTEMS_INVALID_SIZE;
+    }
+
+    for(uint32_t i = 0; i < amount; i++) {
+        buffer[i] = segmentedTask->communicationMemory[i + startingAtByte];
+    }
+}
+
+rtems_status_code rtems_task_segmented_read_communication_memory_for(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize,
+                                                                        size_t amount) {
+    return rtems_task_segmented_read_communication_memory_for_from(segmentedTask, buffer, bufferSize, amount, 0);
+}
+
+rtems_status_code rtems_task_segmented_read_communication_memory_from(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize,
+                                                                        uint32_t startingAtByte) {
+    return rtems_task_segmented_read_communication_memory_for_from(segmentedTask, buffer, bufferSize,
+                                                                    CONFIGURE_MAXIMUM_COMMUNICATION_MEMORY - startingAtByte, startingAtByte);
+}
+
+rtems_status_code rtems_task_segmented_read_communication_memory(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize) {
+    return rtems_task_segmented_read_communication_memory_from(segmentedTask, buffer, bufferSize, 0);
+}
+
 rtems_status_code rtems_task_segmented_write_communication_memory(Segmented_Task_Task* segmentedTask, uint8_t* content, size_t sizeOfContent) {
     if(sizeOfContent > CONFIGURE_MAXIMUM_COMMUNICATION_MEMORY) {
         return RTEMS_INVALID_SIZE;
