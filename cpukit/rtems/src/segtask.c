@@ -22,7 +22,7 @@ void fillGeneralDataIntoSegTask(Segmented_Task_Task* task,
 
 void fillSegmentDataIntoSegTask(Segmented_Task_Task* task,
                 uint32_t numberOfSegments, void (*functionPointer[]) (void)) {
-    task->numberOfSegements = numberOfSegments;
+    task->numberOfSegments = numberOfSegments;
     
     for(uint32_t i = 0; i < numberOfSegments; i++) {
         task->segments[i].function = functionPointer[i];

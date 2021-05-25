@@ -66,30 +66,90 @@ rtems_task Init(
   rtems_task_priority segmentPriorities[] = {3, 4, 5};
   
   Segmented_Task_SLFP_Task taskCopy;
+  printf("QUICK DEBUG Outside: %zu\n", sizeof(Segmented_Task_SLFP_Task));
+  printf("QUICK DEBUG OUTSIDE: %u", CONFIGURE_MAXIMUM_SEGMENTS);
+
+  printf("---- DEBUGGING BEFORE THE TASK CREATION ----");
+  printf("Printing all informations of the taskCopy.\n\n");
+  printf("TaskCopy adress: %p\n", &taskCopy);
+  printf("TaskCopy size: %zu\n", sizeof(taskCopy));
+  printf("Underlying struct size: %zd\n", sizeof(Segmented_Task_SLFP_Task));
+  printf("Finished debugging before\n");
 
   status = rtems_task_create_segmented_slfp(taskName, taskPriority, taskStackSize, taskModes,
                                             taskAttributes, numberOfSegments, segmentFunctions,
                                             segmentPriorities, &taskCopy);
   directive_failed(status, "ErrorMsg: ");
 
-  rtems_test_assert(taskCopy.base.taskName == taskName);
+  /*rtems_test_assert(taskCopy.base.taskName == taskName);
   rtems_test_assert(taskCopy.base.taskPriority == 3);
   rtems_test_assert(taskCopy.base.taskStackSize == taskStackSize);
   rtems_test_assert(taskCopy.base.taskModes == taskModes);
   rtems_test_assert(taskCopy.base.taskAttributes == taskAttributes);
-  rtems_test_assert(taskCopy.base.numberOfSegements == numberOfSegments);
+  rtems_test_assert(taskCopy.base.numberOfSegments == numberOfSegments);
   rtems_test_assert(taskCopy.base.segments[0].function == function1);
   rtems_test_assert(taskCopy.base.segments[1].function == function2);
-  rtems_test_assert(taskCopy.base.segments[2].function == function3);
+  rtems_test_assert(taskCopy.base.segments[2].function == function3);*/
 
-  printf("Entering the Priorityproblem\n---------------\n");
-  printf("TaskCopy.priorities Address: %p", taskCopy.priorities);
-  printf("TaskCopy.priorities[0]: %u -> Should be 3\n", taskCopy.priorities[0]);
-  rtems_test_assert((taskCopy.priorities)[0] == 3);
-  printf("TaskCopy.priorities[1]: %u -> Should be 4\n", taskCopy.priorities[1]);
-  rtems_test_assert(taskCopy.priorities[1] == 4);
-  printf("TaskCopy.priorities[2]: %u -> Should be 5\n", taskCopy.priorities[2]);
-  rtems_test_assert(taskCopy.priorities[2] == 5);
+
+  /*
+  Somehow there is a problem with the priority assignment of the struct copy.
+  Debugging it.
+  */
+
+  printf("----------- DEBUGGING -----------\n");
+  printf("Printing all informations of the taskCopy.\n\n");
+  printf("TaskCopy adress: %p\n", &taskCopy);
+  printf("TaskCopy size: %zu\n", sizeof(taskCopy));
+  printf("Underlying struct size: %zd\n", sizeof(Segmented_Task_SLFP_Task));
+
+  printf("Expected taskCopy name: %u -> Received name: %u\n", taskName, taskCopy.base.taskName);
+  printf("Checkking assertion: ");
+  rtems_test_assert(taskName == taskCopy.base.taskName);
+  printf("PASS!\n");
+
+  printf("Expected taskCopy taskPriority: %u -> Received priority: %u\n", segmentPriorities[0], taskCopy.base.taskPriority);
+  printf("Checkking assertion: ");
+  rtems_test_assert(segmentPriorities[0] == taskCopy.base.taskPriority);
+  printf("PASS!\n");
+
+  printf("Expected taskCopy taskStackSize: %zu -> Received priority: %zu\n", taskStackSize, taskCopy.base.taskStackSize);
+  printf("Checkking assertion: ");
+  rtems_test_assert(taskStackSize == taskCopy.base.taskStackSize);
+  printf("PASS!\n");
+
+  printf("Expected taskCopy taskModes: %u -> Received modes: %u\n", taskModes, taskCopy.base.taskModes);
+  printf("Checkking assertion: ");
+  rtems_test_assert(taskModes == taskCopy.base.taskModes);
+  printf("PASS!\n");
+
+  printf("Expected taskCopy taskAttributes: %u -> Received attributes: %u\n", taskAttributes, taskCopy.base.taskAttributes);
+  printf("Checkking assertion: ");
+  rtems_test_assert(taskAttributes == taskCopy.base.taskAttributes);
+  printf("PASS!\n");
+
+  printf("Expected taskCopy numberOfSegments: %u -> Received number: %u\n", numberOfSegments, taskCopy.base.numberOfSegments);
+  printf("Checkking assertion: ");
+  rtems_test_assert(numberOfSegments == taskCopy.base.numberOfSegments);
+  printf("PASS!\n\n");
+
+  printf("--- Checking the segments ---\n\n");
+  for(uint32_t i = 0; i < numberOfSegments; i++) {
+    printf("Segment: %u\n", i);
+    printf("Segments adress: %p\n", &(taskCopy.base.segments[i]));
+    
+    printf("Expected taskCopy segment %u function pointer adress: %p -> Received adress: %p\n", i, function1, taskCopy.base.segments[i].function);
+    printf("Checkking assertion: ");
+    rtems_test_assert(function1 == taskCopy.base.segments[i].function);
+    printf("PASS!\n");
+
+    printf("Expected taskCopy segment %u priority: %u -> Received priority: %u\n", i, segmentPriorities[i], taskCopy.priorities[i]);
+    printf("Checkking assertion: ");
+    rtems_test_assert(segmentPriorities[i] == taskCopy.priorities[i]);
+    printf("PASS!\n");
+  }
+
+  printf("\nPassed the debugging!\n");
 
   (*(taskCopy.base.segments[0].function))();
   (*(taskCopy.base.segments[1].function))();
