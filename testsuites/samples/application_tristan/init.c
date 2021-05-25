@@ -118,6 +118,7 @@ rtems_task Init(
 )
 {
   rtems_status_code status;
+  rtems_id segmentedTaskId;
   rtems_id bufferTaskId;
   rtems_id idleTaskId;
 
@@ -163,14 +164,12 @@ rtems_task Init(
   uint32_t numberOfSegments = 3;
   void (*segmentFunctions[]) (void) = {function1, function2, function3};
   rtems_task_priority segmentPriorities[] = {3, 4, 6};
-  
-  Segmented_Task_SLFP_Task taskCopy;
 
   // Task Creation
 
   status = rtems_task_create_segmented_slfp(segmentedTaskName, taskPriority, taskStackSize, taskModes,
                                             taskAttributes, numberOfSegments, segmentFunctions,
-                                            segmentPriorities, &taskCopy);
+                                            segmentPriorities, &segmentedTaskId);
   directive_failed(status, "Segmented Task creation failed.");
 
   status = rtems_task_create(bufferTaskName, 5, RTEMS_MINIMUM_STACK_SIZE, RTEMS_DEFAULT_MODES, RTEMS_DEFAULT_ATTRIBUTES, &bufferTaskId);
@@ -181,8 +180,7 @@ rtems_task Init(
 
   // Task Starting
 
-  rtems_id dummyId;
-  status = rtems_task_start_segmented_slfp(dummyId);
+  status = rtems_task_start_segmented_slfp(segmentedTaskId);
   directive_failed(status, "Start of segmented Task failed.");
 
   status = rtems_task_start(bufferTaskId, buffer, (rtems_task_argument) NULL);

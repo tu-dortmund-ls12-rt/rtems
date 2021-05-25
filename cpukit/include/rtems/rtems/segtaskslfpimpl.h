@@ -11,6 +11,8 @@ extern "C" {
 
 Segmented_Task_SLFP_Task segmentedTask; // Currently only one segmented task is possible. Should be replaced with a dynamic data structure.
 
+bool getSegmented_Task_SLFP_Task(rtems_id id, Segmented_Task_SLFP_Task** segmentedTaskToReturn);
+
 /*
 "Empties" the segmented slfp task. "Empties" mean zeroing.
 
