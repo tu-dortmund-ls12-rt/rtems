@@ -64,6 +64,18 @@ sys_config.h otherwise the unintend behavior happens. HUGE SOURCE OF ERRORS HERE
 #define CONFIGURE_MAXIMUM_SEGMENTS 10
 #endif
 
+/*
+TODO:
+WORKAROUND!
+
+Same problem as described for CONFIGURE_MAXIMUM_SEGMENTS does also apply for CONFIGURE_MAXIMUM_COMMUNCATION_MEMORY.
+*/
+#define CONFIGURE_MAXIMUM_COMMUNICATION_MEMORY 256
+
+#ifndef CONFIGURE_MAXIMUM_COMMUNICATION_MEMORY
+#define CONFIGURE_MAXIMUM_COMMUNICATION_MEMORY 64
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -87,8 +99,9 @@ typedef struct {
    Segment specific informations
    */
   uint32_t numberOfSegments;
-  Segmented_Task_Segment segments [CONFIGURE_MAXIMUM_SEGMENTS];
-  uintptr_t communicationMemory; // TODO: Realization unknown so far. Just so I don't forget.
+  Segmented_Task_Segment segments[CONFIGURE_MAXIMUM_SEGMENTS];
+  uint8_t communicationMemory[CONFIGURE_MAXIMUM_COMMUNICATION_MEMORY];
+  uint32_t nextByteToWrite;
 } Segmented_Task_Task;
 
 #ifdef __cplusplus

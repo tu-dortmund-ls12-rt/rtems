@@ -34,12 +34,12 @@ static rtems_task buffer(rtems_task_argument argument) {
 
   for(uint32_t i = 0; i < 2; i++) {
     rtems_interval waitStart;
+    rtems_interval currentTime;
+
     status = rtems_clock_get_seconds_since_epoch(&waitStart);
     directive_failed(status, "Receiving start time failed.");
 
-    rtems_interval currentTime;
-    status = rtems_clock_get_seconds_since_epoch(&currentTime);
-    directive_failed(status, "Receiving current time failed.");
+    currentTime = waitStart;
 
     while(currentTime - waitStart < secondsToWait) {
       status = rtems_clock_get_seconds_since_epoch(&currentTime);
@@ -51,9 +51,37 @@ static rtems_task buffer(rtems_task_argument argument) {
     status = rtems_task_ident(segmentedTaskName, RTEMS_SEARCH_ALL_NODES, &taskId);
     directive_failed(status, "Couldn't receive task ID.");
     
+    printf("Resuming suspended task\n");
+
     status = rtems_task_resume(taskId);
     directive_failed(status, "Couldn't resume suspended task");
   }
+
+  printf("Simulating active execution in the buffer task for 10 seconds...");
+  secondsToWait = 10;
+  rtems_interval simStart;
+  rtems_interval lastDot;
+  rtems_interval simCurrent;
+
+  status = rtems_clock_get_seconds_since_epoch(&simStart);
+  directive_failed(status, "Receiving sim start time failed");
+
+  lastDot = simStart;
+  simCurrent = simStart;
+
+  while(simCurrent - simStart < secondsToWait) {
+    if(simCurrent - lastDot >= 1) {
+      printf(".");
+      lastDot = simCurrent;
+    }
+
+    status = rtems_clock_get_seconds_since_epoch(&simCurrent);
+    directive_failed(status, "Receiving current time failed.");
+  }
+
+  printf("\n");
+
+  printf("Finished simulating active execution.\n");
 
   /*printf("Buffer is entering infinite loop");
   while(true);*/
@@ -132,7 +160,8 @@ rtems_task Init(
 
   // Task Starting
 
-  status = rtems_task_start_segmented_slfp();
+  rtems_id dummyId;
+  status = rtems_task_start_segmented_slfp(dummyId);
   directive_failed(status, "Start of segmented Task failed.");
 
   status = rtems_task_start(bufferTaskId, buffer, (rtems_task_argument) NULL);
