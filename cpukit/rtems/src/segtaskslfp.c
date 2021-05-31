@@ -1,6 +1,10 @@
 #include <rtems/rtems/segtaskslfp.h>
 #include <rtems/rtems/segtaskslfpimpl.h>
 
+// ----- Global variable declaration / definition -----
+
+Segmented_Task_SLFP_Task segmentedTask; // Currently only one segmented task is possible. Should be replaced with a dynamic data structure.
+
 // ----- RTEMS API Implementation -----
 
 rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t taskStackSize,

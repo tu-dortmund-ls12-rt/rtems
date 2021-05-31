@@ -9,7 +9,21 @@
 extern "C" {
 #endif
 
-Segmented_Task_SLFP_Task segmentedTask; // Currently only one segmented task is possible. Should be replaced with a dynamic data structure.
+/*
+Info regarding "Segmented_Task_SLFP_Task segmentedTask;":
+
+The declaration of this variable was originaly in this header file. Cause this used
+to be the way in C++. But the problem in this case is, that segtaskslfpimpl.h includes
+segtaskimpl.h and vice versa. Therefor, if the variable is declared in the header
+file, then there are multiple declarations of the same variable. It is therefor
+moved in the *.c file. If it's "somehow" needed in this header file or in another
+file, it needs to be declared as "extern".
+
+TODO:
+Is there a disadvantage declaring it in the *.c file? It'll be still allocated on the
+heap of the RTEMS OS right? Think this through, because u don't want to let this
+variable get out of scope ever!
+*/
 
 bool getSegmented_Task_SLFP_Task(rtems_id id, Segmented_Task_SLFP_Task** segmentedTaskToReturn);
 
