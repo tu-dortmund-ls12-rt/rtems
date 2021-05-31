@@ -140,7 +140,6 @@ rtems_task Init(
   /*
   Segmented Task:
   Name = Seg
-  Priorität = 2
   StackSize = Min
   Modes = Default
   Attributes = Default
@@ -154,10 +153,9 @@ rtems_task Init(
     Priorität = 4
   Segment 3:
     Function = function3
-    Priorität = 5
+    Priorität = 6
   */
-
-  rtems_task_priority taskPriority = 2;
+ 
   size_t taskStackSize = RTEMS_MINIMUM_STACK_SIZE;
   rtems_mode taskModes = RTEMS_DEFAULT_MODES;
   rtems_attribute taskAttributes = RTEMS_DEFAULT_ATTRIBUTES;
@@ -167,7 +165,7 @@ rtems_task Init(
 
   // Task Creation
 
-  status = rtems_task_create_segmented_slfp(segmentedTaskName, taskPriority, taskStackSize, taskModes,
+  status = rtems_task_create_segmented_slfp(segmentedTaskName, taskStackSize, taskModes,
                                             taskAttributes, numberOfSegments, segmentFunctions,
                                             segmentPriorities, &segmentedTaskId);
   directive_failed(status, "Segmented Task creation failed.");

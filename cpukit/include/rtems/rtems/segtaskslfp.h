@@ -18,8 +18,7 @@ TODO:
 Remove the possibility to receive a copy of the created datastructure. This is only
 for debugging purpose.
 */
-rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName,
-                rtems_task_priority taskPriority, size_t taskStackSize,
+rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t taskStackSize,
                 rtems_mode initialModes, rtems_attribute taskAttributes,
                 uint32_t numberOfSegments, void (*segmentFunctions[]) (void),
                 rtems_task_priority segmentPriorities[], rtems_id* taskId);
