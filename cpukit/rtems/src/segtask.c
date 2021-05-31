@@ -180,6 +180,8 @@ rtems_status_code rtems_task_segmented_read_communication_memory_for_from_impl(S
     for(uint32_t i = 0; i < amount; i++) {
         buffer[i] = segmentedTask->communicationMemory[i + startingAtByte];
     }
+
+    return RTEMS_SUCCESSFUL;
 }
 
 rtems_status_code rtems_task_segmented_read_communication_memory_for_impl(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize,
