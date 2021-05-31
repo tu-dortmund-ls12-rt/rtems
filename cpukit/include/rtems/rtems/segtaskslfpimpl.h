@@ -1,5 +1,5 @@
 #ifndef _RTEMS_RTEMS_SEGTASKSLFPIMPL_H
-#define _RTEMS_RTEMS_SEGTASKSFLPIMPL_H
+#define _RTEMS_RTEMS_SEGTASKSLFPIMPL_H
 
 #include <rtems/rtems/segtaskimpl.h>
 #include <rtems/rtems/segtaskslfpdata.h>
