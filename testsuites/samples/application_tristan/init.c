@@ -13,33 +13,61 @@ void function1(void);
 void function2(void);
 void function3(void);
 
+typedef struct {
+  uint32_t value;
+  uint8_t byte;
+  char someName[256];
+  void (*functionPtr) (void);
+} SomeMemory;
+
+void structFunction(void);
+void structFunction(void) {
+  printf("I'm a test function.\n");
+}
+
 void function1(void) {
   rtems_status_code status;
   printf("I'm function1\n");
-  
-  uint32_t x = 42;
-  printf("Saving the value of %u into the communication memory", x);
 
-  uint8_t* content = (uint8_t*) &x;
-  size_t contentSize = sizeof(x) / sizeof(uint8_t);
+  SomeMemory sm;
+  sm.value = 42;
+  sm.byte = 2;
+  sm.someName[0] = 'H';
+  sm.someName[1] = 'e';
+  sm.someName[2] = 'l';
+  sm.someName[3] = 'l';
+  sm.someName[4] = 'o';
+  sm.someName[5] = ' ';
+  sm.someName[6] = 'W';
+  sm.someName[7] = 'o';
+  sm.someName[8] = 'r';
+  sm.someName[9] = 'l';
+  sm.someName[10] = 'd';
+  sm.someName[11] = '!';
+  sm.someName[12] = '\0';
+  sm.functionPtr = structFunction;
 
-  /*
-  TODO:
-  Continue here! The executing task has no reference on the segmented task
-  datastructure and shall not get one. But what it does has is it's own
-  task id.
-
-  Concept change: For the API it is only possible for a segmented task to
-  write to it's own communcation memory! The underlying implementation may
-  look different, but the calling task should not be in need to pass it's
-  own segmented task structure (which it does not have access to), nor it's
-  own id.
-  */
-  //status = rtems_task_segmented_write_communication_memory(content, contentSize);
+  printf("Writing to memory\n");
+  status = rtems_task_segmented_write_communication_memory((uint8_t*) &sm, sizeof(sm));
+  directive_failed(status, "Failed to write memory\n");
 }
 
 void function2(void) {
+  rtems_status_code status;
   printf("I'm function2\n");
+
+  SomeMemory sm;
+
+  printf("Reading from memory\n");
+  status = rtems_task_segmented_read_communication_memory_for((uint8_t*) &sm, sizeof(sm), sizeof(sm));
+  directive_failed(status, "Failed to read memory\n");
+
+  printf("Read the following from memory:\n");
+  printf("Value: %u\n", sm.value);
+  printf("Byte: %u\n", sm.byte);
+  printf("SomeName: %s\n", sm.someName);
+  printf("Executing function: ");
+  sm.functionPtr();
 }
 
 void function3(void) {
@@ -155,7 +183,7 @@ rtems_task Init(
     Function = function3
     Priorität = 6
   */
- 
+
   size_t taskStackSize = RTEMS_MINIMUM_STACK_SIZE;
   rtems_mode taskModes = RTEMS_DEFAULT_MODES;
   rtems_attribute taskAttributes = RTEMS_DEFAULT_ATTRIBUTES;
