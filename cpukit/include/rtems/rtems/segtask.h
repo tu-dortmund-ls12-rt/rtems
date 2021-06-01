@@ -3,6 +3,24 @@
 
 #include <rtems/rtems/segtaskslfp.h>
 
+/**
+ * Do this comments in this style
+ * 
+ * @brief RTEMS Set Task Priority
+ *
+ * This routine implements the rtems_task_set_priority directive. The
+ * current priority of the task associated with ID is set to
+ * new_priority. The former priority of that task is returned
+ * in old_priority.
+ *
+ * @param[in] id is the thread to extract
+ * @param[in] new_priority is the thread to extract
+ * @param[in] old_priority is the thread to extract
+ *
+ * @retval RTEMS_SUCCESSFUL if successful or error code if unsuccessful and
+ * and *old_priority filled in with the previous previous priority
+ */
+
 /*
 Returns the size of the allocated memory for communcation between segments.
 
