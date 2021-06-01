@@ -96,6 +96,13 @@ rtems_status_code rtems_task_segmented_clear_communication_memory(void) {
 
 // ----- Hidden Implementation -----
 
+void executeNextSegment(Segmented_Task_Task* task) {
+    /*
+    TODO: What to do if a segment should be executed that is not present?
+    */
+    task->segments[++task->currentSegment].function();
+}
+
 void emptySegmentedTask(Segmented_Task_Task* task) {
     rtems_status_code status;
 
@@ -105,6 +112,7 @@ void emptySegmentedTask(Segmented_Task_Task* task) {
     task->taskModes = 0;
     task->taskAttributes = 0;
     task->numberOfSegments = 0;
+    task->currentSegment = -1;
     
     for(uint32_t i = 0; i < CONFIGURE_MAXIMUM_SEGMENTS; i++) {
         task->segments[i].function = 0;

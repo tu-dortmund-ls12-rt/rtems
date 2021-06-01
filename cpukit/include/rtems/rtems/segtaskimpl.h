@@ -12,6 +12,11 @@ extern "C" {
 #define DO_ZERO_ON_WRITE 0
 
 /*
+Executes the function of the next segment of the given segmented task.
+*/
+void executeNextSegment(Segmented_Task_Task* task);
+
+/*
 Zeroes the given Segmented_Task_Task.
 
 Attention: The TaskID is not changed at all, because the segmented

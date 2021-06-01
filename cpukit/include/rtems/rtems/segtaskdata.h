@@ -99,6 +99,7 @@ typedef struct {
    Segment specific informations
    */
   uint32_t numberOfSegments;
+  int32_t currentSegment; // -1 when first segment is yet to be executed
   Segmented_Task_Segment segments[CONFIGURE_MAXIMUM_SEGMENTS];
   uint8_t communicationMemory[CONFIGURE_MAXIMUM_COMMUNICATION_MEMORY];
   uint32_t nextByteToWrite;

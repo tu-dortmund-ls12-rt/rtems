@@ -72,7 +72,8 @@ void main(rtems_task_argument arguments) {
     bool result = getSegmented_Task_SLFP_Task(RTEMS_SELF, &segmentedTask);
     Segmented_Task_Task* base = (Segmented_Task_Task*) segmentedTask;
     for(uint32_t i = 0; i < base->numberOfSegments; i++) {
-        base->segments[i].function();
+        //base->segments[i].function();
+        executeNextSegment(base);
         
         /*
         No suspension nor priority change needed after
