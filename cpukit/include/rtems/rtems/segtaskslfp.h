@@ -34,6 +34,11 @@ effect.
 */
 rtems_status_code rtems_task_start_segmented_slfp(rtems_id taskId);
 
+/*
+Resume a suspended segmented SLFP task with the given id according to SLFP scheduling.
+*/
+rtems_status_code rtems_task_resume_segmented_slfp(rtems_id taskId);
+
 #ifdef __cplusplus
 }
 #endif

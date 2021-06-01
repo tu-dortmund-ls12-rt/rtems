@@ -37,7 +37,50 @@ rtems_status_code rtems_task_start_segmented_slfp(rtems_id taskId) {
     return rtems_task_start(base->taskId, main, (rtems_task_argument) NULL);
 }
 
+rtems_status_code rtems_task_resume_segmented_slfp(rtems_id taskId) {
+   bool result;
+   rtems_status_code status;
+   rtems_task_priority nextPriority, wildCard;
+   Segmented_Task_SLFP_Task* receivedTask;
+   Segmented_Task_Task* receivedBase;
+   
+   result = getSegmented_Task_SLFP_Task(taskId, &receivedTask);
+   if(!result || receivedTask == NULL) {
+       return RTEMS_INVALID_ID;
+   }
+
+   status = rtems_task_is_suspended(taskId);
+   if(status != RTEMS_ALREADY_SUSPENDED) {
+       if(status != RTEMS_SUCCESSFUL) {
+           return status;
+       } else {
+           return RTEMS_INCORRECT_STATE;
+       }
+   }
+
+   result = getPriorityOfSegmentByIndex(receivedTask, receivedTask->base.currentSegment, &nextPriority);
+   if(!result) {
+       return RTEMS_INVALID_ID;
+   }
+
+   status = rtems_task_set_priority(taskId, nextPriority, &wildCard);
+   if(!rtems_is_status_successful(status)) {
+       return status;
+   }
+
+   return rtems_task_resume(taskId);
+}
+
 // ----- Hidden Implementation -----
+
+bool getPriorityOfSegmentByIndex(Segmented_Task_SLFP_Task* task, uint32_t segmentIndex, rtems_task_priority* priority) {
+    if(task == NULL) {
+        return false;
+    }
+
+    *priority = task->priorities[segmentIndex];
+    return true;
+}
 
 bool getSegmented_Task_SLFP_Task(rtems_id id, Segmented_Task_SLFP_Task** segmentedTaskToReturn) {
     //TODO: Implement going through the list of all slfp tasks

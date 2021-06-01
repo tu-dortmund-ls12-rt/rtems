@@ -28,6 +28,12 @@ variable get out of scope ever!
 bool getSegmented_Task_SLFP_Task(rtems_id id, Segmented_Task_SLFP_Task** segmentedTaskToReturn);
 
 /*
+Get the priority of the given segment (indicate by the index) of the given
+segmented task.
+*/
+bool getPriorityOfSegmentByIndex(Segmented_Task_SLFP_Task* task, uint32_t segmentIndex, rtems_task_priority* priority);
+
+/*
 "Empties" the segmented slfp task. "Empties" mean zeroing.
 
 TODO:

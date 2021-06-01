@@ -102,7 +102,8 @@ static rtems_task buffer(rtems_task_argument argument) {
     
     printf("Resuming suspended task\n");
 
-    status = rtems_task_resume(taskId);
+    //status = rtems_task_resume(taskId);
+    status = rtems_task_resume_segmented_slfp(taskId);
     directive_failed(status, "Couldn't resume suspended task");
   }
 
@@ -131,9 +132,6 @@ static rtems_task buffer(rtems_task_argument argument) {
   printf("\n");
 
   printf("Finished simulating active execution.\n");
-
-  /*printf("Buffer is entering infinite loop");
-  while(true);*/
   rtems_task_exit();
 }
 
