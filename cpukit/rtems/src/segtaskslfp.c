@@ -10,8 +10,13 @@ Segmented_Task_SLFP_Task segmentedTask; // Currently only one segmented task is 
 rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t taskStackSize,
                 rtems_mode initialModes, rtems_attribute taskAttributes, uint32_t numberOfSegments,
                 void (*segmentFunctions[]) (void), rtems_task_priority segmentPriorities[], rtems_id* taskId) {
+    // --- Argument validation ---
+    // Arguments that need to be validated will be validated in fillDataIntoSegTaskSLFP and rtems_tassk_create
+    // TODO: Do validation in fillDataIntoSegTaskSLFP
+
+    // --- Implementation ---
     rtems_extended_status_code status;
-    
+
     //TODO: Ditch the single task, and create a new one in a dynamic list
     status = emptySegTaskSLFP(&segmentedTask);
     if(!rtems_is_status_successful(status)) {
@@ -35,6 +40,10 @@ rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t t
 }
 
 rtems_status_code rtems_task_start_segmented_slfp(rtems_id taskId) {
+    // --- Argument validation ---
+    // Arguments that need to be validated will be validated in getSegmented_Task_SLFP_Task
+
+    // --- Implementation ---
     rtems_extended_status_code status;
     /*
     Somehow redundant, but may be usefull in the future to check if taskId
@@ -52,6 +61,10 @@ rtems_status_code rtems_task_start_segmented_slfp(rtems_id taskId) {
 }
 
 rtems_status_code rtems_task_resume_segmented_slfp(rtems_id taskId) {
+    // --- Argument validation ---
+    // Arguments that need to be validated will be validated in getSegmented_Task_SLFP_Task
+
+    // --- Implementation ---
    rtems_extended_status_code status;
    rtems_task_priority nextPriority, wildCard;
    Segmented_Task_SLFP_Task* receivedTask;
