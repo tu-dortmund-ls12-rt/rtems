@@ -11,8 +11,7 @@ rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t t
                 rtems_mode initialModes, rtems_attribute taskAttributes, uint32_t numberOfSegments,
                 void (*segmentFunctions[]) (void), rtems_task_priority segmentPriorities[], rtems_id* taskId) {
     // --- Argument validation ---
-    // Arguments that need to be validated will be validated in fillDataIntoSegTaskSLFP and rtems_tassk_create
-    // TODO: Do validation in fillDataIntoSegTaskSLFP
+    // Arguments that need to be validated will be validated in fillDataIntoSegTaskSLFP and rtems_task_create
 
     // --- Implementation ---
     rtems_extended_status_code status;
@@ -20,18 +19,30 @@ rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t t
     //TODO: Ditch the single task, and create a new one in a dynamic list
     status = emptySegTaskSLFP(&segmentedTask);
     if(!rtems_is_status_successful(status)) {
-        return status;
+        return RTEMS_INTERNAL_ERROR; // RTEMS_INTERNAL_ERROR is returned, because the error is not dependet on the user input.
     }
 
     status = fillDataIntoSegTaskSLFP(&segmentedTask, taskName, taskStackSize, initialModes,
                 taskAttributes, numberOfSegments, segmentFunctions, segmentPriorities);
     if(!rtems_is_status_successful(status)) {
-        return status;
+        if(status == RTEMS_EXTENDED_NULL_POINTER && &segmentedTask == NULL) {
+            return RTEMS_INTERNAL_ERROR; // RTEMS_INTERNAL_ERROR is returned, because the error is not dependet on the user input.
+        } else {
+            return status;
+        }
     }
 
     status = rtems_task_create(taskName, segmentedTask.base.taskPriority, taskStackSize, initialModes, taskAttributes, taskId);
     if(!rtems_is_status_successful(status)) {
-        return status;
+        if(status == RTEMS_INVALID_PRIORITY) {
+            /*
+            * RTEMS_INTERNAL_ERROR is returned, because the error is not dependet on the user input. A wrong
+            * priority should be catched earlier.
+            */
+            return RTEMS_INTERNAL_ERROR;
+        } else {
+            return status;
+        }
     }
 
     ((Segmented_Task_Task*)(&segmentedTask))->taskId = *taskId;
@@ -57,7 +68,12 @@ rtems_status_code rtems_task_start_segmented_slfp(rtems_id taskId) {
     }
 
     Segmented_Task_Task* base = (Segmented_Task_Task*) receivedSegmentedTask;
-    return rtems_task_start(base->taskId, main, (rtems_task_argument) NULL);
+    status = rtems_task_start(base->taskId, main, (rtems_task_argument) NULL);
+    if(!rtems_is_status_successful(status)) {
+        return status;
+    }
+
+    return RTEMS_SUCCESSFUL;
 }
 
 rtems_status_code rtems_task_resume_segmented_slfp(rtems_id taskId) {
@@ -135,10 +151,14 @@ rtems_extended_status_code getPriorityOfSegmentByIndex(Segmented_Task_SLFP_Task*
 rtems_extended_status_code emptySegTaskSLFP(Segmented_Task_SLFP_Task* givenSegmentedTask) {
     // --- Argument validation ---
     // Arguments that need to be validated will be validated in emptySegmentedTask
-    // TODO: Do validation in emptySegmentedTask
 
-    // TODO: A extended status code must be returned by the following and must be forwarded. Remember to change the return description.
-    emptySegmentedTask((Segmented_Task_Task*) givenSegmentedTask);
+    // --- Implementation ---
+    rtems_extended_status_code status;
+
+    status = emptySegmentedTask((Segmented_Task_Task*) givenSegmentedTask);
+    if(!rtems_is_status_successful(status)) {
+        return status;
+    }
 
     for(uint32_t i = 0; i < CONFIGURE_MAXIMUM_SEGMENTS; i++) {
         givenSegmentedTask->priorities[i] = 0;
@@ -153,14 +173,24 @@ rtems_extended_status_code fillDataIntoSegTaskSLFP(Segmented_Task_SLFP_Task* tas
                 uint32_t numberOfSegments, void (*functionPointer[]) (void),
                 rtems_task_priority priorities[]) {
     // --- Argument validation ---
-    // Arguments that need to be validated will be validated in fillDataIntoSegTask
-    // TODO: Do validation in fillDataIntoSegTask
+    // All arguments that are not validated here are validated in fillDataIntoSegTask.
+    // Validation of priorities is moved to the actual priority assignment, so there is only need for one loop.
 
-    // TODO: A extended status code must be returned by the following and must be forwarded. Remember to change the return description.
-    fillDataIntoSegTask((Segmented_Task_Task*) task, taskName, priorities[0], taskStackSize, initialModes, taskAttributes, numberOfSegments, functionPointer);
+    // --- Implementation ---
+    rtems_extended_status_code status;
+
+    status = fillDataIntoSegTask((Segmented_Task_Task*) task, taskName, priorities[0], taskStackSize, initialModes, taskAttributes, numberOfSegments, functionPointer);
+    if(!rtems_is_status_successful(status)) {
+        return status;
+    }
 
     for(uint32_t i = 0; i < numberOfSegments; i++) {
-        (task->priorities)[i] = priorities[i];
+        rtems_task_priority currentPriority = priorities[i];
+        if(!rtems_is_status_successful(isPriorityValid(currentPriority))) {
+            return RTEMS_INVALID_PRIORITY;
+        } else {
+            (task->priorities)[i] = currentPriority;
+        }
     }
 
     return RTEMS_SUCCESSFUL;

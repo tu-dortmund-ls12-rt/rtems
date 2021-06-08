@@ -30,14 +30,19 @@ extern "C" {
  * @param[in] taskId Pointer to which the id of the task will be returned.
  * 
  * @retval RTEMS_SUCCESSFUL if successfull.
- * @retval RTEMS_INVALID_ADDRESS if taskId is a null pointer.
+ * @retval RTEMS_INVALID_PRIORITY if segmentPriorities containss an invalid rtems_task_priority.
+ * @retval RTEMS_INVALID_NAME if taskName is an invalid rtems_name.
+ * @retval RTEMS_INVALID_ADDRESS if taskId is a null pointer or segmentFunctions contains
+ * a null pointer.
+ * @retval RTEMS_INTERNAL_ERROR if RTEMS inconsistency was detected.
  * @retval RTEMS_MP_NOT_CONFIGURED if multiprocessing is not configured.
  * @retval RTEMS_TOO_MANY if too many task are created.
- * @retval RTEMS_TOO_MANY if there are too many gloabl objects.
+ * @retval RTEMS_TOO_MANY if numberOfSegments is greater than the maximum number configured.
  * @retval RTEMS_UNSATISFIED if not enough memory for stack or floating point
  * context is present.
  * @retval RTEMS_UNSATISFIED if non-preemption mode is not supported on SMP system.
  * @retval RTEMS_UNSATISFIED if interrupt level mode is not supported on SMP system.
+ * @retval RTEMS_TOO_MANY if there are too many global objects.
  */
 rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t taskStackSize,
                 rtems_mode initialModes, rtems_attribute taskAttributes,

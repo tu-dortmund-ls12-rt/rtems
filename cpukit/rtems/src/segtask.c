@@ -96,15 +96,38 @@ rtems_status_code rtems_task_segmented_clear_communication_memory(void) {
 
 // ----- Hidden Implementation -----
 
-void executeNextSegment(Segmented_Task_Task* task) {
-    /*
-    TODO: What to do if a segment should be executed that is not present?
-    */
-    task->segments[++task->currentSegment].function();
+rtems_extended_status_code isPriorityValid(rtems_task_priority priority) {
+    if(priority >= 1 && priority <= 255) {
+        return RTEMS_SUCCESSFUL;
+    } else {
+        return RTEMS_INVALID_PRIORITY;
+    }
 }
 
-void emptySegmentedTask(Segmented_Task_Task* task) {
-    rtems_status_code status;
+rtems_extended_status_code executeNextSegment(Segmented_Task_Task* task) {
+    // --- Argument validation ---
+    if(task == NULL) {
+        return RTEMS_EXTENDED_NULL_POINTER;
+    }
+
+    // --- Implementation ---
+    // Reached the last segment.
+    if(task->currentSegment - 1 == task->numberOfSegments) {
+        return RTEMS_EXTENDED_FINAL_SEGMENT;
+    }
+
+    task->segments[++task->currentSegment].function();
+    return RTEMS_SUCCESSFUL;
+}
+
+rtems_extended_status_code emptySegmentedTask(Segmented_Task_Task* task) {
+    // --- Argument validation ---
+    if(task == NULL) {
+        return RTEMS_EXTENDED_NULL_POINTER;
+    }
+
+    // --- Implementation ---
+    rtems_extended_status_code status;
 
     task->taskName = 0;
     task->taskPriority = 0;
@@ -119,52 +142,133 @@ void emptySegmentedTask(Segmented_Task_Task* task) {
     }
 
     status = rtems_task_segmented_clear_communication_memory_impl(task);
-    //TODO: Handle the internal status eror. directive_failed is not available here.
-}
-
-bool getSegmented_Task_Task(rtems_id id, Segmented_Task_Task** segmentedTaskToReturn) {
-    Segmented_Task_SLFP_Task* receivedTask1 = NULL;
-    rtems_extended_status_code status;
-    status = getSegmented_Task_SLFP_Task(id, &receivedTask1);
     if(rtems_is_status_successful(status)) {
-        *segmentedTaskToReturn = (Segmented_Task_Task*) receivedTask1;
-        return true;
+        // TODO: Add possible status to method return description.
+        return status;
     }
 
-    // TODO: Same for Realtime_Enforcement
-
-    //Else
-    return false; // The given id does not coresspond with a SLFP or Realtime Enforcement Task
+    return RTEMS_SUCCESSFUL;
 }
 
-void fillDataIntoSegTask(Segmented_Task_Task* task,
+rtems_extended_status_code getSegmented_Task_Task(rtems_id id, Segmented_Task_Task** segmentedTaskToReturn) {
+    // --- Argument validation ---
+    if(segmentedTaskToReturn == NULL) {
+        return RTEMS_EXTENDED_NULL_POINTER;
+    }
+
+    // --- Implementation ---
+    // TODO: Extend commentlike for Realtime Enforcement Tasks
+    Segmented_Task_SLFP_Task* slfpTask = NULL;
+    // Segmented_Task_RE_Task* reTask = NULL;
+    rtems_extended_status_code status;
+
+    status = getSegmented_Task_SLFP_Task(id, &slfpTask);
+    if(rtems_is_status_successful(status)) {
+        *segmentedTaskToReturn = (Segmented_Task_Task*) slfpTask;
+        return RTEMS_SUCCESSFUL;
+    } else if(status != RTEMS_INVALID_ID) {
+        return status;
+    }
+
+    /*
+    status = getSegmented_Task_RE_Task(id, &reTask);
+    if(rtems_is_status_successful(status)) {
+        *segmentedTaskToReturn = (Segmented_Task_Task*) reTask;
+        return RTEMS_SUCCESSFUL;
+    } else if(status != RTEMS_INVALID_ID) {
+        return status;
+    }
+    */
+}
+
+rtems_extended_status_code fillDataIntoSegTask(Segmented_Task_Task* task,
                 rtems_name taskName, rtems_task_priority taskPriority,
                 size_t taskStackSize, rtems_mode initialModes, 
                 rtems_attribute taskAttributes, uint32_t numberOfSegments,
                 void (*functionPointer[]) (void)) {
-    emptySegmentedTask(task);
-    fillGeneralDataIntoSegTask(task, taskName, taskPriority, taskStackSize, initialModes, taskAttributes);
-    fillSegmentDataIntoSegTask(task, numberOfSegments, functionPointer);
+    // --- Argument validation ---
+    // Arguments that need to be validated will be validated in emptySegmentedTask, fillGeneralDataIntoSegTask and fillSegmentDataIntoSegTask
+    // TODO: Do validation in emptySegmentedTask, fillGeneralDataIntoSegTask and fillSegmentDataIntoSegTask
+
+    // --- Implementation ---
+    rtems_extended_status_code status;
+
+    status = emptySegmentedTask(task);
+    if(!rtems_is_status_successful(status)) {
+        return status;
+    }
+
+    status = fillGeneralDataIntoSegTask(task, taskName, taskPriority, taskStackSize, initialModes, taskAttributes);
+    if(!rtems_is_status_successful(status)) {
+        return status;
+    }
+
+    status = fillSegmentDataIntoSegTask(task, numberOfSegments, functionPointer);
+    if(!rtems_is_status_successful(status)) {
+        return status;
+    }
+
+    return RTEMS_SUCCESSFUL;
 }
 
-void fillGeneralDataIntoSegTask(Segmented_Task_Task* task,
+rtems_extended_status_code fillGeneralDataIntoSegTask(Segmented_Task_Task* task,
                 rtems_name taskName, rtems_task_priority taskPriority,
                 size_t taskStackSize, rtems_mode initialModes, 
                 rtems_attribute taskAttributes) {
+    // --- Argument validation ---
+    /* TODO: Validation of taskStackSize, initialModes and taskAttributes doesn't
+    * seem to be possible. Check for further intel.
+    * Potential errors will be found during the task creation.
+    * If those informations are invalid, the struct will be filled with invalid
+    * informations.
+    */
+    if(task == NULL) {
+        return RTEMS_EXTENDED_NULL_POINTER;
+    }
+
+    if(!rtems_is_name_valid(taskName)) {
+        return RTEMS_INVALID_NAME;
+    }
+
+    if(!rtems_is_status_successful(isPriorityValid(taskPriority))) {
+        return RTEMS_INVALID_PRIORITY;
+    }
+
+    // --- Implementation ---
     task->taskName = taskName;
     task->taskPriority = taskPriority;
     task->taskStackSize = taskStackSize;
     task->taskModes = initialModes;
     task->taskAttributes = taskAttributes;
+
+    return RTEMS_SUCCESSFUL;
 }
 
-void fillSegmentDataIntoSegTask(Segmented_Task_Task* task,
+rtems_extended_status_code fillSegmentDataIntoSegTask(Segmented_Task_Task* task,
                 uint32_t numberOfSegments, void (*functionPointer[]) (void)) {
+    // --- Argument validation ---
+    if(task == NULL) {
+        return RTEMS_EXTENDED_NULL_POINTER;
+    }
+
+    if(numberOfSegments > CONFIGURE_MAXIMUM_SEGMENTS) {
+        return RTEMS_EXTENDED_TOO_MANY_SEGMENTS;
+    }
+
+    for(uint32_t i = 0; i < numberOfSegments; i++) {
+        if(functionPointer[i] == NULL) {
+            return RTEMS_EXTENDED_NULL_POINTER;
+        }
+    }
+
+    // --- Implementation ---
     task->numberOfSegments = numberOfSegments;
     
     for(uint32_t i = 0; i < numberOfSegments; i++) {
         task->segments[i].function = functionPointer[i];
     }
+
+    return RTEMS_SUCCESSFUL;
 }
 
 rtems_status_code rtems_task_segmented_get_communication_memory_size_impl(Segmented_Task_Task* segmentedTask, size_t* size) {

@@ -5,6 +5,7 @@
 #include <rtems/rtems/segtaskslfpdata.h>
 #include <rtems/rtems/attr.h>
 #include <rtems/rtems/extended_rtems_status_codes.h>
+//#include <rtems/rtems/segtaskimpl.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,7 +46,6 @@ variable get out of scope ever!
  */
 rtems_extended_status_code getSegmented_Task_SLFP_Task(rtems_id id, Segmented_Task_SLFP_Task** segmentedTaskToReturn);
 
-
 /**
  * @brief RTEMS Segmented SLFP Task Implementation: Get the priority
  * of the disired segment.
@@ -76,6 +76,9 @@ rtems_extended_status_code getPriorityOfSegmentByIndex(Segmented_Task_SLFP_Task*
  * @param[in] givenSegmentedTask Pointer to the segmented slfp task.
  * 
  * @retval RTEMS_SUCCESSFUL if successfull.
+ * @retval RTEMS_EXTENDED_NULL_POINTER if task is a null pointer.
+ * For mapping on rtems_status_code see rtems_extended_status_code
+ * details.
  * 
  * @par Notes
  * TODO:
@@ -109,6 +112,16 @@ rtems_extended_status_code emptySegTaskSLFP(Segmented_Task_SLFP_Task* givenSegme
  * Its size must match the numberOfSegments.
  * 
  * @retval RTEMS_SUCCESSFUL if successfull.
+ * @retval RTEMS_INVALID_PRIORITY if priorities containss an invalid rtems_task_priority.
+ * @retval RTEMS_INVALID_NAME if taskName is an invalid rtems_name.
+ * @retval RTEMS_EXTENDED_NULL_POINTER if task is 
+ * a null pointer or functionPointer contains a null pointer.
+ * For mapping on rtems_status_code see rtems_extended_status_code
+ * details.
+ * @retval RTEMS_EXTENDED_TOO_MANY_SEGMENTS if numberOfSegments is 
+ * greater than the maximum number configured.
+ * For mapping on rtems_status_code see rtems_extended_status_code
+ * details.
  */
 rtems_extended_status_code fillDataIntoSegTaskSLFP(Segmented_Task_SLFP_Task* task,
                 rtems_name taskName, size_t taskStackSize,
