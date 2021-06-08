@@ -124,8 +124,9 @@ void emptySegmentedTask(Segmented_Task_Task* task) {
 
 bool getSegmented_Task_Task(rtems_id id, Segmented_Task_Task** segmentedTaskToReturn) {
     Segmented_Task_SLFP_Task* receivedTask1 = NULL;
-    bool result = getSegmented_Task_SLFP_Task(id, &receivedTask1);
-    if(result) {
+    rtems_extended_status_code status;
+    status = getSegmented_Task_SLFP_Task(id, &receivedTask1);
+    if(rtems_is_status_successful(status)) {
         *segmentedTaskToReturn = (Segmented_Task_Task*) receivedTask1;
         return true;
     }

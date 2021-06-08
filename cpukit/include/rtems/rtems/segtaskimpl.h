@@ -4,6 +4,7 @@
 #include <rtems/rtems/attr.h>
 #include <rtems/rtems/segtaskdata.h>
 #include <rtems/rtems/segtaskslfpimpl.h>
+#include <rtems/rtems/extended_rtems_status_codes.h>
 
 #ifdef __cplusplus
 extern "C" {
