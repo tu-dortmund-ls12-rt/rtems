@@ -39,6 +39,9 @@ variable get out of scope ever!
  * @retval RTEMS_SUCCESSFUL if successfull.
  * @retval RTEMS_INVALID_ID if no slfp task is associated with the
  * given id.
+ * @retval RTEMS_EXTENDED_NULL_POINTER if semgentedTaskToReturn is a null Pointer.
+ * For mapping on rtems_status_code see rtems_extended_status_code
+ * details.
  */
 rtems_extended_status_code getSegmented_Task_SLFP_Task(rtems_id id, Segmented_Task_SLFP_Task** segmentedTaskToReturn);
 
@@ -48,8 +51,7 @@ rtems_extended_status_code getSegmented_Task_SLFP_Task(rtems_id id, Segmented_Ta
  * of the disired segment.
  *
  * This routine returns the priority of the segment that is associated
- * with the given index of the segmented slfp task that is associated
- * with the given taskId.
+ * with the given index of the given segmented slfp task.
  * 
  * @param[in] task Pointer to the segmented slfp task.
  * @param[in] segmentIndex Index of the segment.

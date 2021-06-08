@@ -92,6 +92,7 @@ rtems_extended_status_code getSegmented_Task_SLFP_Task(rtems_id id, Segmented_Ta
         return RTEMS_EXTENDED_NULL_POINTER;
     }
 
+    // --- Implementation ---
     //TODO: Implement going through the list of all slfp tasks
     bool taskIsPresent = true; // TODO: Replace with real check
     if(!taskIsPresent) {
@@ -113,6 +114,7 @@ rtems_extended_status_code getPriorityOfSegmentByIndex(Segmented_Task_SLFP_Task*
         return RTEMS_EXTENDED_INVALID_INDEX;
     }
 
+    // --- Implementation ---
     *priority = task->priorities[segmentIndex];
     return RTEMS_SUCCESSFUL;
 }
