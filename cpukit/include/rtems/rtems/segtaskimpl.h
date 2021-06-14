@@ -46,12 +46,12 @@ rtems_extended_status_code isPriorityValid(rtems_task_priority priority); //CHEC
 rtems_extended_status_code executeNextSegment(Segmented_Task_Task* task); // CHECK
 
 /**
- * @brief RTEMS Segmented Task Implementation: Zeroes the given segmented
+ * @brief RTEMS Segmented Task Implementation: Empty the given segmented
  * task.
  * 
- * This routine zeroes the given segmented task. Attention: The TaskID is
- * not changed at all, because the segmented task could have a rtems task
- * assigned with a valid id.
+ * This routine sets all values of the given segmented task to their default
+ * values. Attention: The TaskID is not changed at all, because the segmented
+ * task could have a rtems task assigned with a valid id.
  * 
  * @param[in] task Pointer to the segmented task.
  * 
@@ -95,7 +95,7 @@ rtems_extended_status_code getSegmented_Task_Task(rtems_id id, Segmented_Task_Ta
  * segmented task could have a rtems task assigned with a valid id.
  * 
  * @param[in] task Pointer to the segmented task.
- * @param[in] taskname Name the given task will receive.
+ * @param[in] taskName Name the given task will receive.
  * @param[in] taskPriority Priority the given task will receive.
  * @param[in] taskStackSize Size of the stack that is reserved for the given task.
  * @param[in] initialModes RTEMS modes that the given task will have at the
@@ -106,7 +106,8 @@ rtems_extended_status_code getSegmented_Task_Task(rtems_id id, Segmented_Task_Ta
  * of the given task. Its size must match the numberOfSegments.
  * 
  * @retval RTEMS_SUCCESSFUL if successfull.
- * @retval RTEMS_EXTENDED_NULL_POINTER if task is a null pointer.
+ * @retval RTEMS_EXTENDED_NULL_POINTER if task is a null pointer of
+ * functionPointer contains a null pointer.
  * For mapping on rtems_status_code see rtems_extended_status_code
  * details.
  * @retval RTEMS_INTERNAL_ERROR if an internal RTEMS inconsistency was detected.
