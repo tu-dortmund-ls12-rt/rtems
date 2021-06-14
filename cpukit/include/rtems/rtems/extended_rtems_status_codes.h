@@ -235,20 +235,7 @@ typedef enum {
    * When this extended status code is casted to a RTEMS_STATUS_CODE
    * it will be mapped on RTEMS_ILLEGAL_ON_SELF.
    */
-  RTEMS_EXTENDED_FINAL_SEGMENT = RTEMS_EXTENDED_ILLEGAL_ON_SELF,
-
-  /**
-   * @brief This status code is used internally by the implementation
-   * when more segments should be created than available at maximum.
-   *
-   * @par Notes
-   * This status will not be returned to the user.
-   * 
-   * @par Notes
-   * When this extended status code is casted to a RTEMS_STATUS_CODE
-   * it will be mapped on RTEMS_TOO_MANY.
-   */
-  RTEMS_EXTENDED_TOO_MANY_SEGMENTS = RTEMS_EXTENDED_TOO_MANY
+  RTEMS_EXTENDED_FINAL_SEGMENT = RTEMS_EXTENDED_ILLEGAL_ON_SELF
 } rtems_extended_status_code;
 
 #endif
