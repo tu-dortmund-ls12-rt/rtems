@@ -11,7 +11,9 @@ rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t t
                 rtems_mode initialModes, rtems_attribute taskAttributes, uint32_t numberOfSegments,
                 void (*segmentFunctions[]) (void), rtems_task_priority segmentPriorities[], rtems_id* taskId) {
     // --- Argument validation ---
-    // Arguments that need to be validated will be validated in fillDataIntoSegTaskSLFP and rtems_task_create
+    /**
+     * Arguments that need to be validated will be validated in fillDataIntoSegTaskSLFP and rtems_task_create.
+     */
 
     // --- Implementation ---
     rtems_extended_status_code status;
@@ -19,14 +21,35 @@ rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t t
     //TODO: Ditch the single task, and create a new one in a dynamic list
     status = emptySegTaskSLFP(&segmentedTask);
     if(!rtems_is_status_successful(status)) {
-        return RTEMS_INTERNAL_ERROR; // RTEMS_INTERNAL_ERROR is returned, because the error is not dependet on the user input.
+        /**
+         * Possible errors:
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      Not user depented. Therefor it is an internal error.
+         * RTEMS_INTERNAL_ERROR:
+         *      Needs to be forwarded.
+         */
+        return RTEMS_INTERNAL_ERROR;
     }
 
     status = fillDataIntoSegTaskSLFP(&segmentedTask, taskName, taskStackSize, initialModes,
                 taskAttributes, numberOfSegments, segmentFunctions, segmentPriorities);
     if(!rtems_is_status_successful(status)) {
+        /**
+         * Possible errors:
+         * RTEMS_INVALID_PRIORITY:
+         *      User dependent. Needs to be forwarded.
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      Can be user depenedent or not, depending on where the null pointer occurs.
+         *      Has to be split up into a forwarded error and an internal error.
+         * RTEMS_INTERNAL_ERROR:
+         *      Needs to be forwarded.
+         * RTEMS_INVALID_NAME:
+         *      User dependent. Needs to be forwarded.
+         * RTEMS_EXTENDED_TOO_MANY_SEGMENTS:
+         *      User dependent. Needs to be forwarded.
+         */
         if(status == RTEMS_EXTENDED_NULL_POINTER && &segmentedTask == NULL) {
-            return RTEMS_INTERNAL_ERROR; // RTEMS_INTERNAL_ERROR is returned, because the error is not dependet on the user input.
+            return RTEMS_INTERNAL_ERROR;
         } else {
             return status;
         }
@@ -34,11 +57,24 @@ rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t t
 
     status = rtems_task_create(taskName, segmentedTask.base.taskPriority, taskStackSize, initialModes, taskAttributes, taskId);
     if(!rtems_is_status_successful(status)) {
-        if(status == RTEMS_INVALID_PRIORITY) {
-            /*
-            * RTEMS_INTERNAL_ERROR is returned, because the error is not dependet on the user input. A wrong
-            * priority should be catched earlier.
-            */
+        /**
+         * Possible errors:
+         * RTEMS_INVALID_ADDRESS:
+         *       User dependent. Needs to be forwarded.
+         * RTEMS_INVALID_NAME:
+         *       User dependent but validated beforehand. Therefor an internal error
+         *       must be returned.
+         * RTEMS_INVALID_PRIORITY:
+         *       User dependent but validated beforehand. Therefor an internal error
+         *       must be returned.
+         * RTEMS_MP_NOT_CONFIGURED:
+         *       User dependent. Needs to be forwarded.
+         * RTEMS_TOO_MANY:
+         *       User dependent. Needs to be forwarded.
+         * RTEMS_UNSATISFIED:
+         *       User dependent. Needs to be forwarded.
+         */
+        if(status == RTEMS_INVALID_NAME || status == RTEMS_INVALID_PRIORITY) {
             return RTEMS_INTERNAL_ERROR;
         } else {
             return status;
@@ -52,25 +88,54 @@ rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t t
 
 rtems_status_code rtems_task_start_segmented_slfp(rtems_id taskId) {
     // --- Argument validation ---
-    // Arguments that need to be validated will be validated in getSegmented_Task_SLFP_Task
+    /**
+     * Arguments that need to be validated will be validated in getSegmented_Task_SLFP_Task.
+     */
 
     // --- Implementation ---
     rtems_extended_status_code status;
-    /*
-    Somehow redundant, but may be usefull in the future to check if taskId
-    is associated with a segmented SLFP task.
-    */
-    Segmented_Task_SLFP_Task* receivedSegmentedTask;
+    /**
+     * Somehow redundant, but may be usefull in the future to check if taskId
+     * is associated with a segmented SLFP task.
+     */
+    Segmented_Task_SLFP_Task* receivedSegmentedTask = NULL;
+    Segmented_Task_Task* base = NULL;
 
     status = getSegmented_Task_SLFP_Task(taskId, &receivedSegmentedTask);
     if(!rtems_is_status_successful(status)) {
-        return status;
+        /**
+         * Possible errors:
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      Not user depented. Therefor it is an internal error.
+         * RTEMS_INVALID_ID:
+         *      User dependent. Needs to be forwarded.
+         */
+        if(status == RTEMS_EXTENDED_NULL_POINTER) {
+            return RTEMS_INTERNAL_ERROR;
+        } else {
+            return status;
+        }
     }
 
-    Segmented_Task_Task* base = (Segmented_Task_Task*) receivedSegmentedTask;
+    base = (Segmented_Task_Task*) receivedSegmentedTask;
     status = rtems_task_start(base->taskId, main, (rtems_task_argument) NULL);
     if(!rtems_is_status_successful(status)) {
-        return status;
+        /**
+         * Possible errors:
+         * RTEMS_INVALID_ADDRESS:
+         *      Not user depented. Therefor it is an internal error.
+         * RTEMS_INVALID_ID:
+         *      User dependent but validated beforhand. Therefor it is an internal error.
+         * RTEMS_INCORRECT_STATE:
+         *      User dependent. Needs to be forwarded.
+         * RTEMS_ILLEGAL_ON_REMOTE_OBJECT:
+         *      User dependent. Needs to be forwarded.
+         */
+        if(status == RTEMS_INVALID_ADDRESS || status == RTEMS_INVALID_ID) {
+            return RTEMS_INTERNAL_ERROR;
+        } else {
+            return status;
+        }
     }
 
     return RTEMS_SUCCESSFUL;
@@ -78,7 +143,9 @@ rtems_status_code rtems_task_start_segmented_slfp(rtems_id taskId) {
 
 rtems_status_code rtems_task_resume_segmented_slfp(rtems_id taskId) {
     // --- Argument validation ---
-    // Arguments that need to be validated will be validated in getSegmented_Task_SLFP_Task
+    /**
+     * Arguments that need to be validated will be validated in getSegmented_Task_SLFP_Task.
+     */
 
     // --- Implementation ---
    rtems_extended_status_code status;
@@ -88,7 +155,18 @@ rtems_status_code rtems_task_resume_segmented_slfp(rtems_id taskId) {
    
    status = getSegmented_Task_SLFP_Task(taskId, &receivedTask);
    if(!rtems_is_status_successful(status)) {
-       return status;
+       /**
+        * Possible errors:
+        * RTEMS_EXTENDED_NULL_POINTER:
+        *      Not user depented. Therefor it is an internal error.
+        * RTEMS_INVALID_ID:
+        *      User dependent. Needs to be forwarded.
+        */
+       if(status == RTEMS_EXTENDED_NULL_POINTER) {
+           return RTEMS_INTERNAL_ERROR;
+       } else {
+           return status;
+       }
    }
 
    status = rtems_task_is_suspended(taskId);
@@ -102,15 +180,45 @@ rtems_status_code rtems_task_resume_segmented_slfp(rtems_id taskId) {
 
    status = getPriorityOfSegmentByIndex(receivedTask, receivedTask->base.currentSegment, &nextPriority);
    if(!rtems_is_status_successful(status)) {
-       return status;
+       /**
+        * Possible errors:
+        * RTEMS_EXTENDED_NULL_POINTER:
+        *      User dependent and validated beforhand or user independent. In both cases it
+        *      is an internal error.
+        * RTEMS_EXTENDED_INVALID_INDEX:
+        *      User independent. Therefor it is an internal error.
+        */
+       return RTEMS_INTERNAL_ERROR;
    }
 
    status = rtems_task_set_priority(taskId, nextPriority, &wildCard);
    if(!rtems_is_status_successful(status)) {
-       return status;
+       /**
+        * Possible errors:
+        * RTEMS_INVALID_ID:
+        *      User dependent but validated beforhand. Therefor it is an internal error.
+        * RTEMS_INVALID_ADDRESS:
+        *      User independent. Therefor it is an internal error.
+        * RTEMS_INVALID_PRIORITY:
+        *      User independent. Therefor it is an internal error.
+        */
+       return RTEMS_INTERNAL_ERROR;
    }
 
-   return rtems_task_resume(taskId);
+   status = rtems_task_resume(taskId);
+   if(!rtems_is_status_successful(status)) {
+       /**
+        * Possible errors:
+        * RTEMS_INVALID_ID:
+        *       User dependent but validated beforhand. Therefor it is an internal error.
+        * RTEMS_INCORRECT_STATE:
+        *       User call dependented but validated beforehand. Therefor it is an internal
+        *       error.
+        */
+       return RTEMS_INTERNAL_ERROR;
+   }
+
+   return RTEMS_SUCCESSFUL;
 }
 
 // ----- Hidden Implementation -----

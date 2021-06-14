@@ -7,7 +7,6 @@
 #include <rtems/rtems/segtaskslfpdata.h>
 #include <rtems/rtems/attr.h>
 #include <rtems/rtems/extended_rtems_status_codes.h>
-//#include <rtems/rtems/segtaskimpl.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,7 +45,7 @@ variable get out of scope ever!
  * @retval RTEMS_INVALID_ID if no slfp task is associated with the
  * given id.
  */
-rtems_extended_status_code getSegmented_Task_SLFP_Task(rtems_id id, Segmented_Task_SLFP_Task** segmentedTaskToReturn); // CHECK
+rtems_extended_status_code getSegmented_Task_SLFP_Task(rtems_id id, Segmented_Task_SLFP_Task** segmentedTaskToReturn);
 
 /**
  * @brief RTEMS Segmented SLFP Task Implementation: Get the priority
@@ -67,7 +66,7 @@ rtems_extended_status_code getSegmented_Task_SLFP_Task(rtems_id id, Segmented_Ta
  * For mapping on rtems_status_code see rtems_extended_status_code
  * details.
  */
-rtems_extended_status_code getPriorityOfSegmentByIndex(Segmented_Task_SLFP_Task* task, uint32_t segmentIndex, rtems_task_priority* priority); // CHECK
+rtems_extended_status_code getPriorityOfSegmentByIndex(Segmented_Task_SLFP_Task* task, uint32_t segmentIndex, rtems_task_priority* priority);
 
 /**
  * @brief RTEMS Segmented SLFP Task Implementation: Empty the given segmented
@@ -91,7 +90,7 @@ rtems_extended_status_code getPriorityOfSegmentByIndex(Segmented_Task_SLFP_Task*
  * one segmentedTask currently possible. So therefor it won't be used. This needs
  * to be changed when a list of Segmented_TASK_SLFP_Tasks is present.
  */
-rtems_extended_status_code emptySegTaskSLFP(Segmented_Task_SLFP_Task* givenSegmentedTask); // CHECK
+rtems_extended_status_code emptySegTaskSLFP(Segmented_Task_SLFP_Task* givenSegmentedTask);
 
 /**
  * @brief RTEMS Segmented SLFP Task Implementation: Fill in the given data.
@@ -136,7 +135,7 @@ rtems_extended_status_code fillDataIntoSegTaskSLFP(Segmented_Task_SLFP_Task* tas
                 rtems_name taskName, size_t taskStackSize,
                 rtems_mode initialModes, rtems_attribute taskAttributes,
                 uint32_t numberOfSegments, void (*functionPointer[]) (void),
-                rtems_task_priority priorities[]); // CHECK
+                rtems_task_priority priorities[]);
 
 /**
  * @brief RTEMS Segmented Task SLFP Implementation: The runtime function.
@@ -152,7 +151,7 @@ rtems_extended_status_code fillDataIntoSegTaskSLFP(Segmented_Task_SLFP_Task* tas
  * - Renvame to avoid compiler warnings.
  * - Implement loop for multiple execution of a segmented slfp task.
  */
-void main(rtems_task_argument arguments); // CHECK
+void main(rtems_task_argument arguments);
 
 #ifdef __cplusplus
 }

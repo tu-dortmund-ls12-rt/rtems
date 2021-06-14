@@ -23,7 +23,7 @@ extern "C" {
  * @retval RTEMS_SUCCESSFUL if successfull.
  * @retval RTEMS_INVALID_PRIORITY if priority is not invalid.
  */
-rtems_extended_status_code isPriorityValid(rtems_task_priority priority); //CHECK
+rtems_extended_status_code isPriorityValid(rtems_task_priority priority);
 
 /**
  * @brief RTEMS Segmented Task Implementation: Execute the next segmented of
@@ -43,7 +43,7 @@ rtems_extended_status_code isPriorityValid(rtems_task_priority priority); //CHEC
  * For mapping on rtems_status_code see rtems_extended_status_code
  * details.
  */
-rtems_extended_status_code executeNextSegment(Segmented_Task_Task* task); // CHECK
+rtems_extended_status_code executeNextSegment(Segmented_Task_Task* task);
 
 /**
  * @brief RTEMS Segmented Task Implementation: Empty the given segmented
@@ -61,7 +61,7 @@ rtems_extended_status_code executeNextSegment(Segmented_Task_Task* task); // CHE
  * details.
  * @retval RTEMS_INTERNAL_ERROR if an internal RTEMS inconsistency was detected.
  */
-rtems_extended_status_code emptySegmentedTask(Segmented_Task_Task* task); // CHECK
+rtems_extended_status_code emptySegmentedTask(Segmented_Task_Task* task);
 
 /**
  * @brief RTEMS Segmented Task Implementation: Get task by id.
@@ -82,7 +82,7 @@ rtems_extended_status_code emptySegmentedTask(Segmented_Task_Task* task); // CHE
  * details.
  * @retval RTEMS_INTERNAL_ERROR if an internal RTEMS inconsistency was detected.
  */
-rtems_extended_status_code getSegmented_Task_Task(rtems_id id, Segmented_Task_Task** segmentedTaskToReturn); // CHECK
+rtems_extended_status_code getSegmented_Task_Task(rtems_id id, Segmented_Task_Task** segmentedTaskToReturn);
 
 /**
  * @brief RTEMS Segmented Task Implementation: Fill in the given data.
@@ -122,7 +122,7 @@ rtems_extended_status_code fillDataIntoSegTask(Segmented_Task_Task* task,
                 rtems_name taskName, rtems_task_priority taskPriority,
                 size_t taskStackSize, rtems_mode initialModes, 
                 rtems_attribute taskAttributes, uint32_t numberOfSegments,
-                void (*functionPointer[]) (void)); // CHECK
+                void (*functionPointer[]) (void));
 
 /**
  * @brief RTEMS Segmented Task Implementation: Fill in the given general data.
@@ -152,7 +152,7 @@ rtems_extended_status_code fillDataIntoSegTask(Segmented_Task_Task* task,
 rtems_extended_status_code fillGeneralDataIntoSegTask(Segmented_Task_Task* task,
                 rtems_name taskName, rtems_task_priority taskPriority,
                 size_t taskStackSize, rtems_mode initialModes, 
-                rtems_attribute taskAttributes); // CHECK
+                rtems_attribute taskAttributes);
 
 /**
  * @brief RTEMS Segmented Task Implementation: Fill in the given segment
@@ -177,8 +177,7 @@ rtems_extended_status_code fillGeneralDataIntoSegTask(Segmented_Task_Task* task,
  * details.
  */
 rtems_extended_status_code fillSegmentDataIntoSegTask(Segmented_Task_Task* task,
-                uint32_t numberOfSegments, void (*functionPointer[]) (void)); // CHECK
-
+                uint32_t numberOfSegments, void (*functionPointer[]) (void));
 /**
  * @brief RTEMS Segmented Task Implementation: Get the size of the communication memory.
  *
@@ -198,7 +197,7 @@ rtems_extended_status_code fillSegmentDataIntoSegTask(Segmented_Task_Task* task,
  * of the given segmented task. Make the allocated communication memory of the individual tasks variable
  * and then change this method.
  */
-rtems_extended_status_code rtems_task_segmented_get_communication_memory_size_impl(Segmented_Task_Task* segmentedTask, size_t* size); // CHECK
+rtems_extended_status_code rtems_task_segmented_get_communication_memory_size_impl(Segmented_Task_Task* segmentedTask, size_t* size);
 
 /**
  * @brief RTEMS Segmented Task Implementation: Read from the communication memory.
@@ -223,7 +222,7 @@ rtems_extended_status_code rtems_task_segmented_get_communication_memory_size_im
  * defined by amount or a read outside of the communication memory should be performed.
  */
 rtems_extended_status_code rtems_task_segmented_read_communication_memory_for_from_impl(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize,
-                                                                        size_t amount, uint32_t startingAtByte); // CHECK
+                                                                        size_t amount, uint32_t startingAtByte);
 
 /**
  * @brief RTEMS Segmented Task Implementation: Read from the communication memory.
@@ -247,7 +246,7 @@ rtems_extended_status_code rtems_task_segmented_read_communication_memory_for_fr
  * defined by amount or a read outside of the communication memory should be performed.
  */
 rtems_extended_status_code rtems_task_segmented_read_communication_memory_for_impl(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize,
-                                                                        size_t amount); // CHECK
+                                                                        size_t amount);
 
 /**
  * @brief RTEMS Segmented Task Implementation: Read from the communication memory.
@@ -271,7 +270,7 @@ rtems_extended_status_code rtems_task_segmented_read_communication_memory_for_im
  * or a read outside of the communication memory should be performed.
  */
 rtems_extended_status_code rtems_task_segmented_read_communication_memory_from_impl(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize,
-                                                                        uint32_t startingAtByte); // CHECK
+                                                                        uint32_t startingAtByte);
 
 /**
  * @brief RTEMS Segmented Task Implementation: Read from the communication memory.
@@ -292,7 +291,7 @@ rtems_extended_status_code rtems_task_segmented_read_communication_memory_from_i
  * @retval RTEMS_INVALID_SIZE if the buffer is to small to read the amount of content
  * or a read outside of the communication memory should be performed.
  */
-rtems_extended_status_code rtems_task_segmented_read_communication_memory_impl(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize); // CHECK                           
+rtems_extended_status_code rtems_task_segmented_read_communication_memory_impl(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize);                          
 
 /**
  * @brief RTEMS Segmented Task Implementation: Writes content to communication memory.
@@ -317,7 +316,7 @@ rtems_extended_status_code rtems_task_segmented_read_communication_memory_impl(S
  * communication memory.
  * @retval RTEMS_INTERNAL_ERROR if an internal RTEMS inconsistency was detected.
  */
-rtems_extended_status_code rtems_task_segmented_write_communication_memory_impl(Segmented_Task_Task* segmentedTask, uint8_t* content, size_t sizeOfContent); // CHECK
+rtems_extended_status_code rtems_task_segmented_write_communication_memory_impl(Segmented_Task_Task* segmentedTask, uint8_t* content, size_t sizeOfContent);
 
 /**
  * @brief RTEMS Segmented Task Implementation: Append content to communication memory.
@@ -340,7 +339,7 @@ rtems_extended_status_code rtems_task_segmented_write_communication_memory_impl(
  * communication memory is left to write the whole content in the
  * communication memory.
  */
-rtems_extended_status_code rtems_task_segmented_append_communication_memory_impl(Segmented_Task_Task* segmentedTask, uint8_t* content, size_t sizeOfContent); // CHECK
+rtems_extended_status_code rtems_task_segmented_append_communication_memory_impl(Segmented_Task_Task* segmentedTask, uint8_t* content, size_t sizeOfContent);
 
 /**
  * @brief RTEMS Segmented Task Implementation: Zeroes the communication memory
@@ -356,7 +355,7 @@ rtems_extended_status_code rtems_task_segmented_append_communication_memory_impl
  * For mapping on rtems_status_code see rtems_extended_status_code
  * details.
  */
-rtems_extended_status_code rtems_task_segmented_clear_communication_memory_impl(Segmented_Task_Task* segmentedTask); // Check
+rtems_extended_status_code rtems_task_segmented_clear_communication_memory_impl(Segmented_Task_Task* segmentedTask);
 
 
 #ifdef __cplusplus

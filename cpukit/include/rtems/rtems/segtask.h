@@ -33,7 +33,7 @@
  * @retval RTEMS_INVALID_ADDRESS if size is a null pointer
  * @retval RTEMS_INTERNAL_ERROR if an internal RTEMS inconsistency was detected.
  */
-rtems_status_code rtems_task_segmented_get_communication_memory_size(size_t* size); // CHECK
+rtems_status_code rtems_task_segmented_get_communication_memory_size(size_t* size);
 
 /**
  * @brief RTEMS Segmented Task: Read from the communication memory.
@@ -56,7 +56,7 @@ rtems_status_code rtems_task_segmented_get_communication_memory_size(size_t* siz
  * defined by amount or a read outside of the communication memory should be performed.
  */
 rtems_status_code rtems_task_segmented_read_communication_memory_for_from(uint8_t* buffer, size_t bufferSize,
-                                                                        size_t amount, uint32_t startingAtByte); // CHECK
+                                                                        size_t amount, uint32_t startingAtByte);
 
 /**
  * @brief RTEMS Segmented Task: Read from the communication memory.
@@ -78,7 +78,7 @@ rtems_status_code rtems_task_segmented_read_communication_memory_for_from(uint8_
  * defined by amount or a read outside of the communication memory should be performed.
  */
 rtems_status_code rtems_task_segmented_read_communication_memory_for(uint8_t* buffer, size_t bufferSize,
-                                                                        size_t amount); // CHECK
+                                                                        size_t amount);
 
 /**
  * @brief RTEMS Segmented Task: Read from the communication memory.
@@ -100,7 +100,7 @@ rtems_status_code rtems_task_segmented_read_communication_memory_for(uint8_t* bu
  * or a read outside of the communication memory should be performed.
  */
 rtems_status_code rtems_task_segmented_read_communication_memory_from(uint8_t* buffer, size_t bufferSize,
-                                                                        uint32_t startingAtByte); // CHECK
+                                                                        uint32_t startingAtByte);
 
 /**
  * @brief RTEMS Segmented Task: Read from the communication memory.
@@ -119,7 +119,7 @@ rtems_status_code rtems_task_segmented_read_communication_memory_from(uint8_t* b
  * @retval RTEMS_INVALID_SIZE if the buffer is to small to read the amount of content
  * or a read outside of the communication memory should be performed.
  */
-rtems_status_code rtems_task_segmented_read_communication_memory(uint8_t* buffer, size_t bufferSize); // CHECK                       
+rtems_status_code rtems_task_segmented_read_communication_memory(uint8_t* buffer, size_t bufferSize);                      
 
 /**
  * @brief RTEMS Segmented Task: Writes content to communication memory.
@@ -139,7 +139,7 @@ rtems_status_code rtems_task_segmented_read_communication_memory(uint8_t* buffer
  * communication memory is present to write the whole content in the
  * communication memory.
  */
-rtems_status_code rtems_task_segmented_write_communication_memory(uint8_t* content, size_t sizeOfContent); // CHECK
+rtems_status_code rtems_task_segmented_write_communication_memory(uint8_t* content, size_t sizeOfContent);
 
 /**
  * @brief RTEMS Segmented Task: Append content to communication memory.
@@ -159,7 +159,7 @@ rtems_status_code rtems_task_segmented_write_communication_memory(uint8_t* conte
  * communication memory is left to write the whole content in the
  * communication memory.
  */
-rtems_status_code rtems_task_segmented_append_communication_memory(uint8_t* content, size_t sizeOfContent); // CHECK
+rtems_status_code rtems_task_segmented_append_communication_memory(uint8_t* content, size_t sizeOfContent);
 
 /**
  * @brief RTEMS Segmented Task: Zeroes the communication memory
@@ -171,6 +171,6 @@ rtems_status_code rtems_task_segmented_append_communication_memory(uint8_t* cont
  * @retval RTEMS_SUCCESSFUL if successfull.
  * @retval RTEMS_INTERNAL_ERROR if an internal RTEMS inconsistency was detected.
  */
-rtems_status_code rtems_task_segmented_clear_communication_memory(void); // CHECK
+rtems_status_code rtems_task_segmented_clear_communication_memory(void);
 
 #endif

@@ -27,22 +27,20 @@ extern "C" {
  * @param[in] segmentPriorities Array that contains the priorities of the segments of
  * the the task. It is important that this is in the same order as functionPointer.
  * Its size must match the numberOfSegments.
- * @param[in] taskId Pointer to which the id of the task will be returned.
+ * @param[out] taskId Pointer to which the id of the task will be returned.
  * 
- * @retval RTEMS_SUCCESSFUL if successfull.
- * @retval RTEMS_INVALID_PRIORITY if segmentPriorities containss an invalid rtems_task_priority.
- * @retval RTEMS_INVALID_NAME if taskName is an invalid rtems_name.
+ * @retval RTEMS_SUCCESSFUl if successful.
+ * @retval RTEMS_INTERNAL_ERROR if an internal RTEMS inconsistency was detected.
+ * @retval RTEMS_INVALID_PRIORITY if segmentPriorities contains an invalid rtems_task_priority.
  * @retval RTEMS_INVALID_ADDRESS if taskId is a null pointer or segmentFunctions contains
- * a null pointer.
- * @retval RTEMS_INTERNAL_ERROR if RTEMS inconsistency was detected.
- * @retval RTEMS_MP_NOT_CONFIGURED if multiprocessing is not configured.
- * @retval RTEMS_TOO_MANY if too many task are created.
- * @retval RTEMS_TOO_MANY if numberOfSegments is greater than the maximum number configured.
- * @retval RTEMS_UNSATISFIED if not enough memory for stack or floating point
- * context is present.
- * @retval RTEMS_UNSATISFIED if non-preemption mode is not supported on SMP system.
- * @retval RTEMS_UNSATISFIED if interrupt level mode is not supported on SMP system.
- * @retval RTEMS_TOO_MANY if there are too many global objects.
+ *                               a null pointer.
+ * @retval RTEMS_INVALID_NAME if taskName is an invalid rtems_name.
+ * @retval RTEMS_TOO_MANY if numberOfSegments exceeds the maximum configuration or if
+ *                        too many tasks are created or if there are too many global objects.
+ * @retval RTEMS_MP_NOT_CONFIGURED if multiprocessing is not configured. 
+ * @retval RTEMS_UNSATISFIED if not enough memory for stack or floating point context
+ *                           is present or non-preemption mode is not supported on SMP
+ *                           system or interrupt level mode is not supported on SMP system.
  */
 rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t taskStackSize,
                 rtems_mode initialModes, rtems_attribute taskAttributes,
@@ -57,11 +55,13 @@ rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t t
  * 
  * @param[in] taskId Id of the task that should be started.
  * 
- * @retval RTEMS_SUCCESSFUL if successfull.
- * @retval RTEMS_INVALID_ID if no slfp task is associated with the
- * given id.
- * @retval RTEMS_INCORRECT_STATE if task to start is not in the dormant state.
- * @retval RTEMS_ILLEGAL_ON_REMOTE_OBJECT if it's not possible to start a remote task.
+ * @retval RTEMS_SUCCESSFUL if successful.
+ * @retval RTEMS_INTERNAL_ERROR if an internal RTEMS inconsistency was detected.
+ * @retval RTEMS_INVALID_ID if no slfp task is associated with the given id.
+ * @retval RTEMS_INCORRECT_STATE if the slfp task to start is not in the dormant
+ *                               state.
+ * @retval RTEMS_ILLEGAL_ON_REMOTE_OBJECT if it's not possible to start a remote
+ *                                        task.
  * 
  * @par Notes
  * TODO:
@@ -77,12 +77,14 @@ rtems_status_code rtems_task_start_segmented_slfp(rtems_id taskId);
  * 
  * @param[in] taskId Id of the task that should be resumed.
  * 
- * @retval RTEMS_SUCCESSFUL if successfull.
+ * @retval RTEMS_SUCCESSFUL if successful.
+ * @retval RTEMS_INTERNAL_ERROR if an internal RTEMS inconsistency was detected.
  * @retval RTEMS_INVALID_ID if no slfp task is associated with the
- * given id.
- * @retval RTEMS_ILLEGAL_ON_REMOTE_OBJECT if the resume is not support
- * on remote tasks.
+ *                          given id.
  * @retval RTEMS_INCORRECT_STATE if the task to resume is not suspended.
+ * @retval RTEMS_ILLEGAL_ON_REMOTE_OBJECT if something is not support
+ *                                        on remote tasks.
+ * 
  */
 rtems_status_code rtems_task_resume_segmented_slfp(rtems_id taskId);
 
