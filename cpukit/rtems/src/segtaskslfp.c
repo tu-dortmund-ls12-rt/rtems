@@ -150,13 +150,23 @@ rtems_extended_status_code getPriorityOfSegmentByIndex(Segmented_Task_SLFP_Task*
 
 rtems_extended_status_code emptySegTaskSLFP(Segmented_Task_SLFP_Task* givenSegmentedTask) {
     // --- Argument validation ---
-    // Arguments that need to be validated will be validated in emptySegmentedTask
+    /**
+     * Arguments that need to be validated will be validated in emptySegmentedTask,
+     */
 
     // --- Implementation ---
     rtems_extended_status_code status;
 
     status = emptySegmentedTask((Segmented_Task_Task*) givenSegmentedTask);
     if(!rtems_is_status_successful(status)) {
+        /**
+         * Possible errors:
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      User depented. Occurs when givenSegmentedTask is a null pointer.
+         *      Must be forwarded.
+         * RTEMS_INTERNAL_ERROR:
+         *      User indepented. Must be forwarded.
+         */
         return status;
     }
 
@@ -173,62 +183,81 @@ rtems_extended_status_code fillDataIntoSegTaskSLFP(Segmented_Task_SLFP_Task* tas
                 uint32_t numberOfSegments, void (*functionPointer[]) (void),
                 rtems_task_priority priorities[]) {
     // --- Argument validation ---
-    // All arguments that are not validated here are validated in fillDataIntoSegTask.
-    // Validation of priorities is moved to the actual priority assignment, so there is only need for one loop.
+    /**
+     * Other arguments that need to be validated will be validated in fillDataIntoSegTask.
+     */
+    for(uint32_t i = 0; i < numberOfSegments; i++) {
+        if(!rtems_is_status_successful(isPriorityValid(priorities[i]))) {
+            return RTEMS_INVALID_PRIORITY;
+        }
+    }
 
     // --- Implementation ---
     rtems_extended_status_code status;
 
     status = fillDataIntoSegTask((Segmented_Task_Task*) task, taskName, priorities[0], taskStackSize, initialModes, taskAttributes, numberOfSegments, functionPointer);
     if(!rtems_is_status_successful(status)) {
-        return status;
+        /**
+         * Possible errors:
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      User depented. Occurs when task is a null pointer or functionPointer contains
+         *      a null pointer. Must be forwarded.
+         * RTEMS_INTERNAL_ERROR:
+         *      User indepented. Must be forwarded.
+         * RTEMS_INVALID_NAME:
+         *      User dependent. Must be forwarded.
+         * RTEMS_INVALID_PRIORITY:
+         *      User dependent, but was validated beforehand. Therefor in case of this
+         *      error an internal error must be returned.
+         * RTEMS_EXTENDED_TOO_MANY_SEGMENTS:
+         *      User dependent. Must be forwarded.
+         */
+        if(status == RTEMS_INVALID_PRIORITY) {
+            return RTEMS_INTERNAL_ERROR;
+        } else {
+            return status;
+        }
     }
 
     for(uint32_t i = 0; i < numberOfSegments; i++) {
-        rtems_task_priority currentPriority = priorities[i];
-        if(!rtems_is_status_successful(isPriorityValid(currentPriority))) {
-            return RTEMS_INVALID_PRIORITY;
-        } else {
-            (task->priorities)[i] = currentPriority;
-        }
+        (task->priorities)[i] = priorities[i];
     }
 
     return RTEMS_SUCCESSFUL;
 }
 
 void main(rtems_task_argument arguments) {
+    // --- Argument validation ---
     
+    // --- Implementation
     Segmented_Task_SLFP_Task* segmentedTask;
-    rtems_extended_status_code status = getSegmented_Task_SLFP_Task(RTEMS_SELF, &segmentedTask);
+    rtems_extended_status_code status;
+    
+    status = getSegmented_Task_SLFP_Task(RTEMS_SELF, &segmentedTask);
     if(!rtems_is_status_successful(status)) {
-        /*
-        TODO: What todo when status is not RTEMS_SUCCESSFUL? The main function of the task
-        must be exited but with failure.
-        */
+        /**
+         * When an error happens the RTEMS task must be exited with a failure.
+         * Currently a fitting method can't be found. Therefor only an information
+         * is displayed and the task is exited in a regular way.
+         * 
+         * TODO:
+         * Find a real way to exit the task with a failure.
+         */
+       printf("\n\n--- ERROR ---!\n");
+       printf("Task %u exited with failure. Currently there is no way to exit in an irregular way.\n", RTEMS_SELF);
+       printf("-------");
+       printf("\n\n");
+       rtems_task_exit();
     }
 
     Segmented_Task_Task* base = (Segmented_Task_Task*) segmentedTask;
     for(uint32_t i = 0; i < base->numberOfSegments; i++) {
-        //base->segments[i].function();
         executeNextSegment(base);
         
-        /*
-        No suspension nor priority change needed after
-        the last segment
-        */
-        if(i == base->numberOfSegments - 1) {
-            break;
+        // No suspension is needed after the last segment.
+        if(i != base->numberOfSegments - 1) {
+            rtems_task_suspend(RTEMS_SELF);
         }
-
-        rtems_task_suspend(RTEMS_SELF);
-        /*
-        Change priority of the task to the priority of the next segment.
-        Exact place to apply the change is unknown yet. Temporarly it's
-        done after the task is unsuspended.
-        */
-        base->taskPriority = segmentedTask->priorities[i+1];
-        rtems_task_priority wildCard;
-        rtems_task_set_priority(RTEMS_SELF, base->taskPriority,&wildCard);
     }
     rtems_task_exit();
 }

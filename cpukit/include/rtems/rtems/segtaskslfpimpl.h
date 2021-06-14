@@ -1,6 +1,8 @@
 #ifndef _RTEMS_RTEMS_SEGTASKSLFPIMPL_H
 #define _RTEMS_RTEMS_SEGTASKSLFPIMPL_H
 
+#include <stdio.h>
+
 #include <rtems/rtems/segtaskimpl.h>
 #include <rtems/rtems/segtaskslfpdata.h>
 #include <rtems/rtems/attr.h>
@@ -28,23 +30,23 @@ variable get out of scope ever!
 */
 
 /**
- * @brief RTEMS Segmented SLFP Task Implementation: Get task by id.
+ * @brief RTEMS Segmented Task SLFP Implementation: Get task by id.
  *
  * This routine returns the segmented slfp task that is associated
  * with the given task id.
  * 
  * @param[in] id Id of the slfp task to retrieve.
  * @param[out] segmentedTaskToReturn Pointer that will contain
- *              the adress of the disired task afterwards.
+ *              the adress of the disired slfp task afterwards.
  * 
  * @retval RTEMS_SUCCESSFUL if successfull.
- * @retval RTEMS_INVALID_ID if no slfp task is associated with the
- * given id.
  * @retval RTEMS_EXTENDED_NULL_POINTER if semgentedTaskToReturn is a null Pointer.
  * For mapping on rtems_status_code see rtems_extended_status_code
  * details.
+ * @retval RTEMS_INVALID_ID if no slfp task is associated with the
+ * given id.
  */
-rtems_extended_status_code getSegmented_Task_SLFP_Task(rtems_id id, Segmented_Task_SLFP_Task** segmentedTaskToReturn);
+rtems_extended_status_code getSegmented_Task_SLFP_Task(rtems_id id, Segmented_Task_SLFP_Task** segmentedTaskToReturn); // CHECK
 
 /**
  * @brief RTEMS Segmented SLFP Task Implementation: Get the priority
@@ -55,7 +57,7 @@ rtems_extended_status_code getSegmented_Task_SLFP_Task(rtems_id id, Segmented_Ta
  * 
  * @param[in] task Pointer to the segmented slfp task.
  * @param[in] segmentIndex Index of the segment.
- * @param[in] priority Pointer to which the priority will be returned.
+ * @param[out] priority Pointer to which the priority will be returned.
  * 
  * @retval RTEMS_SUCCESSFUL if successfull.
  * @retval RTEMS_EXTENDED_NULL_POINTER if task or priority is a null pointer.
@@ -65,28 +67,31 @@ rtems_extended_status_code getSegmented_Task_SLFP_Task(rtems_id id, Segmented_Ta
  * For mapping on rtems_status_code see rtems_extended_status_code
  * details.
  */
-rtems_extended_status_code getPriorityOfSegmentByIndex(Segmented_Task_SLFP_Task* task, uint32_t segmentIndex, rtems_task_priority* priority);
+rtems_extended_status_code getPriorityOfSegmentByIndex(Segmented_Task_SLFP_Task* task, uint32_t segmentIndex, rtems_task_priority* priority); // CHECK
 
 /**
- * @brief RTEMS Segmented SLFP Task Implementation: Empties the segmented slfp task.
+ * @brief RTEMS Segmented SLFP Task Implementation: Empty the given segmented
+ * task.
  * 
- * This routine sets all values of the given segmented slfp task to their default
- * values.
+ * This routine sets all values of the given segmented task to their default
+ * values. Attention: The TaskID is not changed at all, because the segmented
+ * task could have a rtems task assigned with a valid id.
  * 
- * @param[in] givenSegmentedTask Pointer to the segmented slfp task.
+ * @param[in] givenSegmentedTask Pointer to the segmented task.
  * 
  * @retval RTEMS_SUCCESSFUL if successfull.
- * @retval RTEMS_EXTENDED_NULL_POINTER if task is a null pointer.
+ * @retval RTEMS_EXTENDED_NULL_POINTER if segmentedTask is a null pointer.
  * For mapping on rtems_status_code see rtems_extended_status_code
  * details.
+ * @retval RTEMS_INTERNAL_ERROR if an internal RTEMS inconsistency was detected.
  * 
  * @par Notes
  * TODO:
  * Currently the given segmentedTask has no effect, because there is always only
- * segmentedTask currently possible. So therefor it won't be used. This needs
+ * one segmentedTask currently possible. So therefor it won't be used. This needs
  * to be changed when a list of Segmented_TASK_SLFP_Tasks is present.
  */
-rtems_extended_status_code emptySegTaskSLFP(Segmented_Task_SLFP_Task* givenSegmentedTask);
+rtems_extended_status_code emptySegTaskSLFP(Segmented_Task_SLFP_Task* givenSegmentedTask); // CHECK
 
 /**
  * @brief RTEMS Segmented SLFP Task Implementation: Fill in the given data.
@@ -96,48 +101,58 @@ rtems_extended_status_code emptySegTaskSLFP(Segmented_Task_SLFP_Task* givenSegme
  * beforehand.
  * 
  * Attention: The id of the task is not changed at all, because the given
- * segmented slfp task could have a rtems task assigned with a valid id.
+ * segmented task could have a rtems task assigned with a valid id.
  * 
  * @param[in] task Pointer to the segmented slfp task.
- * @param[in] taskname Name the given task will receive.
- * @param[in] taskStackSize Size of the stack that is reserved for the given task.
- * @param[in] initialModes RTEMS modes that the given task will have at the
- * beginning of it's execution.
- * @param[in] taskAttributes RTEMS attributes that the given task will have.
- * @param[in] numberOfSegments Number of segments the given task is composed of.
+ * @param[in] taskName Name the given slfp task will receive.
+ * @param[in] taskStackSize Size of the stack that is reserved for the
+ *                          given slfp task.
+ * @param[in] initialModes RTEMS modes that the given slfp task will
+ *                          have at the beginning of it's execution.
+ * @param[in] taskAttributes RTEMS attributes that the given slfp task will have.
+ * @param[in] numberOfSegments Number of segments the given slfp task is composed of.
  * @param[in] functionPointer Array that contains the functions of the segments
- * of the given task. Its size must match the numberOfSegments.
+ *                          of the given slfp task. Its size must match the
+ *                          numberOfSegments.
  * @param[in] priorities Array that contains the priorities of the segments of
- * the the given task. It is important that this is in the same order as functionPointer.
- * Its size must match the numberOfSegments.
+ *                       the the given slfp task. It is important that this is
+ *                       in the same order as functionPointer. Its size must
+ *                       match the numberOfSegments.
  * 
- * @retval RTEMS_SUCCESSFUL if successfull.
- * @retval RTEMS_INVALID_PRIORITY if priorities containss an invalid rtems_task_priority.
+ * @retval RTEMS_SUCCESSFUL if successfull
+ * @retval RTEMS_INVALID_PRIORITY if priorities contains an invalid rtems_task_priority.
+ * @retval RTEMS_EXTENDED_NULL_POINTER if task is a null pointer or functionPointer
+ *                                     contains a null pointer. For mapping on
+ *                                     rtems_status_code see rtems_extended_status_code
+ *                                     details.
+ * @retval RTEMS_INTERNAL_ERROR if an internal RTEMS inconsistency was detected.
  * @retval RTEMS_INVALID_NAME if taskName is an invalid rtems_name.
- * @retval RTEMS_EXTENDED_NULL_POINTER if task is 
- * a null pointer or functionPointer contains a null pointer.
- * For mapping on rtems_status_code see rtems_extended_status_code
- * details.
- * @retval RTEMS_EXTENDED_TOO_MANY_SEGMENTS if numberOfSegments is 
- * greater than the maximum number configured.
- * For mapping on rtems_status_code see rtems_extended_status_code
- * details.
+ * @retval RTEMS_EXTENDED_TOO_MANY_SEGMENTS if numberOfSegments is greater than the
+ *                                          maximum number configured. For mapping
+ *                                          on rtems_status_code see rtems_extended_status_code
+ *                                          details.
  */
 rtems_extended_status_code fillDataIntoSegTaskSLFP(Segmented_Task_SLFP_Task* task,
                 rtems_name taskName, size_t taskStackSize,
                 rtems_mode initialModes, rtems_attribute taskAttributes,
                 uint32_t numberOfSegments, void (*functionPointer[]) (void),
-                rtems_task_priority priorities[]);
+                rtems_task_priority priorities[]); // CHECK
 
-/*
-This is the main function which executes the segments,
-performs the priority switching and the selfsuspension.
-
-TODO:
-Rename to avoid compiler warnings.
-Implement loop for multiple execution of a segmented task.
-*/
-void main(rtems_task_argument arguments);
+/**
+ * @brief RTEMS Segmented Task SLFP Implementation: The runtime function.
+ *
+ * This routine implements the main runtime function that is executed as
+ * a task by RTEMS. It will execute the segments of the segmented slfp
+ * task and perform the self suspension between the tasks.
+ * 
+ * @param[in] arguments A set of user defined arguments for the task.
+ * 
+ * @par Notes
+ * TODO:
+ * - Renvame to avoid compiler warnings.
+ * - Implement loop for multiple execution of a segmented slfp task.
+ */
+void main(rtems_task_argument arguments); // CHECK
 
 #ifdef __cplusplus
 }
