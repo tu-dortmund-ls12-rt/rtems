@@ -10,9 +10,9 @@
 extern "C" {
 #endif
 
-#define DO_ZERO_ON_WRITE 0
+#define DO_ZERO_ON_WRITE 0 // Not configurable by the user.
 
-/**
+/** 
  * @brief RTEMS Segmented Task Implementation: Checks wether the priority
  * is valid.
  *
@@ -23,7 +23,7 @@ extern "C" {
  * @retval RTEMS_SUCCESSFUL if successfull.
  * @retval RTEMS_INVALID_PRIORITY if priority is not invalid.
  */
-rtems_extended_status_code isPriorityValid(rtems_task_priority priority);
+rtems_extended_status_code isPriorityValid(rtems_task_priority priority); //CHECK
 
 /**
  * @brief RTEMS Segmented Task Implementation: Execute the next segmented of
@@ -43,7 +43,7 @@ rtems_extended_status_code isPriorityValid(rtems_task_priority priority);
  * For mapping on rtems_status_code see rtems_extended_status_code
  * details.
  */
-rtems_extended_status_code executeNextSegment(Segmented_Task_Task* task);
+rtems_extended_status_code executeNextSegment(Segmented_Task_Task* task); // CHECK
 
 /**
  * @brief RTEMS Segmented Task Implementation: Zeroes the given segmented
@@ -59,8 +59,9 @@ rtems_extended_status_code executeNextSegment(Segmented_Task_Task* task);
  * @retval RTEMS_EXTENDED_NULL_POINTER if task is a null pointer.
  * For mapping on rtems_status_code see rtems_extended_status_code
  * details.
+ * @retval RTEMS_INTERNAL_ERROR an internal RTEMS inconsistency was detected.
  */
-rtems_extended_status_code emptySegmentedTask(Segmented_Task_Task* task);
+rtems_extended_status_code emptySegmentedTask(Segmented_Task_Task* task); // CHECK
 
 /**
  * @brief RTEMS Segmented Task Implementation: Get task by id.
@@ -69,7 +70,7 @@ rtems_extended_status_code emptySegmentedTask(Segmented_Task_Task* task);
  * with the given task id.
  * 
  * @param[in] id Id of the task to retrieve.
- * @param[in] segmentedTaskToReturn Pointer that will contain
+ * @param[out] segmentedTaskToReturn Pointer that will contain
  *              the adress of the disired task afterwards.
  * 
  * @retval RTEMS_SUCCESSFUL if successfull.
@@ -79,8 +80,9 @@ rtems_extended_status_code emptySegmentedTask(Segmented_Task_Task* task);
  * a null pointer.
  * For mapping on rtems_status_code see rtems_extended_status_code
  * details.
+ * @retval RTEMS_INTERNAL_ERROR an internal RTEMS inconsistency was detected.
  */
-rtems_extended_status_code getSegmented_Task_Task(rtems_id id, Segmented_Task_Task** segmentedTaskToReturn);
+rtems_extended_status_code getSegmented_Task_Task(rtems_id id, Segmented_Task_Task** segmentedTaskToReturn); // CHECK
 
 /**
  * @brief RTEMS Segmented Task Implementation: Fill in the given data.
@@ -92,7 +94,7 @@ rtems_extended_status_code getSegmented_Task_Task(rtems_id id, Segmented_Task_Ta
  * Attention: The id of the task is not changed at all, because the given
  * segmented task could have a rtems task assigned with a valid id.
  * 
- * @param[in] task Pointer to the segmented slfp task.
+ * @param[in] task Pointer to the segmented task.
  * @param[in] taskname Name the given task will receive.
  * @param[in] taskPriority Priority the given task will receive.
  * @param[in] taskStackSize Size of the stack that is reserved for the given task.
@@ -104,12 +106,12 @@ rtems_extended_status_code getSegmented_Task_Task(rtems_id id, Segmented_Task_Ta
  * of the given task. Its size must match the numberOfSegments.
  * 
  * @retval RTEMS_SUCCESSFUL if successfull.
- * @retval RTEMS_INVALID_NAME if taskName is an invalid rtems_name.
- * @retval RTEMS_INVALID_PRIORITY if taskPriority is an invalid rtems_task_priority.
- * @retval RTEMS_EXTENDED_NULL_POINTER if segmentedTaskToReturn is 
- * a null pointer or functionPointer contains a null pointer.
+ * @retval RTEMS_EXTENDED_NULL_POINTER if task is a null pointer.
  * For mapping on rtems_status_code see rtems_extended_status_code
  * details.
+ * @retval RTEMS_INTERNAL_ERROR an internal RTEMS inconsistency was detected.
+ * @retval RTEMS_INVALID_NAME if taskName is an invalid rtems_name.
+ * @retval RTEMS_INVALID_PRIORITY if taskPriority is an invalid rtems_task_priority.
  * @retval RTEMS_EXTENDED_TOO_MANY_SEGMENTS if numberOfSegments is 
  * greater than the maximum number configured.
  * For mapping on rtems_status_code see rtems_extended_status_code
@@ -119,7 +121,7 @@ rtems_extended_status_code fillDataIntoSegTask(Segmented_Task_Task* task,
                 rtems_name taskName, rtems_task_priority taskPriority,
                 size_t taskStackSize, rtems_mode initialModes, 
                 rtems_attribute taskAttributes, uint32_t numberOfSegments,
-                void (*functionPointer[]) (void));
+                void (*functionPointer[]) (void)); // CHECK
 
 /**
  * @brief RTEMS Segmented Task Implementation: Fill in the given general data.
@@ -130,7 +132,7 @@ rtems_extended_status_code fillDataIntoSegTask(Segmented_Task_Task* task,
  * Attention: The id of the task is not changed at all, because the given
  * segmented task could have a rtems task assigned with a valid id.
  * 
- * @param[in] task Pointer to the segmented slfp task.
+ * @param[in] task Pointer to the segmented task.
  * @param[in] taskname Name the given task will receive.
  * @param[in] taskPriority Priority the given task will receive.
  * @param[in] taskStackSize Size of the stack that is reserved for the given task.
@@ -149,7 +151,7 @@ rtems_extended_status_code fillDataIntoSegTask(Segmented_Task_Task* task,
 rtems_extended_status_code fillGeneralDataIntoSegTask(Segmented_Task_Task* task,
                 rtems_name taskName, rtems_task_priority taskPriority,
                 size_t taskStackSize, rtems_mode initialModes, 
-                rtems_attribute taskAttributes);
+                rtems_attribute taskAttributes); // CHECK
 
 /**
  * @brief RTEMS Segmented Task Implementation: Fill in the given segment
@@ -158,7 +160,7 @@ rtems_extended_status_code fillGeneralDataIntoSegTask(Segmented_Task_Task* task,
  * This routines fills in the given segment specific data into the given
  * segmented task.
  * 
- * @param[in] task Pointer to the segmented slfp task.
+ * @param[in] task Pointer to the segmented task.
  * @param[in] numberOfSegments Number of segments the given task is composed of.
  * @param[in] functionPointer Array that contains the functions of the segments
  * of the given task. Its size must match the numberOfSegments.
@@ -174,75 +176,186 @@ rtems_extended_status_code fillGeneralDataIntoSegTask(Segmented_Task_Task* task,
  * details.
  */
 rtems_extended_status_code fillSegmentDataIntoSegTask(Segmented_Task_Task* task,
-                uint32_t numberOfSegments, void (*functionPointer[]) (void));
+                uint32_t numberOfSegments, void (*functionPointer[]) (void)); // CHECK
 
-/*
-Returns the size of the allocated memory for communcation between segments.
+/**
+ * @brief RTEMS Segmented Task Implementation: Get the size of the communication memory.
+ *
+ * This routine returns the size of the allocated memory for the communication
+ * between the segments of a task.
+ * 
+ * @param[in] segmentedTask Pointer to the segmented slfp task.
+ * @param[out] size Size of the communication memory.
+ * 
+ * @retval RTEMS_SUCCESSFUL if successfull.
+ * @retval RTEMS_EXTENDED_NULL_POINTER if segmentedTask or size is 
+ * a null pointer.
+ * 
+ * @par Notes
+ * TODO:
+ * So far each segmented task has the same sized communication memory. The result is therefor independent
+ * of the given segmented task. Make the allocated communication memory of the individual tasks variable
+ * and then change this method.
+ */
+rtems_extended_status_code rtems_task_segmented_get_communication_memory_size_impl(Segmented_Task_Task* segmentedTask, size_t* size); // CHECK
 
-TODO:
-So far each segmented task has the same sized communication memory. The result is therefor indepented of the given
-segmented task.
-*/
-rtems_status_code rtems_task_segmented_get_communication_memory_size_impl(Segmented_Task_Task* segmentedTask, size_t* size);
+/**
+ * @brief RTEMS Segmented Task Implementation: Read from the communication memory.
+ *
+ * This routine reads the content from the communication memory of the given segmented
+ * task for the given number of bytes starting at a specific byte (inclusive) into
+ * the given buffer. Boundary checks are performed, so therefor it is not possible
+ * to read outside of the intended memory. A copy of the memory content is returned,
+ * so it's not possible to manipulate the memory accidently.
+ * 
+ * @param[in] segmentedTask Pointer to the segmented task.
+ * @param[out] buffer Pointer to the location where the content should be written to.
+ * @param[in] bufferSize Size of the buffer in bytes.
+ * @param[in] amount Amount of content to read in bytes.
+ * @param[in] statingAtByte Byte where the reading should start.
+ * 
+ * @retval RTEMS_SUCCESSFUL if successfull.
+ * @retval RTEMS_EXTENDED_NULL_POINTER if segmentedTask of buffer is a null pointer.
+ * For mapping on rtems_status_code see rtems_extended_status_code
+ * details.
+ * @retval RTEMS_INVALID_SIZE if the buffer is to small to read the amount of content
+ * defined by amount or a read outside of the communication memory should be performed.
+ */
+rtems_extended_status_code rtems_task_segmented_read_communication_memory_for_from_impl(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize,
+                                                                        size_t amount, uint32_t startingAtByte); // CHECK
 
-/*
-Read the communication memory of the given segmented task for the given number of bytes
-starting at a specific byte (inclusive) into the given buffer.
-Boundary checks are performed, so therefor it is not possible to read out of the intended
-memory.
-A copy of the memory content is returned, so it's not possible to manipulate the memory.
-*/
-rtems_status_code rtems_task_segmented_read_communication_memory_for_from_impl(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize,
-                                                                        size_t amount, uint32_t startingAtByte);
+/**
+ * @brief RTEMS Segmented Task Implementation: Read from the communication memory.
+ *
+ * This routine reads the content from the communication memory of the given segmented
+ * task for the given number of bytes starting at the beginning of the memory into
+ * the given buffer. Boundary checks are performed, so therefor it is not possible
+ * to read outside of the intended memory. A copy of the memory content is returned,
+ * so it's not possible to manipulate the memory accidently.
+ * 
+ * @param[in] segmentedTask Pointer to the segmented task.
+ * @param[out] buffer Pointer to the location where the content should be written to.
+ * @param[in] bufferSize Size of the buffer in bytes.
+ * @param[in] amount Amount of content to read in bytes.
+ * 
+ * @retval RTEMS_SUCCESSFUL if successfull.
+ * @retval RTEMS_EXTENDED_NULL_POINTER if segmentedTask of buffer is a null pointer.
+ * For mapping on rtems_status_code see rtems_extended_status_code
+ * details.
+ * @retval RTEMS_INVALID_SIZE if the buffer is to small to read the amount of content
+ * defined by amount or a read outside of the communication memory should be performed.
+ */
+rtems_extended_status_code rtems_task_segmented_read_communication_memory_for_impl(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize,
+                                                                        size_t amount); // CHECK
 
-/*
-Read the communication memory of the given segmented task for the given number of bytes
-starting at the beginning of the memory into the given buffer.
-Boundary checks are performed, so therefor it is not possible to read out of the intended
-memory.
-A copy of the memory content is returned, so it's not possible to manipulate the memory.
-*/
-rtems_status_code rtems_task_segmented_read_communication_memory_for_impl(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize,
-                                                                        size_t amount);
+/**
+ * @brief RTEMS Segmented Task Implementation: Read from the communication memory.
+ *
+ * This routine reads the whole content from the communication memory of the given
+ * segmented task starting at a specific byte (inclusive) into the given buffer.
+ * Boundary checks are performed, so therefor it is not possible to read outside
+ * of the intended memory. A copy of the memory content is returned, so it's not
+ * possible to manipulate the memory accidently.
+ * 
+ * @param[in] segmentedTask Pointer to the segmented task.
+ * @param[out] buffer Pointer to the location where the content should be written to.
+ * @param[in] bufferSize Size of the buffer in bytes.
+ * @param[in] statingAtByte Byte where the reading should start.
+ * 
+ * @retval RTEMS_SUCCESSFUL if successfull.
+ * @retval RTEMS_EXTENDED_NULL_POINTER if segmentedTask of buffer is a null pointer.
+ * For mapping on rtems_status_code see rtems_extended_status_code
+ * details.
+ * @retval RTEMS_INVALID_SIZE if the buffer is to small to read the amount of content
+ * or a read outside of the communication memory should be performed.
+ */
+rtems_extended_status_code rtems_task_segmented_read_communication_memory_from_impl(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize,
+                                                                        uint32_t startingAtByte); // CHECK
 
-/*
-Read the whole communication memory of the given segmented task starting at a specific
-byte (inclusive) into the given buffer.
-Boundary checks are performed, so therefor it is not possible to read out of the intended
-memory.
-A copy of the memory content is returned, so it's not possible to manipulate the memory.
-*/
-rtems_status_code rtems_task_segmented_read_communication_memory_from_impl(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize,
-                                                                        uint32_t startingAtByte);
+/**
+ * @brief RTEMS Segmented Task Implementation: Read from the communication memory.
+ *
+ * This routine reads the whole content from the communication memory of the given
+ * segmented task into the given buffer. Boundary checks are performed, so therefor
+ * it is not possible to read outside of the intended memory. A copy of the memory
+ * content is returned, so it's not possible to manipulate the memory accidently.
+ * 
+ * @param[in] segmentedTask Pointer to the segmented task.
+ * @param[out] buffer Pointer to the location where the content should be written to.
+ * @param[in] bufferSize Size of the buffer in bytes.
+ * 
+ * @retval RTEMS_SUCCESSFUL if successfull.
+ * @retval RTEMS_EXTENDED_NULL_POINTER if segmentedTask of buffer is a null pointer.
+ * For mapping on rtems_status_code see rtems_extended_status_code
+ * details.
+ * @retval RTEMS_INVALID_SIZE if the buffer is to small to read the amount of content
+ * or a read outside of the communication memory should be performed.
+ */
+rtems_extended_status_code rtems_task_segmented_read_communication_memory_impl(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize); // CHECK                           
 
-/*
-Read the whole communication memory of the given segmented task into the given buffer.
-Boundary checks are performed, so therefor it is not possible to read out of the intended
-memory.
-A copy of the memory content is returned, so it's not possible to manipulate the memory.
-*/
-rtems_status_code rtems_task_segmented_read_communication_memory_impl(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize);                            
+/**
+ * @brief RTEMS Segmented Task Implementation: Writes content to communication memory.
+ *
+ * This routine writes to the beginning of the allocated communication memory of the
+ * given segmented task. Boundary checks are performed, so therefor it is not possible
+ * to write outside of the intented memory if the correct size in bytes of the content
+ * is given. If the communication memory is fully zeroed before writing the content to
+ * the communication memory depends on DO_ZERO_ON_WRITE.
+ * 
+ * @param[in] segmentedTask Pointer to the segmented task.
+ * @param[in] content Pointer to the content.
+ * @param[in] sizeOfContent Size of the content.
+ * 
+ * @retval RTEMS_SUCCESSFUL if successfull.
+ * @retval RTEMS_EXTENDED_NULL_POINTER if segmentedTask or content is 
+ * a null pointer.
+ * For mapping on rtems_status_code see rtems_extended_status_code
+ * details.
+ * @retval RTEMS_INVALID_SIZE if sizeOfContent is zero or not enough
+ * communication memory is present to write the whole content in the
+ * communication memory.
+ * @retval RTEMS_INTERNAL_ERROR an internal RTEMS inconsistency was detected.
+ */
+rtems_extended_status_code rtems_task_segmented_write_communication_memory_impl(Segmented_Task_Task* segmentedTask, uint8_t* content, size_t sizeOfContent); // CHECK
 
-/*
-Writes to the beginning of the allocated communication memory of the given segmented task.
-Boundary checks are performed, so therefor it is not possible to write out of the intended
-memory if the correct size in bytes of the content is given.
-If the communication memory is fully zeroed beforehand depends on DO_ZERO_ON_WRITE.
-*/
-rtems_status_code rtems_task_segmented_write_communication_memory_impl(Segmented_Task_Task* segmentedTask, uint8_t* content, size_t sizeOfContent);
+/**
+ * @brief RTEMS Segmented Task Implementation: Append content to communication memory.
+ *
+ * This routine appends the given content after the last written content in the
+ * communicationen memory of the given segmented task. Boundary checks are performed,
+ * so therefor it is not possible to write outside of the intented memory if the
+ * correct size in bytes of the content is given.
+ * 
+ * @param[in] segmentedTask Pointer to the segmented task.
+ * @param[in] content Pointer to the content.
+ * @param[in] sizeOfContent Size of the content.
+ * 
+ * @retval RTEMS_SUCCESSFUL if successfull.
+ * @retval RTEMS_EXTENDED_NULL_POINTER if segmentedTask or content is 
+ * a null pointer.
+ * For mapping on rtems_status_code see rtems_extended_status_code
+ * details.
+ * @retval RTEMS_INVALID_SIZE if sizeOfContent is zero or not enough
+ * communication memory is left to write the whole content in the
+ * communication memory.
+ */
+rtems_extended_status_code rtems_task_segmented_append_communication_memory_impl(Segmented_Task_Task* segmentedTask, uint8_t* content, size_t sizeOfContent); // CHECK
 
-/*
-Appends the given content after the last written content in the communication memory.
-Boundary checks are performed, so therefor it is not possible to write out of the intended
-memory if the correct size in bytes of the content is given.
-*/
-rtems_status_code rtems_task_segmented_append_communication_memory_impl(Segmented_Task_Task* segmentedTask, uint8_t* content, size_t sizeOfContent);
-
-/*
-"Empties" the communication memory of the segmented task. This means it's whole content is zeroed.
-This also resets the nextByteToWrite information back to 0.
-*/
-rtems_status_code rtems_task_segmented_clear_communication_memory_impl(Segmented_Task_Task* segmentedTask);
+/**
+ * @brief RTEMS Segmented Task Implementation: Zeroes the communication memory
+ * of the given segmented task.
+ * 
+ * This routine zeroes the communication memory of the given segmented task and
+ * resets the nextByteToWrite information back to 0.
+ * 
+ * @param[in] segmentedTask Pointer to the segmented task.
+ * 
+ * @retval RTEMS_SUCCESSFUL if successfull.
+ * @retval RTEMS_EXTENDED_NULL_POINTER if segmentedTask is a null pointer.
+ * For mapping on rtems_status_code see rtems_extended_status_code
+ * details.
+ */
+rtems_extended_status_code rtems_task_segmented_clear_communication_memory_impl(Segmented_Task_Task* segmentedTask); // Check
 
 
 #ifdef __cplusplus

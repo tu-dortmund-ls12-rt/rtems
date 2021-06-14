@@ -5,10 +5,12 @@
 
 rtems_status_code rtems_task_segmented_get_communication_memory_size(size_t* size) {
     Segmented_Task_Task* correspondingTask = NULL;
-    bool result = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
+    rtems_extended_status_code status;
+    
+    status = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
 
-    if(result == false || correspondingTask == NULL) {
-        return RTEMS_NOT_OWNER_OF_RESOURCE; // TODO: Replace with correct error code
+    if(!rtems_is_status_successful(status)) {
+        return status;
     }
 
     return rtems_task_segmented_get_communication_memory_size_impl(correspondingTask, size);
@@ -17,10 +19,12 @@ rtems_status_code rtems_task_segmented_get_communication_memory_size(size_t* siz
 rtems_status_code rtems_task_segmented_read_communication_memory_for_from(uint8_t* buffer, size_t bufferSize,
                                                                         size_t amount, uint32_t startingAtByte) {
     Segmented_Task_Task* correspondingTask = NULL;
-    bool result = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
+    rtems_extended_status_code status;
+    
+    status = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
 
-    if(result == false || correspondingTask == NULL) {
-        return RTEMS_NOT_OWNER_OF_RESOURCE; // TODO: Replace with correct error code
+    if(!rtems_is_status_successful(status)) {
+        return status;
     }
 
     return rtems_task_segmented_read_communication_memory_for_from_impl(correspondingTask, buffer, bufferSize, amount, startingAtByte);
@@ -29,10 +33,12 @@ rtems_status_code rtems_task_segmented_read_communication_memory_for_from(uint8_
 rtems_status_code rtems_task_segmented_read_communication_memory_for(uint8_t* buffer, size_t bufferSize,
                                                                         size_t amount) {
     Segmented_Task_Task* correspondingTask = NULL;
-    bool result = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
+    rtems_extended_status_code status;
+    
+    status = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
 
-    if(result == false || correspondingTask == NULL) {
-        return RTEMS_NOT_OWNER_OF_RESOURCE; // TODO: Replace with correct error code
+    if(!rtems_is_status_successful(status)) {
+        return status;
     }
 
     return rtems_task_segmented_read_communication_memory_for_impl(correspondingTask, buffer, bufferSize, amount);
@@ -41,10 +47,12 @@ rtems_status_code rtems_task_segmented_read_communication_memory_for(uint8_t* bu
 rtems_status_code rtems_task_segmented_read_communication_memory_from(uint8_t* buffer, size_t bufferSize,
                                                                         uint32_t startingAtByte) {
     Segmented_Task_Task* correspondingTask = NULL;
-    bool result = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
+    rtems_extended_status_code status;
+    
+    status = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
 
-    if(result == false || correspondingTask == NULL) {
-        return RTEMS_NOT_OWNER_OF_RESOURCE; // TODO: Replace with correct error code
+    if(!rtems_is_status_successful(status)) {
+        return status;
     }
 
     return rtems_task_segmented_read_communication_memory_from_impl(correspondingTask, buffer, bufferSize, startingAtByte);
@@ -52,10 +60,12 @@ rtems_status_code rtems_task_segmented_read_communication_memory_from(uint8_t* b
 
 rtems_status_code rtems_task_segmented_read_communication_memory(uint8_t* buffer, size_t bufferSize) {
     Segmented_Task_Task* correspondingTask = NULL;
-    bool result = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
+    rtems_extended_status_code status;
+    
+    status = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
 
-    if(result == false || correspondingTask == NULL) {
-        return RTEMS_NOT_OWNER_OF_RESOURCE; // TODO: Replace with correct error code
+    if(!rtems_is_status_successful(status)) {
+        return status;
     }
 
     return rtems_task_segmented_read_communication_memory_impl(correspondingTask, buffer, bufferSize);
@@ -63,10 +73,12 @@ rtems_status_code rtems_task_segmented_read_communication_memory(uint8_t* buffer
 
 rtems_status_code rtems_task_segmented_write_communication_memory(uint8_t* content, size_t sizeOfContent) {
     Segmented_Task_Task* correspondingTask = NULL;
-    bool result = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
+    rtems_extended_status_code status;
+    
+    status = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
 
-    if(result == false || correspondingTask == NULL) {
-        return RTEMS_NOT_OWNER_OF_RESOURCE; // TODO: Replace with correct error code
+    if(!rtems_is_status_successful(status)) {
+        return status;
     }
 
     return rtems_task_segmented_write_communication_memory_impl(correspondingTask, content, sizeOfContent);
@@ -85,10 +97,12 @@ rtems_status_code rtems_task_segmented_append_communication_memory(uint8_t* cont
 
 rtems_status_code rtems_task_segmented_clear_communication_memory(void) {
     Segmented_Task_Task* correspondingTask = NULL;
-    bool result = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
+    rtems_extended_status_code status;
+    
+    status = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
 
-    if(result == false || correspondingTask == NULL) {
-        return RTEMS_NOT_OWNER_OF_RESOURCE; // TODO: Replace with correct error code
+    if(!rtems_is_status_successful(status)) {
+        return status;
     }
 
     return rtems_task_segmented_clear_communication_memory_impl(correspondingTask);
@@ -97,6 +111,10 @@ rtems_status_code rtems_task_segmented_clear_communication_memory(void) {
 // ----- Hidden Implementation -----
 
 rtems_extended_status_code isPriorityValid(rtems_task_priority priority) {
+    /*
+    The priority range might be changed in the future. Maybe there is another
+    way to check the validity of a priority through an existing core call?
+    */
     if(priority >= 1 && priority <= 255) {
         return RTEMS_SUCCESSFUL;
     } else {
@@ -142,9 +160,13 @@ rtems_extended_status_code emptySegmentedTask(Segmented_Task_Task* task) {
     }
 
     status = rtems_task_segmented_clear_communication_memory_impl(task);
-    if(rtems_is_status_successful(status)) {
-        // TODO: Add possible status to method return description.
-        return status;
+    if(!rtems_is_status_successful(status)) {
+        /**
+         * Possible errors:
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      User depented, but validated beforehand. Should not occur.
+         */
+        return RTEMS_INTERNAL_ERROR;
     }
 
     return RTEMS_SUCCESSFUL;
@@ -168,6 +190,13 @@ rtems_extended_status_code getSegmented_Task_Task(rtems_id id, Segmented_Task_Ta
         return RTEMS_SUCCESSFUL;
     } else if(status != RTEMS_INVALID_ID) {
         return status;
+    } else {
+        /**
+         * Possible errors:
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      User depented, but validated beforehand. Should not occur.
+         */
+        return RTEMS_INTERNAL_ERROR;
     }
 
     /*
@@ -177,6 +206,13 @@ rtems_extended_status_code getSegmented_Task_Task(rtems_id id, Segmented_Task_Ta
         return RTEMS_SUCCESSFUL;
     } else if(status != RTEMS_INVALID_ID) {
         return status;
+    } else {
+        /**
+         * Possible errors:
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      User depented, but validated beforehand. Should not occur.
+         */
+        /*return RTEMS_INTERNAL_ERROR;
     }
     */
 }
@@ -187,24 +223,35 @@ rtems_extended_status_code fillDataIntoSegTask(Segmented_Task_Task* task,
                 rtems_attribute taskAttributes, uint32_t numberOfSegments,
                 void (*functionPointer[]) (void)) {
     // --- Argument validation ---
-    // Arguments that need to be validated will be validated in emptySegmentedTask, fillGeneralDataIntoSegTask and fillSegmentDataIntoSegTask
-    // TODO: Do validation in emptySegmentedTask, fillGeneralDataIntoSegTask and fillSegmentDataIntoSegTask
+    /**
+     * Arguments that need to be validated will be validated in emptySegmentedTask,
+     * fillGeneralDataIntoSegTask and fillSegmentDataIntoSegTask due to optimization.
+     */
 
     // --- Implementation ---
     rtems_extended_status_code status;
 
     status = emptySegmentedTask(task);
     if(!rtems_is_status_successful(status)) {
+        /**
+         * Every possible error needs to be forwarded.
+         */
         return status;
     }
 
     status = fillGeneralDataIntoSegTask(task, taskName, taskPriority, taskStackSize, initialModes, taskAttributes);
     if(!rtems_is_status_successful(status)) {
+        /**
+         * Every possible error needs to be forwarded.
+         */
         return status;
     }
 
     status = fillSegmentDataIntoSegTask(task, numberOfSegments, functionPointer);
     if(!rtems_is_status_successful(status)) {
+        /**
+         * Every possible error needs to be forwarded.
+         */
         return status;
     }
 
@@ -255,6 +302,11 @@ rtems_extended_status_code fillSegmentDataIntoSegTask(Segmented_Task_Task* task,
         return RTEMS_EXTENDED_TOO_MANY_SEGMENTS;
     }
 
+    /**
+     * TODO:
+     * If optimization is needed, this for loop can be avoided
+     * by checking during the assignment.
+     */
     for(uint32_t i = 0; i < numberOfSegments; i++) {
         if(functionPointer[i] == NULL) {
             return RTEMS_EXTENDED_NULL_POINTER;
@@ -271,25 +323,34 @@ rtems_extended_status_code fillSegmentDataIntoSegTask(Segmented_Task_Task* task,
     return RTEMS_SUCCESSFUL;
 }
 
-rtems_status_code rtems_task_segmented_get_communication_memory_size_impl(Segmented_Task_Task* segmentedTask, size_t* size) {
-    /*
-    TODO:
-    So far each segmented task has the same sized communication memory. The result is therefor indepented of the given
-    segmented task.
-    */
+rtems_extended_status_code rtems_task_segmented_get_communication_memory_size_impl(Segmented_Task_Task* segmentedTask, size_t* size) {
+    // --- Argument validation ---
+    if(segmentedTask == NULL || size == NULL) {
+        return RTEMS_EXTENDED_NULL_POINTER;
+    }
+
+    // --- Implementation ---
+    /**
+     * TODO:
+     * So far each segmented task has the same sized communication memory. The result is therefor indepented of the given
+     * segmented task.
+     */
     *size = CONFIGURE_MAXIMUM_COMMUNICATION_MEMORY;
+    return RTEMS_SUCCESSFUL;
 }
 
-rtems_status_code rtems_task_segmented_read_communication_memory_for_from_impl(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize,
+rtems_extended_status_code rtems_task_segmented_read_communication_memory_for_from_impl(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize,
                                                                         size_t amount, uint32_t startingAtByte) {
-    if(bufferSize < amount) {
+    // --- Argument validation ---
+    if(segmentedTask == NULL || buffer == NULL) {
+        return RTEMS_EXTENDED_NULL_POINTER;
+    }
+
+    if(bufferSize < amount || startingAtByte + amount > CONFIGURE_MAXIMUM_COMMUNICATION_MEMORY) {
         return RTEMS_INVALID_SIZE;
     }
 
-    if(startingAtByte + amount > CONFIGURE_MAXIMUM_COMMUNICATION_MEMORY) {
-        return RTEMS_INVALID_SIZE;
-    }
-
+    // --- Implementation ---
     for(uint32_t i = 0; i < amount; i++) {
         buffer[i] = segmentedTask->communicationMemory[i + startingAtByte];
     }
@@ -297,28 +358,83 @@ rtems_status_code rtems_task_segmented_read_communication_memory_for_from_impl(S
     return RTEMS_SUCCESSFUL;
 }
 
-rtems_status_code rtems_task_segmented_read_communication_memory_for_impl(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize,
+rtems_extended_status_code rtems_task_segmented_read_communication_memory_for_impl(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize,
                                                                         size_t amount) {
-    return rtems_task_segmented_read_communication_memory_for_from_impl(segmentedTask, buffer, bufferSize, amount, 0);
+    // --- Argument validation ---
+    /**
+     * Arguments that need to be validated will be validated in rtems_task_segmented_read_communication_memory_for_from_impl
+     */
+
+    // --- Implementation ---
+    rtems_extended_status_code status;
+
+    status = rtems_task_segmented_read_communication_memory_for_from_impl(segmentedTask, buffer, bufferSize, amount, 0);
+    if(!rtems_is_status_successful(status)) {
+        return status;
+    }
+
+    return RTEMS_SUCCESSFUL;
 }
 
-rtems_status_code rtems_task_segmented_read_communication_memory_from_impl(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize,
+rtems_extended_status_code rtems_task_segmented_read_communication_memory_from_impl(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize,
                                                                         uint32_t startingAtByte) {
-    return rtems_task_segmented_read_communication_memory_for_from_impl(segmentedTask, buffer, bufferSize,
-                                                                    CONFIGURE_MAXIMUM_COMMUNICATION_MEMORY - startingAtByte, startingAtByte);
+    // --- Argument validation ---
+    /**
+     * Arguments that need to be validated will be validated in rtems_task_segmented_read_communication_memory_for_from_impl
+     */
+
+    // --- Implementation ---
+    rtems_extended_status_code status;
+
+    status = rtems_task_segmented_read_communication_memory_for_from_impl(segmentedTask, buffer, bufferSize, CONFIGURE_MAXIMUM_COMMUNICATION_MEMORY - startingAtByte,
+                                                                        startingAtByte);
+    if(!rtems_is_status_successful(status)) {
+        return status;
+    }
+
+    return RTEMS_SUCCESSFUL;
 }
 
-rtems_status_code rtems_task_segmented_read_communication_memory_impl(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize) {
-    return rtems_task_segmented_read_communication_memory_from_impl(segmentedTask, buffer, bufferSize, 0);
+rtems_extended_status_code rtems_task_segmented_read_communication_memory_impl(Segmented_Task_Task* segmentedTask, uint8_t* buffer, size_t bufferSize) {
+    // --- Argument validation ---
+    /**
+     * Arguments that need to be validated will be validated in rtems_task_segmented_read_communication_memory_for_from_impl
+     */
+
+    // --- Implementation ---
+    rtems_extended_status_code status;
+
+    status = rtems_task_segmented_read_communication_memory_from_impl(segmentedTask, buffer, bufferSize, 0);
+    if(!rtems_is_status_successful(status)) {
+        return status;
+    }
+
+    return RTEMS_SUCCESSFUL;
 }
 
-rtems_status_code rtems_task_segmented_write_communication_memory_impl(Segmented_Task_Task* segmentedTask, uint8_t* content, size_t sizeOfContent) {
-    if(sizeOfContent > CONFIGURE_MAXIMUM_COMMUNICATION_MEMORY) {
+rtems_extended_status_code rtems_task_segmented_write_communication_memory_impl(Segmented_Task_Task* segmentedTask, uint8_t* content, size_t sizeOfContent) {
+    // --- Argument validation ---
+    if(segmentedTask == NULL || content == NULL) {
+        return RTEMS_EXTENDED_NULL_POINTER;
+    }
+
+    if(sizeOfContent == 0 || sizeOfContent > CONFIGURE_MAXIMUM_COMMUNICATION_MEMORY) {
         return RTEMS_INVALID_SIZE;
     }
 
+    // --- Implementation ---
+    rtems_extended_status_code status;
+
     if(DO_ZERO_ON_WRITE == 1) {
-        rtems_task_segmented_clear_communication_memory_impl(segmentedTask);
+        status = rtems_task_segmented_clear_communication_memory_impl(segmentedTask);
+        if(!rtems_is_status_successful(status)) {
+            /**
+             * Possible errors:
+             * RTEMS_EXTENDED_NULL_POINTER:
+             *      User depented, but validated beforehand. Should not occur.
+             */
+            return RTEMS_INTERNAL_ERROR;
+        }
     }
 
     /*
@@ -336,17 +452,23 @@ rtems_status_code rtems_task_segmented_write_communication_memory_impl(Segmented
     return RTEMS_SUCCESSFUL;
 }
 
-rtems_status_code rtems_task_segmented_append_communication_memory_impl(Segmented_Task_Task* segmentedTask, uint8_t* content, size_t sizeOfContent) {
+rtems_extended_status_code rtems_task_segmented_append_communication_memory_impl(Segmented_Task_Task* segmentedTask, uint8_t* content, size_t sizeOfContent) {
+    // --- Argument validation ---
     int32_t freeMemory = CONFIGURE_MAXIMUM_COMMUNICATION_MEMORY - segmentedTask->nextByteToWrite;
 
-    /*
-    Covers both cases that either the memory is full aready or
-    that more memory is needed than what's left.
-    */
-    if(freeMemory <= sizeOfContent) {
+    if(segmentedTask == NULL || content == NULL) {
+        return RTEMS_EXTENDED_NULL_POINTER;
+    }
+
+    /**
+     * Covers both cases that either the memory is full aready or
+     * that more memory is needed than what's left.
+     */
+    if(sizeOfContent == 0 || freeMemory < sizeOfContent) {
         return RTEMS_INVALID_SIZE;
     }
 
+    // --- Implementation ---
     for(uint32_t i = 0; i < sizeOfContent; i++) {
         segmentedTask->communicationMemory[i + segmentedTask->nextByteToWrite] = content[i];
     }
@@ -354,7 +476,13 @@ rtems_status_code rtems_task_segmented_append_communication_memory_impl(Segmente
     return RTEMS_SUCCESSFUL;
 }
 
-rtems_status_code rtems_task_segmented_clear_communication_memory_impl(Segmented_Task_Task* segmentedTask) {
+rtems_extended_status_code rtems_task_segmented_clear_communication_memory_impl(Segmented_Task_Task* segmentedTask) {
+    // --- Argument validation ---
+    if(segmentedTask == NULL) {
+        return RTEMS_EXTENDED_NULL_POINTER;
+    }
+
+    // --- Implementation ---
     for(uint32_t i = 0; i < CONFIGURE_MAXIMUM_COMMUNICATION_MEMORY; i++) {
         segmentedTask->communicationMemory[i] = 0;
     }
