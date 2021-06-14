@@ -34,7 +34,7 @@ variable get out of scope ever!
  * with the given task id.
  * 
  * @param[in] id Id of the slfp task to retrieve.
- * @param[in] segmentedTaskToReturn Pointer that will contain
+ * @param[out] segmentedTaskToReturn Pointer that will contain
  *              the adress of the disired task afterwards.
  * 
  * @retval RTEMS_SUCCESSFUL if successfull.
