@@ -59,7 +59,7 @@ rtems_extended_status_code executeNextSegment(Segmented_Task_Task* task); // CHE
  * @retval RTEMS_EXTENDED_NULL_POINTER if task is a null pointer.
  * For mapping on rtems_status_code see rtems_extended_status_code
  * details.
- * @retval RTEMS_INTERNAL_ERROR an internal RTEMS inconsistency was detected.
+ * @retval RTEMS_INTERNAL_ERROR if an internal RTEMS inconsistency was detected.
  */
 rtems_extended_status_code emptySegmentedTask(Segmented_Task_Task* task); // CHECK
 
@@ -80,7 +80,7 @@ rtems_extended_status_code emptySegmentedTask(Segmented_Task_Task* task); // CHE
  * a null pointer.
  * For mapping on rtems_status_code see rtems_extended_status_code
  * details.
- * @retval RTEMS_INTERNAL_ERROR an internal RTEMS inconsistency was detected.
+ * @retval RTEMS_INTERNAL_ERROR if an internal RTEMS inconsistency was detected.
  */
 rtems_extended_status_code getSegmented_Task_Task(rtems_id id, Segmented_Task_Task** segmentedTaskToReturn); // CHECK
 
@@ -109,7 +109,7 @@ rtems_extended_status_code getSegmented_Task_Task(rtems_id id, Segmented_Task_Ta
  * @retval RTEMS_EXTENDED_NULL_POINTER if task is a null pointer.
  * For mapping on rtems_status_code see rtems_extended_status_code
  * details.
- * @retval RTEMS_INTERNAL_ERROR an internal RTEMS inconsistency was detected.
+ * @retval RTEMS_INTERNAL_ERROR if an internal RTEMS inconsistency was detected.
  * @retval RTEMS_INVALID_NAME if taskName is an invalid rtems_name.
  * @retval RTEMS_INVALID_PRIORITY if taskPriority is an invalid rtems_task_priority.
  * @retval RTEMS_EXTENDED_TOO_MANY_SEGMENTS if numberOfSegments is 
@@ -314,7 +314,7 @@ rtems_extended_status_code rtems_task_segmented_read_communication_memory_impl(S
  * @retval RTEMS_INVALID_SIZE if sizeOfContent is zero or not enough
  * communication memory is present to write the whole content in the
  * communication memory.
- * @retval RTEMS_INTERNAL_ERROR an internal RTEMS inconsistency was detected.
+ * @retval RTEMS_INTERNAL_ERROR if an internal RTEMS inconsistency was detected.
  */
 rtems_extended_status_code rtems_task_segmented_write_communication_memory_impl(Segmented_Task_Task* segmentedTask, uint8_t* content, size_t sizeOfContent); // CHECK
 
