@@ -4,108 +4,335 @@
 // ----- RTEMS API Implementation -----
 
 rtems_status_code rtems_task_segmented_get_communication_memory_size(size_t* size) {
+    // --- Argument Validation
+    /**
+     * Arguments that need to be validated will be validated in
+     * rtems_task_segmented_get_communication_memory_size_impl due to optimization.
+     */
+
+    // --- Implementation ---
     Segmented_Task_Task* correspondingTask = NULL;
     rtems_extended_status_code status;
     
     status = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
-
     if(!rtems_is_status_successful(status)) {
-        return status;
+        /**
+         * Possible errors:
+         * RTEMS_INVALID_ID:
+         *      Not user dependent. The cause must therefor be internal.
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      Not user dependent. The cause must therefor be internal.
+         * RTEMS_INTERNAL_ERROR:
+         *      Not user dependent. The cause must therefor be internal.
+         */
+        return RTEMS_INTERNAL_ERROR;
     }
 
-    return rtems_task_segmented_get_communication_memory_size_impl(correspondingTask, size);
+    status = rtems_task_segmented_get_communication_memory_size_impl(correspondingTask, size);
+    if(!rtems_is_status_successful(status)) {
+        /**
+         * Possible errors:
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      Not user dependent or validated beforehand. The cause must therefor be internal.
+         */
+        return RTEMS_INTERNAL_ERROR;
+    }
+
+    return RTEMS_SUCCESSFUL;
 }
 
 rtems_status_code rtems_task_segmented_read_communication_memory_for_from(uint8_t* buffer, size_t bufferSize,
                                                                         size_t amount, uint32_t startingAtByte) {
+    // --- Argument Validation
+    /**
+     * Arguments that need to be validated will be validated in
+     * rtems_task_segmented_read_communication_memory_for_from_impl due to optimization.
+     */
+
+    // --- Implementation ---
     Segmented_Task_Task* correspondingTask = NULL;
     rtems_extended_status_code status;
     
     status = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
-
     if(!rtems_is_status_successful(status)) {
+        /**
+         * Possible errors:
+         * RTEMS_INVALID_ID:
+         *      Not user dependent. The cause must therefor be internal.
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      Not user dependent. The cause must therefor be internal.
+         * RTEMS_INTERNAL_ERROR:
+         *      Not user dependent. The cause must therefor be internal.
+         */
+        return RTEMS_INTERNAL_ERROR;
+    }
+
+    status = rtems_task_segmented_read_communication_memory_for_from_impl(correspondingTask, buffer, bufferSize, amount, startingAtByte);
+    if(!rtems_is_status_successful(status)) {
+        /**
+         * Possible errors:
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      User independent correspondingTask null pointer would have been catched beforehand.
+         *      Therefor the buffer pointer must be null.
+         * RTEMS_INVALID_SIZE:
+         *      The buffer is to small or a read outside the boundarys should be performed. Both
+         *      cases are user dependent.
+         */
         return status;
     }
 
-    return rtems_task_segmented_read_communication_memory_for_from_impl(correspondingTask, buffer, bufferSize, amount, startingAtByte);
+    return RTEMS_SUCCESSFUL;
 }
 
 rtems_status_code rtems_task_segmented_read_communication_memory_for(uint8_t* buffer, size_t bufferSize,
                                                                         size_t amount) {
+    // --- Argument Validation
+    /**
+     * Arguments that need to be validated will be validated in
+     * rtems_task_segmented_read_communication_memory_for_impl due to optimization.
+     */
+
+    // --- Implementation ---
     Segmented_Task_Task* correspondingTask = NULL;
     rtems_extended_status_code status;
     
     status = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
-
     if(!rtems_is_status_successful(status)) {
+        /**
+         * Possible errors:
+         * RTEMS_INVALID_ID:
+         *      Not user dependent. The cause must therefor be internal.
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      Not user dependent. The cause must therefor be internal.
+         * RTEMS_INTERNAL_ERROR:
+         *      Not user dependent. The cause must therefor be internal.
+         */
+        return RTEMS_INTERNAL_ERROR;
+    }
+
+    status = rtems_task_segmented_read_communication_memory_for_impl(correspondingTask, buffer, bufferSize, amount);
+    if(!rtems_is_status_successful(status)) {
+        /**
+         * Possible errors:
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      User independent correspondingTask null pointer would have been catched beforehand.
+         *      Therefor the buffer pointer must be null.
+         * RTEMS_INVALID_SIZE:
+         *      The buffer is to small or a read outside the boundarys should be performed. Both
+         *      cases are user dependent.
+         */
         return status;
     }
 
-    return rtems_task_segmented_read_communication_memory_for_impl(correspondingTask, buffer, bufferSize, amount);
+    return RTEMS_SUCCESSFUL;
 }
 
 rtems_status_code rtems_task_segmented_read_communication_memory_from(uint8_t* buffer, size_t bufferSize,
                                                                         uint32_t startingAtByte) {
+    // --- Argument Validation
+    /**
+     * Arguments that need to be validated will be validated in
+     * rtems_task_segmented_read_communication_memory_from_impl due to optimization.
+     */
+
+    // --- Implementation ---
     Segmented_Task_Task* correspondingTask = NULL;
     rtems_extended_status_code status;
     
     status = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
-
     if(!rtems_is_status_successful(status)) {
+        /**
+         * Possible errors:
+         * RTEMS_INVALID_ID:
+         *      Not user dependent. The cause must therefor be internal.
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      Not user dependent. The cause must therefor be internal.
+         * RTEMS_INTERNAL_ERROR:
+         *      Not user dependent. The cause must therefor be internal.
+         */
+        return RTEMS_INTERNAL_ERROR;
+    }
+
+    status = rtems_task_segmented_read_communication_memory_from_impl(correspondingTask, buffer, bufferSize, startingAtByte);
+    if(!rtems_is_status_successful(status)) {
+        /**
+         * Possible errors:
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      User independent correspondingTask null pointer would have been catched beforehand.
+         *      Therefor the buffer pointer must be null.
+         * RTEMS_INVALID_SIZE:
+         *      The buffer is to small or a read outside the boundarys should be performed. Both
+         *      cases are user dependent.
+         */
         return status;
     }
 
-    return rtems_task_segmented_read_communication_memory_from_impl(correspondingTask, buffer, bufferSize, startingAtByte);
+    return RTEMS_SUCCESSFUL;
 }
 
 rtems_status_code rtems_task_segmented_read_communication_memory(uint8_t* buffer, size_t bufferSize) {
+    // --- Argument Validation
+    /**
+     * Arguments that need to be validated will be validated in
+     * rtems_task_segmented_read_communication_memory_from_impl due to optimization.
+     */
+
+    // --- Implementation ---
     Segmented_Task_Task* correspondingTask = NULL;
     rtems_extended_status_code status;
     
     status = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
-
     if(!rtems_is_status_successful(status)) {
+        /**
+         * Possible errors:
+         * RTEMS_INVALID_ID:
+         *      Not user dependent. The cause must therefor be internal.
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      Not user dependent. The cause must therefor be internal.
+         * RTEMS_INTERNAL_ERROR:
+         *      Not user dependent. The cause must therefor be internal.
+         */
+        return RTEMS_INTERNAL_ERROR;
+    }
+
+    status = rtems_task_segmented_read_communication_memory_impl(correspondingTask, buffer, bufferSize);
+    if(!rtems_is_status_successful(status)) {
+        /**
+         * Possible errors:
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      User independent correspondingTask null pointer would have been catched beforehand.
+         *      Therefor the buffer pointer must be null.
+         * RTEMS_INVALID_SIZE:
+         *      The buffer is to small or a read outside the boundarys should be performed. Both
+         *      cases are user dependent.
+         */
         return status;
     }
 
-    return rtems_task_segmented_read_communication_memory_impl(correspondingTask, buffer, bufferSize);
+    return RTEMS_SUCCESSFUL;
 }
 
 rtems_status_code rtems_task_segmented_write_communication_memory(uint8_t* content, size_t sizeOfContent) {
+    // --- Argument Validation
+    /**
+     * Arguments that need to be validated will be validated in
+     * rtems_task_segmented_read_communication_memory_from_impl due to optimization.
+     */
+
+    // --- Implementation ---
     Segmented_Task_Task* correspondingTask = NULL;
     rtems_extended_status_code status;
     
     status = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
-
     if(!rtems_is_status_successful(status)) {
+        /**
+         * Possible errors:
+         * RTEMS_INVALID_ID:
+         *      Not user dependent. The cause must therefor be internal.
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      Not user dependent. The cause must therefor be internal.
+         * RTEMS_INTERNAL_ERROR:
+         *      Not user dependent. The cause must therefor be internal.
+         */
+        return RTEMS_INTERNAL_ERROR;
+    }
+
+    status = rtems_task_segmented_write_communication_memory_impl(correspondingTask, content, sizeOfContent);
+    if(!rtems_is_status_successful(status)) {
+        /**
+         * Possible errors:
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      User independent correspondingTask null pointer would have been catched beforehand.
+         *      Therefor the content pointer must be null.
+         * RTEMS_INVALID_SIZE:
+         *      sizeOfContent is zero or not enough communication memory is present to write the whole content.
+         * RTEMS_INTERNAL_ERROR:
+         *      Not user dependet. The internal error must be forwarded.
+         */
         return status;
     }
 
-    return rtems_task_segmented_write_communication_memory_impl(correspondingTask, content, sizeOfContent);
+    return RTEMS_SUCCESSFUL;
 }
 
 rtems_status_code rtems_task_segmented_append_communication_memory(uint8_t* content, size_t sizeOfContent) {
-    Segmented_Task_Task* correspondingTask = NULL;
-    bool result = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
+    // --- Argument Validation
+    /**
+     * Arguments that need to be validated will be validated in
+     * rtems_task_segmented_read_communication_memory_from_impl due to optimization.
+     */
 
-    if(result == false || correspondingTask == NULL) {
-        return RTEMS_NOT_OWNER_OF_RESOURCE; // TODO: Replace with correct error code
-    }
-
-    return rtems_task_segmented_append_communication_memory_impl(correspondingTask, content, sizeOfContent);
-}
-
-rtems_status_code rtems_task_segmented_clear_communication_memory(void) {
+    // --- Implementation ---
     Segmented_Task_Task* correspondingTask = NULL;
     rtems_extended_status_code status;
     
     status = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
-
     if(!rtems_is_status_successful(status)) {
+        /**
+         * Possible errors:
+         * RTEMS_INVALID_ID:
+         *      Not user dependent. The cause must therefor be internal.
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      Not user dependent. The cause must therefor be internal.
+         * RTEMS_INTERNAL_ERROR:
+         *      Not user dependent. The cause must therefor be internal.
+         */
+        return RTEMS_INTERNAL_ERROR;
+    }
+
+    status = rtems_task_segmented_append_communication_memory_impl(correspondingTask, content, sizeOfContent);
+    if(!rtems_is_status_successful(status)) {
+        /**
+         * Possible errors:
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      User independent correspondingTask null pointer would have been catched beforehand.
+         *      Therefor the content pointer must be null.
+         * RTEMS_INVALID_SIZE:
+         *      sizeOfContent is zero or not enough communication memory is left to write the whole content.
+         */
         return status;
     }
 
-    return rtems_task_segmented_clear_communication_memory_impl(correspondingTask);
+    return RTEMS_SUCCESSFUL;
+}
+
+rtems_status_code rtems_task_segmented_clear_communication_memory(void) {
+    // --- Argument Validation
+    /**
+     * Arguments that need to be validated will be validated in
+     * rtems_task_segmented_read_communication_memory_from_impl due to optimization.
+     */
+
+    // --- Implementation ---
+    Segmented_Task_Task* correspondingTask = NULL;
+    rtems_extended_status_code status;
+    
+    status = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
+    if(!rtems_is_status_successful(status)) {
+        /**
+         * Possible errors:
+         * RTEMS_INVALID_ID:
+         *      Not user dependent. The cause must therefor be internal.
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      Not user dependent. The cause must therefor be internal.
+         * RTEMS_INTERNAL_ERROR:
+         *      Not user dependent. The cause must therefor be internal.
+         */
+        return RTEMS_INTERNAL_ERROR;
+    }
+
+    status = rtems_task_segmented_clear_communication_memory_impl(correspondingTask);
+    if(!rtems_is_status_successful(status)) {
+        /**
+         * Possible errors:
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      User independent correspondingTask null pointer would have been catched beforehand.
+         *      The cause must therefor be internal.
+         */
+        return RTEMS_INTERNAL_ERROR;
+    }
+
+    return RTEMS_SUCCESSFUL;
 }
 
 // ----- Hidden Implementation -----
