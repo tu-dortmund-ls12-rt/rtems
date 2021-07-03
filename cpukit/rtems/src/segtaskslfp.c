@@ -3,7 +3,17 @@
 
 // ----- Global variable declaration / definition -----
 
-Segmented_Task_SLFP_Task segmentedTask; // Currently only one segmented task is possible. Should be replaced with a dynamic data structure.
+/*
+TODO:
+WORKAROUND!
+
+Same problem as described for CONFIGURE_MAXIMUM_SEGMENTS described in
+segtaskdata.h does also apply for CONFIGURE_MAXIMUM_TASKS.
+*/
+#define CONFIGURE_MAXIMUM_TASKS 10
+
+Segmented_Task_SLFP_Task segmentedTasks[CONFIGURE_MAXIMUM_TASKS];
+uint32_t next = 0; // Pointer to the next unused segmented slfp task in the pool segmentedTasks.
 
 // ----- RTEMS API Implementation -----
 
@@ -17,9 +27,19 @@ rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t t
 
     // --- Implementation ---
     rtems_extended_status_code status;
+    Segmented_Task_SLFP_Task* segmentedTask;
 
-    //TODO: Ditch the single task, and create a new one in a dynamic list
-    status = emptySegTaskSLFP(&segmentedTask);
+    status = getNextFreeSLFPTaskFromPool(&segmentedTask);
+    if(!rtems_is_status_successful(status)) {
+        /**
+         * Possible errors:
+         * RTEMS_TOO_MANY:
+         *      User dependent. Needs to be forwarded.
+         */
+        return status;
+    } 
+
+    status = emptySegTaskSLFP(segmentedTask); // TODO: Maybe should be done if a task is given back to the pool.
     if(!rtems_is_status_successful(status)) {
         /**
          * Possible errors:
@@ -31,7 +51,7 @@ rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t t
         return RTEMS_INTERNAL_ERROR;
     }
 
-    status = fillDataIntoSegTaskSLFP(&segmentedTask, taskName, taskStackSize, initialModes,
+    status = fillDataIntoSegTaskSLFP(segmentedTask, taskName, taskStackSize, initialModes,
                 taskAttributes, numberOfSegments, segmentFunctions, segmentPriorities);
     if(!rtems_is_status_successful(status)) {
         /**
@@ -55,7 +75,7 @@ rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t t
         }
     }
 
-    status = rtems_task_create(taskName, segmentedTask.base.taskPriority, taskStackSize, initialModes, taskAttributes, taskId);
+    status = rtems_task_create(taskName, (segmentedTask->base).taskPriority, taskStackSize, initialModes, taskAttributes, taskId);
     if(!rtems_is_status_successful(status)) {
         /**
          * Possible errors:
@@ -81,7 +101,7 @@ rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t t
         }
     }
 
-    ((Segmented_Task_Task*)(&segmentedTask))->taskId = *taskId;
+    ((Segmented_Task_Task*)(segmentedTask))->taskId = *taskId;
 
     return RTEMS_SUCCESSFUL;
 }
@@ -229,14 +249,29 @@ rtems_extended_status_code getSegmented_Task_SLFP_Task(rtems_id id, Segmented_Ta
         return RTEMS_EXTENDED_NULL_POINTER;
     }
 
+    if(id == 0) {
+        return RTEMS_INVALID_ID;
+    }
+
     // --- Implementation ---
-    //TODO: Implement going through the list of all slfp tasks
-    bool taskIsPresent = true; // TODO: Replace with real check
+    Segmented_Task_SLFP_Task* currentTask = NULL;
+    Segmented_Task_Task* currentBase = NULL;
+    bool taskIsPresent = false;
+
+    for(uint32_t i = 0; i < CONFIGURE_MAXIMUM_TASKS; i++) {
+        currentTask = &(segmentedTasks[i]);
+        currentBase = (Segmented_Task_Task*) currentTask;
+        if(currentBase->taskId == id) {
+            taskIsPresent = true;
+            break;
+        }
+    }
+
     if(!taskIsPresent) {
         return RTEMS_INVALID_ID;
     }
 
-    *segmentedTaskToReturn = &segmentedTask;
+    *segmentedTaskToReturn = currentTask;
 
     return RTEMS_SUCCESSFUL;
 }
@@ -334,14 +369,27 @@ rtems_extended_status_code fillDataIntoSegTaskSLFP(Segmented_Task_SLFP_Task* tas
     return RTEMS_SUCCESSFUL;
 }
 
+rtems_extended_status_code getNextFreeSLFPTaskFromPool(Segmented_Task_SLFP_Task** task) {
+    // --- Argument validation ---
+    if(next == CONFIGURE_MAXIMUM_TASKS) {
+        return RTEMS_TOO_MANY;
+    }
+
+    // --- Implementation ---
+    *task = &(segmentedTasks[next]);
+
+    return RTEMS_SUCCESSFUL;
+}
+
 void main(rtems_task_argument arguments) {
     // --- Argument validation ---
     
     // --- Implementation
     Segmented_Task_SLFP_Task* segmentedTask;
     rtems_extended_status_code status;
+    rtems_id ownId;
     
-    status = getSegmented_Task_SLFP_Task(RTEMS_SELF, &segmentedTask);
+    status = rtems_task_ident(RTEMS_SELF, RTEMS_SEARCH_ALL_NODES, &ownId);
     if(!rtems_is_status_successful(status)) {
         /**
          * When an error happens the RTEMS task must be exited with a failure.
@@ -352,7 +400,24 @@ void main(rtems_task_argument arguments) {
          * Find a real way to exit the task with a failure.
          */
        printf("\n\n--- ERROR ---!\n");
-       printf("Task %u exited with failure. Currently there is no way to exit in an irregular way.\n", RTEMS_SELF);
+       printf("An unkown task exited with failure. Currently there is no way to exit in an irregular way.\n");
+       printf("-------");
+       printf("\n\n");
+       rtems_task_exit();
+    }
+
+    status = getSegmented_Task_SLFP_Task(ownId, &segmentedTask);
+    if(!rtems_is_status_successful(status)) {
+        /**
+         * When an error happens the RTEMS task must be exited with a failure.
+         * Currently a fitting method can't be found. Therefor only an information
+         * is displayed and the task is exited in a regular way.
+         * 
+         * TODO:
+         * Find a real way to exit the task with a failure.
+         */
+       printf("\n\n--- ERROR ---!\n");
+       printf("Task %u exited with failure. Currently there is no way to exit in an irregular way.\n", ownId);
        printf("-------");
        printf("\n\n");
        rtems_task_exit();
@@ -364,8 +429,9 @@ void main(rtems_task_argument arguments) {
         
         // No suspension is needed after the last segment.
         if(i != base->numberOfSegments - 1) {
-            rtems_task_suspend(RTEMS_SELF);
+            rtems_task_suspend(RTEMS_SELF); // Using RTEMS_SELF is fine, because it is used as a flag.
         }
     }
+    
     rtems_task_exit();
 }

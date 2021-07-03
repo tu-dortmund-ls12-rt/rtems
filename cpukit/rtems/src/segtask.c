@@ -13,8 +13,14 @@ rtems_status_code rtems_task_segmented_get_communication_memory_size(size_t* siz
     // --- Implementation ---
     Segmented_Task_Task* correspondingTask = NULL;
     rtems_extended_status_code status;
+    rtems_id ownId;
     
-    status = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
+    status = rtems_task_ident(RTEMS_SELF, RTEMS_SEARCH_ALL_NODES, &ownId);
+    if(!rtems_is_status_successful(status)) {
+        return status; // TODO: REAL ERROR HANDLING LIKE IN THE OTHER CASES. ALSO EXTEND DOC.
+    }
+    
+    status = getSegmented_Task_Task(ownId, &correspondingTask);
     if(!rtems_is_status_successful(status)) {
         /**
          * Possible errors:
@@ -52,8 +58,14 @@ rtems_status_code rtems_task_segmented_read_communication_memory_for_from(uint8_
     // --- Implementation ---
     Segmented_Task_Task* correspondingTask = NULL;
     rtems_extended_status_code status;
+    rtems_id ownId;
     
-    status = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
+    status = rtems_task_ident(RTEMS_SELF, RTEMS_SEARCH_ALL_NODES, &ownId);
+    if(!rtems_is_status_successful(status)) {
+        return status; // TODO: REAL ERROR HANDLING LIKE IN THE OTHER CASES. ALSO EXTEND DOC.
+    }
+    
+    status = getSegmented_Task_Task(ownId, &correspondingTask);
     if(!rtems_is_status_successful(status)) {
         /**
          * Possible errors:
@@ -95,8 +107,14 @@ rtems_status_code rtems_task_segmented_read_communication_memory_for(uint8_t* bu
     // --- Implementation ---
     Segmented_Task_Task* correspondingTask = NULL;
     rtems_extended_status_code status;
+    rtems_id ownId;
     
-    status = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
+    status = rtems_task_ident(RTEMS_SELF, RTEMS_SEARCH_ALL_NODES, &ownId);
+    if(!rtems_is_status_successful(status)) {
+        return status; // TODO: REAL ERROR HANDLING LIKE IN THE OTHER CASES. ALSO EXTEND DOC.
+    }
+    
+    status = getSegmented_Task_Task(ownId, &correspondingTask);
     if(!rtems_is_status_successful(status)) {
         /**
          * Possible errors:
@@ -138,8 +156,14 @@ rtems_status_code rtems_task_segmented_read_communication_memory_from(uint8_t* b
     // --- Implementation ---
     Segmented_Task_Task* correspondingTask = NULL;
     rtems_extended_status_code status;
+    rtems_id ownId;
+
+    status = rtems_task_ident(RTEMS_SELF, RTEMS_SEARCH_ALL_NODES, &ownId);
+    if(!rtems_is_status_successful(status)) {
+        return status; // TODO: REAL ERROR HANDLING LIKE IN THE OTHER CASES. ALSO EXTEND DOC.
+    }
     
-    status = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
+    status = getSegmented_Task_Task(ownId, &correspondingTask);
     if(!rtems_is_status_successful(status)) {
         /**
          * Possible errors:
@@ -180,8 +204,14 @@ rtems_status_code rtems_task_segmented_read_communication_memory(uint8_t* buffer
     // --- Implementation ---
     Segmented_Task_Task* correspondingTask = NULL;
     rtems_extended_status_code status;
+    rtems_id ownId;
     
-    status = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
+    status = rtems_task_ident(RTEMS_SELF, RTEMS_SEARCH_ALL_NODES, &ownId);
+    if(!rtems_is_status_successful(status)) {
+        return status; // TODO: REAL ERROR HANDLING LIKE IN THE OTHER CASES. ALSO EXTEND DOC.
+    }
+    
+    status = getSegmented_Task_Task(ownId, &correspondingTask);
     if(!rtems_is_status_successful(status)) {
         /**
          * Possible errors:
@@ -222,8 +252,14 @@ rtems_status_code rtems_task_segmented_write_communication_memory(uint8_t* conte
     // --- Implementation ---
     Segmented_Task_Task* correspondingTask = NULL;
     rtems_extended_status_code status;
+    rtems_id ownId;
     
-    status = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
+    status = rtems_task_ident(RTEMS_SELF, RTEMS_SEARCH_ALL_NODES, &ownId);
+    if(!rtems_is_status_successful(status)) {
+        return status; // TODO: REAL ERROR HANDLING LIKE IN THE OTHER CASES. ALSO EXTEND DOC.
+    }
+    
+    status = getSegmented_Task_Task(ownId, &correspondingTask);
     if(!rtems_is_status_successful(status)) {
         /**
          * Possible errors:
@@ -265,8 +301,14 @@ rtems_status_code rtems_task_segmented_append_communication_memory(uint8_t* cont
     // --- Implementation ---
     Segmented_Task_Task* correspondingTask = NULL;
     rtems_extended_status_code status;
+    rtems_id ownId;
     
-    status = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
+    status = rtems_task_ident(RTEMS_SELF, RTEMS_SEARCH_ALL_NODES, &ownId);
+    if(!rtems_is_status_successful(status)) {
+        return status; // TODO: REAL ERROR HANDLING LIKE IN THE OTHER CASES. ALSO EXTEND DOC.
+    }
+    
+    status = getSegmented_Task_Task(ownId, &correspondingTask);
     if(!rtems_is_status_successful(status)) {
         /**
          * Possible errors:
@@ -306,8 +348,14 @@ rtems_status_code rtems_task_segmented_clear_communication_memory(void) {
     // --- Implementation ---
     Segmented_Task_Task* correspondingTask = NULL;
     rtems_extended_status_code status;
+    rtems_id ownId;
+
+    status = rtems_task_ident(RTEMS_SELF, RTEMS_SEARCH_ALL_NODES, &ownId);
+    if(!rtems_is_status_successful(status)) {
+        return status; // TODO: REAL ERROR HANDLING LIKE IN THE OTHER CASES. ALSO EXTEND DOC.
+    }
     
-    status = getSegmented_Task_Task(RTEMS_SELF, &correspondingTask);
+    status = getSegmented_Task_Task(ownId, &correspondingTask);
     if(!rtems_is_status_successful(status)) {
         /**
          * Possible errors:
