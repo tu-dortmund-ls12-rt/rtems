@@ -405,7 +405,7 @@ rtems_extended_status_code executeNextSegment(Segmented_Task_Task* task) {
 
     // --- Implementation ---
     // Reached the last segment.
-    if(task->currentSegment - 1 == task->numberOfSegments) {
+    if(task->currentSegment + 1 == task->numberOfSegments) {
         return RTEMS_EXTENDED_FINAL_SEGMENT;
     }
 
