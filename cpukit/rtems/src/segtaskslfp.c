@@ -169,7 +169,7 @@ rtems_status_code rtems_task_resume_segmented_slfp(rtems_id taskId) {
 
     // --- Implementation ---
    rtems_extended_status_code status;
-   rtems_task_priority nextPriority, wildCard;
+   rtems_task_priority nextPriority;
    Segmented_Task_SLFP_Task* receivedTask;
    Segmented_Task_Task* receivedBase;
    
@@ -198,7 +198,7 @@ rtems_status_code rtems_task_resume_segmented_slfp(rtems_id taskId) {
        }
    }
 
-   status = getPriorityOfSegmentByIndex(receivedTask, receivedTask->base.currentSegment, &nextPriority);
+   status = getPriorityOfSegmentByIndex(receivedTask, receivedTask->base.currentSegment + 1, &nextPriority);
    if(!rtems_is_status_successful(status)) {
        /**
         * Possible errors:
@@ -211,9 +211,11 @@ rtems_status_code rtems_task_resume_segmented_slfp(rtems_id taskId) {
        return RTEMS_INTERNAL_ERROR;
    }
 
-   status = rtems_task_set_priority(taskId, nextPriority, &wildCard);
+   status = setSLFPTaskPriority(receivedTask, nextPriority);
    if(!rtems_is_status_successful(status)) {
        /**
+        * TODO: Change errors to fit setSLFPTaskPriority errors.
+        * 
         * Possible errors:
         * RTEMS_INVALID_ID:
         *      User dependent but validated beforhand. Therefor it is an internal error.
@@ -222,7 +224,7 @@ rtems_status_code rtems_task_resume_segmented_slfp(rtems_id taskId) {
         * RTEMS_INVALID_PRIORITY:
         *      User independent. Therefor it is an internal error.
         */
-       return RTEMS_INTERNAL_ERROR;
+       return status;
    }
 
    status = rtems_task_resume(taskId);
@@ -377,6 +379,25 @@ rtems_extended_status_code getNextFreeSLFPTaskFromPool(Segmented_Task_SLFP_Task*
 
     // --- Implementation ---
     *task = &(segmentedTasks[next]);
+
+    return RTEMS_SUCCESSFUL;
+}
+
+rtems_extended_status_code setSLFPTaskPriority(Segmented_Task_SLFP_Task* task, rtems_task_priority priority) {
+    // --- Argument validation ---
+    /**
+     * Other arguments that need to be validated will be validated in rtems_task_set_priority,
+     */
+
+    if(task == NULL) {
+        return RTEMS_EXTENDED_NULL_POINTER;
+    }
+
+    // --- Implementation ---
+    rtems_task_priority wildCard;
+
+    task->base.taskPriority = priority;
+    rtems_task_set_priority(task->base.taskId, priority, &wildCard);
 
     return RTEMS_SUCCESSFUL;
 }

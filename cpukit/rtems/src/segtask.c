@@ -409,7 +409,7 @@ rtems_extended_status_code executeNextSegment(Segmented_Task_Task* task) {
         return RTEMS_EXTENDED_FINAL_SEGMENT;
     }
 
-    task->segments[++task->currentSegment].function();
+    task->segments[++(task->currentSegment)].function();
     return RTEMS_SUCCESSFUL;
 }
 

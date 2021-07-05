@@ -152,6 +152,10 @@ rtems_extended_status_code fillDataIntoSegTaskSLFP(Segmented_Task_SLFP_Task* tas
  */
 rtems_extended_status_code getNextFreeSLFPTaskFromPool(Segmented_Task_SLFP_Task** task);
 
+// TODO: Add description
+// TODO: Handle cascading rtems_extended_status_codes in calling functions
+rtems_extended_status_code setSLFPTaskPriority(Segmented_Task_SLFP_Task* task, rtems_task_priority priority);
+
 /**
  * @brief RTEMS Segmented Task SLFP Implementation: The runtime function.
  *
