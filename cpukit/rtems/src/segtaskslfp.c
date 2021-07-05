@@ -446,7 +446,22 @@ void main(rtems_task_argument arguments) {
 
     Segmented_Task_Task* base = (Segmented_Task_Task*) segmentedTask;
     for(uint32_t i = 0; i < base->numberOfSegments; i++) {
-        executeNextSegment(base);
+        status = executeNextSegment(base);
+        if(!rtems_is_status_successful(status)) {
+            /**
+             * When an error happens the RTEMS task must be exited with a failure.
+             * Currently a fitting method can't be found. Therefor only an information
+             * is displayed and the task is exited in a regular way.
+             * 
+             * TODO:
+             * Find a real way to exit the task with a failure.
+             */
+            printf("\n\n--- ERROR ---!\n");
+            printf("Task %u exited with failure. Currently there is no way to exit in an irregular way.\n", ownId);
+            printf("-------");
+            printf("\n\n");
+            rtems_task_exit();
+        }
         
         // No suspension is needed after the last segment.
         if(i != base->numberOfSegments - 1) {
