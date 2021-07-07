@@ -141,14 +141,19 @@ rtems_extended_status_code fillDataIntoSegTaskSLFP(Segmented_Task_SLFP_Task* tas
  * @brief RTEMS Segmented SLFP Task Implementation: Returns the next free
  * segmented slfp task from the pool.
  *
- * This routines routine returns a pointer to the next free segmented
- * slfp task from the pool.
+ * This routine returns a pointer to the next free segmented
+ * slfp task from the pool. This task is then "used". Therefore, next
+ * time when this routine is called, the task after is returned.
  * 
  * @param[out] task Pointer to the segmented slfp task.
  * 
  * @retval RTEMS_SUCCESSFUL if successfull
  * @retval RTEMS_TOO_MANY if all segmented slfp tasks of the pool
  *                        are in use already.
+ * 
+ * @par Notes:
+ * The internal pointer on the next free task is increased when
+ * calling this method.
  */
 rtems_extended_status_code getNextFreeSLFPTaskFromPool(Segmented_Task_SLFP_Task** task);
 

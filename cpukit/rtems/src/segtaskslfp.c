@@ -12,6 +12,11 @@ segtaskdata.h does also apply for CONFIGURE_MAXIMUM_TASKS.
 */
 #define CONFIGURE_MAXIMUM_TASKS 10
 
+/**
+ * TODO:
+ * Global variables needs to be protected against
+ * raceconditions.
+ */
 Segmented_Task_SLFP_Task segmentedTasks[CONFIGURE_MAXIMUM_TASKS];
 uint32_t next = 0; // Pointer to the next unused segmented slfp task in the pool segmentedTasks.
 
@@ -373,7 +378,7 @@ rtems_extended_status_code fillDataIntoSegTaskSLFP(Segmented_Task_SLFP_Task* tas
 
 rtems_extended_status_code getNextFreeSLFPTaskFromPool(Segmented_Task_SLFP_Task** task) {
     // --- Argument validation ---
-    if(next == CONFIGURE_MAXIMUM_TASKS) {
+    if(next++ == CONFIGURE_MAXIMUM_TASKS) {
         return RTEMS_TOO_MANY;
     }
 
