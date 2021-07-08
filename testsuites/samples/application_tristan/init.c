@@ -66,10 +66,12 @@ const rtems_name task1Name = rtems_build_name('T', '1', ' ', ' ');
 const rtems_name task2Name = rtems_build_name('T', '2', ' ', ' ');
 const rtems_name task3Name = rtems_build_name('T', '3', ' ', ' ');
 
+uint32_t taskArguments[] = {10, 20, 30};
+
 // Task 1
-void task1segment1(void);
-void task1segment2(void);
-void task1segment3(void);
+void task1segment1(Segmented_Task_Arguments args);
+void task1segment2(Segmented_Task_Arguments args);
+void task1segment3(Segmented_Task_Arguments args);
 
 rtems_id task1Id;
 const uint32_t task1Segments = 3;
@@ -82,9 +84,9 @@ const uint32_t task1ReleasedSegments[3] = {0, 1, 0};
  * {Task which is to resume, When to resume it with respect to the resuming segments start time}
  */
 const uint32_t task1Releases[1][2] = {{task2Name, 2}};
-const void (*task1SegmentFunctions[]) (void) = {task1segment1, task1segment2, task1segment3};
+const void (*task1SegmentFunctions[]) (Segmented_Task_Arguments args) = {task1segment1, task1segment2, task1segment3};
 
-void task1segment1(void) {
+void task1segment1(Segmented_Task_Arguments args) {
   rtems_status_code status;
 
   // Most importantly: Directly record start time. Variable declaration/definition can be done afterwards
@@ -99,6 +101,14 @@ void task1segment1(void) {
   uint32_t numberOfSegementsToResume = task1ReleasedSegments[currentSegment - 1];
   uint32_t offset = 0;
   uint32_t timeToWait = 0;
+
+  // Argument tests
+  uint32_t arg = ((uint32_t*) args.arguments)[currentSegment - 1];
+  printf("[Task: 1 - Segegment: 1]: ------------------\n");
+  printf("[Task: 1 - Segegment: 1]: Testing arguments.\n");
+  printf("[Task: 1 - Segegment: 1]: Passed current segment: %u - Should be: %u\n", args.currentSegment, currentSegment - 1);
+  printf("[Task: 1 - Segegment: 1]: Passed argument: %u\n", arg);
+  printf("[Task: 1 - Segegment: 1]: ------------------\n");
 
   /**
    * Step 1: Wieviele Segmente müssen in diesem Segment released werden?
@@ -166,7 +176,7 @@ void task1segment1(void) {
   printf("[Task: 1 - Segegment: 1]: Finished execution.\n");
 }
 
-void task1segment2(void) {
+void task1segment2(Segmented_Task_Arguments args) {
   rtems_status_code status;
 
   // Most importantly: Directly record start time. Variable declaration/definition can be done afterwards
@@ -181,6 +191,14 @@ void task1segment2(void) {
   uint32_t numberOfSegementsToResume = task1ReleasedSegments[currentSegment - 1];
   uint32_t offset = 0;
   uint32_t timeToWait = 0;
+
+  // Argument tests
+  uint32_t arg = ((uint32_t*) args.arguments)[currentSegment - 1];
+  printf("[Task: 1 - Segegment: 2]: ------------------\n");
+  printf("[Task: 1 - Segegment: 2]: Testing arguments.\n");
+  printf("[Task: 1 - Segegment: 2]: Passed current segment: %u - Should be: %u\n", args.currentSegment, currentSegment - 1);
+  printf("[Task: 1 - Segegment: 2]: Passed argument: %u\n", arg);
+  printf("[Task: 1 - Segegment: 2]: ------------------\n");
 
   /**
    * Step 1: Wieviele Segmente müssen in diesem Segment released werden?
@@ -248,7 +266,7 @@ void task1segment2(void) {
   printf("[Task: 1 - Segegment: 2]: Finished execution.\n");
 }
 
-void task1segment3(void) {
+void task1segment3(Segmented_Task_Arguments args) {
   rtems_status_code status;
 
   // Most importantly: Directly record start time. Variable declaration/definition can be done afterwards
@@ -263,6 +281,14 @@ void task1segment3(void) {
   uint32_t numberOfSegementsToResume = task1ReleasedSegments[currentSegment - 1];
   uint32_t offset = 0;
   uint32_t timeToWait = 0;
+
+  // Argument tests
+  uint32_t arg = ((uint32_t*) args.arguments)[currentSegment - 1];
+  printf("[Task: 1 - Segegment: 1]: ------------------\n");
+  printf("[Task: 1 - Segegment: 1]: Testing arguments.\n");
+  printf("[Task: 1 - Segegment: 1]: Passed current segment: %u - Should be: %u\n", args.currentSegment, currentSegment - 1);
+  printf("[Task: 1 - Segegment: 1]: Passed argument: %u\n", arg);
+  printf("[Task: 1 - Segegment: 1]: ------------------\n");
 
   /**
    * Step 1: Wieviele Segmente müssen in diesem Segment released werden?
@@ -331,8 +357,8 @@ void task1segment3(void) {
 }
 
 // Task 2
-void task2segment1(void);
-void task2segment2(void);
+void task2segment1(Segmented_Task_Arguments args);
+void task2segment2(Segmented_Task_Arguments args);
 
 rtems_id task2Id;
 const uint32_t task2Segments = 2;
@@ -341,9 +367,9 @@ const uint32_t task2durations[2] = {1, 5};
 const uint32_t task2ReleasedSegementsTotal = 2;
 const uint32_t task2ReleasedSegments[2] = {0, 2};
 const uint32_t task2Releases[2][2] = {{task3Name, 4}, {task3Name, 5}}; // {Task which is to release, when to release}
-const void (*task2SegmentFunctions[]) (void) = {task2segment1, task2segment2};
+const void (*task2SegmentFunctions[]) (Segmented_Task_Arguments args) = {task2segment1, task2segment2};
 
-void task2segment1(void) {
+void task2segment1(Segmented_Task_Arguments args) {
   rtems_status_code status;
 
   // Most importantly: Directly record start time. Variable declaration/definition can be done afterwards
@@ -358,6 +384,14 @@ void task2segment1(void) {
   uint32_t numberOfSegementsToResume = task2ReleasedSegments[currentSegment - 1];
   uint32_t offset = 0;
   uint32_t timeToWait = 0;
+
+  // Argument tests
+  uint32_t arg = ((uint32_t*) args.arguments)[currentSegment - 1];
+  printf("[Task: 2 - Segegment: 1]: ------------------\n");
+  printf("[Task: 2 - Segegment: 1]: Testing arguments.\n");
+  printf("[Task: 2 - Segegment: 1]: Passed current segment: %u - Should be: %u\n", args.currentSegment, currentSegment - 1);
+  printf("[Task: 2 - Segegment: 1]: Passed argument: %u\n", arg);
+  printf("[Task: 2 - Segegment: 1]: ------------------\n");
 
   /**
    * Step 1: Wieviele Segmente müssen in diesem Segment released werden?
@@ -425,7 +459,7 @@ void task2segment1(void) {
   printf("[Task: 2 - Segegment: 1]: Finished execution.\n");
 }
 
-void task2segment2(void) {
+void task2segment2(Segmented_Task_Arguments args) {
   rtems_status_code status;
 
   // Most importantly: Directly record start time. Variable declaration/definition can be done afterwards
@@ -440,6 +474,14 @@ void task2segment2(void) {
   uint32_t numberOfSegementsToResume = task2ReleasedSegments[currentSegment - 1];
   uint32_t offset = 0;
   uint32_t timeToWait = 0;
+
+  // Argument tests
+  uint32_t arg = ((uint32_t*) args.arguments)[currentSegment - 1];
+  printf("[Task: 2 - Segegment: 2]: ------------------\n");
+  printf("[Task: 2 - Segegment: 2]: Testing arguments.\n");
+  printf("[Task: 2 - Segegment: 2]: Passed current segment: %u - Should be: %u\n", args.currentSegment, currentSegment - 1);
+  printf("[Task: 2 - Segegment: 2]: Passed argument: %u\n", arg);
+  printf("[Task: 2 - Segegment: 2]: ------------------\n");
 
   /**
    * Step 1: Wieviele Segmente müssen in diesem Segment released werden?
@@ -508,9 +550,9 @@ void task2segment2(void) {
 }
 
 // Task 3
-void task3segment1(void);
-void task3segment2(void);
-void task3segment3(void);
+void task3segment1(Segmented_Task_Arguments args);
+void task3segment2(Segmented_Task_Arguments args);
+void task3segment3(Segmented_Task_Arguments args);
 
 rtems_id task3Id;
 const uint32_t task3Segments = 3;
@@ -519,9 +561,9 @@ const uint32_t task3durations[3] = {4, 3, 2};
 const uint32_t task3ReleasedSegementsTotal = 2;
 const uint32_t task3ReleasedSegments[3] = {1, 1, 0};
 const uint32_t task3Releases[2][2] = {{task1Name, 2}, {task1Name, 1}}; // {Task which is to release, when to release}
-const void (*task3SegmentFunctions[]) (void) = {task3segment1, task3segment2, task3segment3};
+const void (*task3SegmentFunctions[]) (Segmented_Task_Arguments args) = {task3segment1, task3segment2, task3segment3};
 
-void task3segment1(void) {
+void task3segment1(Segmented_Task_Arguments args) {
   rtems_status_code status;
 
   // Most importantly: Directly record start time. Variable declaration/definition can be done afterwards
@@ -536,6 +578,14 @@ void task3segment1(void) {
   uint32_t numberOfSegementsToResume = task3ReleasedSegments[currentSegment - 1];
   uint32_t offset = 0;
   uint32_t timeToWait = 0;
+
+  // Argument tests
+  uint32_t arg = ((uint32_t*) args.arguments)[currentSegment - 1];
+  printf("[Task: 3 - Segegment: 1]: ------------------\n");
+  printf("[Task: 3 - Segegment: 1]: Testing arguments.\n");
+  printf("[Task: 3 - Segegment: 1]: Passed current segment: %u - Should be: %u\n", args.currentSegment, currentSegment - 1);
+  printf("[Task: 3 - Segegment: 1]: Passed argument: %u\n", arg);
+  printf("[Task: 3 - Segegment: 1]: ------------------\n");
 
   /**
    * Step 1: Wieviele Segmente müssen in diesem Segment released werden?
@@ -603,7 +653,7 @@ void task3segment1(void) {
   printf("[Task: 3 - Segegment: 1]: Finished execution.\n");
 }
 
-void task3segment2(void) {
+void task3segment2(Segmented_Task_Arguments args) {
   rtems_status_code status;
 
   // Most importantly: Directly record start time. Variable declaration/definition can be done afterwards
@@ -618,6 +668,14 @@ void task3segment2(void) {
   uint32_t numberOfSegementsToResume = task3ReleasedSegments[currentSegment - 1];
   uint32_t offset = 0;
   uint32_t timeToWait = 0;
+
+  // Argument tests
+  uint32_t arg = ((uint32_t*) args.arguments)[currentSegment - 1];
+  printf("[Task: 3 - Segegment: 2]: ------------------\n");
+  printf("[Task: 3 - Segegment: 2]: Testing arguments.\n");
+  printf("[Task: 3 - Segegment: 2]: Passed current segment: %u - Should be: %u\n", args.currentSegment, currentSegment - 1);
+  printf("[Task: 3 - Segegment: 2]: Passed argument: %u\n", arg);
+  printf("[Task: 3 - Segegment: 2]: ------------------\n");
 
   /**
    * Step 1: Wieviele Segmente müssen in diesem Segment released werden?
@@ -685,7 +743,7 @@ void task3segment2(void) {
   printf("[Task: 3 - Segegment: 2]: Finished execution.\n");
 }
 
-void task3segment3(void) {
+void task3segment3(Segmented_Task_Arguments args) {
   rtems_status_code status;
 
   // Most importantly: Directly record start time. Variable declaration/definition can be done afterwards
@@ -700,6 +758,14 @@ void task3segment3(void) {
   uint32_t numberOfSegementsToResume = task3ReleasedSegments[currentSegment - 1];
   uint32_t offset = 0;
   uint32_t timeToWait = 0;
+
+  // Argument tests
+  uint32_t arg = ((uint32_t*) args.arguments)[currentSegment - 1];
+  printf("[Task: 3 - Segegment: 3]: ------------------\n");
+  printf("[Task: 3 - Segegment: 3]: Testing arguments.\n");
+  printf("[Task: 3 - Segegment: 3]: Passed current segment: %u - Should be: %u\n", args.currentSegment, currentSegment - 1);
+  printf("[Task: 3 - Segegment: 3]: Passed argument: %u\n", arg);
+  printf("[Task: 3 - Segegment: 3]: ------------------\n");
 
   /**
    * Step 1: Wieviele Segmente müssen in diesem Segment released werden?
@@ -875,13 +941,13 @@ rtems_task Init(
   directive_failed(status, "Creation of idle task failed.");
 
   // Task Starting
-  status = rtems_task_start_segmented_slfp(task1Id);
+  status = rtems_task_start_segmented_slfp(task1Id, (rtems_task_argument) taskArguments);
   directive_failed(status, "Start of task 1 failed.");
 
-  status = rtems_task_start_segmented_slfp(task2Id);
+  status = rtems_task_start_segmented_slfp(task2Id, (rtems_task_argument) taskArguments);
   directive_failed(status, "Start of task 2 failed.");
 
-  status = rtems_task_start_segmented_slfp(task3Id);
+  status = rtems_task_start_segmented_slfp(task3Id, (rtems_task_argument) taskArguments);
   directive_failed(status, "Start of task 3 failed.");
 
   status = rtems_task_start(idleTaskId, idle, (rtems_task_argument) NULL);

@@ -134,7 +134,7 @@ rtems_extended_status_code emptySegTaskSLFP(Segmented_Task_SLFP_Task* givenSegme
 rtems_extended_status_code fillDataIntoSegTaskSLFP(Segmented_Task_SLFP_Task* task,
                 rtems_name taskName, size_t taskStackSize,
                 rtems_mode initialModes, rtems_attribute taskAttributes,
-                uint32_t numberOfSegments, void (*functionPointer[]) (void),
+                uint32_t numberOfSegments, void (*functionPointer[]) (Segmented_Task_Arguments),
                 rtems_task_priority priorities[]);
 
 /**

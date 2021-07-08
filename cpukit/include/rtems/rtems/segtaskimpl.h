@@ -33,6 +33,7 @@ rtems_extended_status_code isPriorityValid(rtems_task_priority priority);
  * task.
  * 
  * @param[in] task Pointer to the segmented task.
+ * @param[in] arguments Arguments which are passed to the segment.
  * 
  * @retval RTEMS_SUCCESSFUL if successfull.
  * @retval RTEMS_EXTENDED_NULL_POINTER if task is a null pointer.
@@ -43,7 +44,7 @@ rtems_extended_status_code isPriorityValid(rtems_task_priority priority);
  * For mapping on rtems_status_code see rtems_extended_status_code
  * details.
  */
-rtems_extended_status_code executeNextSegment(Segmented_Task_Task* task);
+rtems_extended_status_code executeNextSegment(Segmented_Task_Task* task, rtems_task_argument arguments);
 
 /**
  * @brief RTEMS Segmented Task Implementation: Empty the given segmented
@@ -122,7 +123,7 @@ rtems_extended_status_code fillDataIntoSegTask(Segmented_Task_Task* task,
                 rtems_name taskName, rtems_task_priority taskPriority,
                 size_t taskStackSize, rtems_mode initialModes, 
                 rtems_attribute taskAttributes, uint32_t numberOfSegments,
-                void (*functionPointer[]) (void));
+                void (*functionPointer[]) (Segmented_Task_Arguments));
 
 /**
  * @brief RTEMS Segmented Task Implementation: Fill in the given general data.
@@ -177,7 +178,7 @@ rtems_extended_status_code fillGeneralDataIntoSegTask(Segmented_Task_Task* task,
  * details.
  */
 rtems_extended_status_code fillSegmentDataIntoSegTask(Segmented_Task_Task* task,
-                uint32_t numberOfSegments, void (*functionPointer[]) (void));
+                uint32_t numberOfSegments, void (*functionPointer[]) (Segmented_Task_Arguments));
 /**
  * @brief RTEMS Segmented Task Implementation: Get the size of the communication memory.
  *

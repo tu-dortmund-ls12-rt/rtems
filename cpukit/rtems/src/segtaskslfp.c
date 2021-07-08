@@ -24,7 +24,7 @@ uint32_t next = 0; // Pointer to the next unused segmented slfp task in the pool
 
 rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t taskStackSize,
                 rtems_mode initialModes, rtems_attribute taskAttributes, uint32_t numberOfSegments,
-                void (*segmentFunctions[]) (void), rtems_task_priority segmentPriorities[], rtems_id* taskId) {
+                void (*segmentFunctions[]) (Segmented_Task_Arguments), rtems_task_priority segmentPriorities[], rtems_id* taskId) {
     // --- Argument validation ---
     /**
      * Arguments that need to be validated will be validated in fillDataIntoSegTaskSLFP and rtems_task_create.
@@ -111,7 +111,7 @@ rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t t
     return RTEMS_SUCCESSFUL;
 }
 
-rtems_status_code rtems_task_start_segmented_slfp(rtems_id taskId) {
+rtems_status_code rtems_task_start_segmented_slfp(rtems_id taskId, rtems_task_argument taskArguments) {
     // --- Argument validation ---
     /**
      * Arguments that need to be validated will be validated in getSegmented_Task_SLFP_Task.
@@ -143,7 +143,7 @@ rtems_status_code rtems_task_start_segmented_slfp(rtems_id taskId) {
     }
 
     base = (Segmented_Task_Task*) receivedSegmentedTask;
-    status = rtems_task_start(base->taskId, main, (rtems_task_argument) NULL);
+    status = rtems_task_start(base->taskId, main, taskArguments);
     if(!rtems_is_status_successful(status)) {
         /**
          * Possible errors:
@@ -330,7 +330,7 @@ rtems_extended_status_code emptySegTaskSLFP(Segmented_Task_SLFP_Task* givenSegme
 rtems_extended_status_code fillDataIntoSegTaskSLFP(Segmented_Task_SLFP_Task* task,
                 rtems_name taskName, size_t taskStackSize,
                 rtems_mode initialModes, rtems_attribute taskAttributes,
-                uint32_t numberOfSegments, void (*functionPointer[]) (void),
+                uint32_t numberOfSegments, void (*functionPointer[]) (Segmented_Task_Arguments),
                 rtems_task_priority priorities[]) {
     // --- Argument validation ---
     /**
@@ -451,7 +451,7 @@ void main(rtems_task_argument arguments) {
 
     Segmented_Task_Task* base = (Segmented_Task_Task*) segmentedTask;
     for(uint32_t i = 0; i < base->numberOfSegments; i++) {
-        status = executeNextSegment(base);
+        status = executeNextSegment(base, arguments);
         if(!rtems_is_status_successful(status)) {
             /**
              * When an error happens the RTEMS task must be exited with a failure.

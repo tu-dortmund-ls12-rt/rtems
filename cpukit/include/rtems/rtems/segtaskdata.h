@@ -97,11 +97,12 @@ extern "C" {
  */
 typedef struct {
     uint32_t currentSegment; // Starting at zero
-    void* arguments; // Contains always the adress which was given when creating the task. To every 
-} SegmentArguments;
+    void* arguments; // Workaround: TODO: Replace with rtems_task_argument
+    //rtems_task_argument arguments; // Contains always the adress which was given when creating the task. To every 
+} Segmented_Task_Arguments;
 
 typedef struct {
-    void (*function) (void);
+    void (*function) (Segmented_Task_Arguments);
 } Segmented_Task_Segment;
 
 typedef struct {

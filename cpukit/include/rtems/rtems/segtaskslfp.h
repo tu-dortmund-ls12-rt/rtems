@@ -44,7 +44,7 @@ extern "C" {
  */
 rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t taskStackSize,
                 rtems_mode initialModes, rtems_attribute taskAttributes,
-                uint32_t numberOfSegments, void (*segmentFunctions[]) (void),
+                uint32_t numberOfSegments, void (*segmentFunctions[]) (Segmented_Task_Arguments),
                 rtems_task_priority segmentPriorities[], rtems_id* taskId);
 
 /**
@@ -54,6 +54,7 @@ rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t t
  * schedule it by Segmented Level Fixed Priority scheduling
  * 
  * @param[in] taskId Id of the task that should be started.
+ * @param[in] taskArguments Arguments which will be passed to every segment.
  * 
  * @retval RTEMS_SUCCESSFUL if successful.
  * @retval RTEMS_INTERNAL_ERROR if an internal RTEMS inconsistency was detected.
@@ -68,7 +69,7 @@ rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t t
  * Currently can only one segmentedTask exists. So therefor the given id will have
  * effect.
  */
-rtems_status_code rtems_task_start_segmented_slfp(rtems_id taskId);
+rtems_status_code rtems_task_start_segmented_slfp(rtems_id taskId, rtems_task_argument taskArguments);
 
 /**
  * @brief RTEMS Segmented SLFP Task: Resume the segmented slfp task by id.

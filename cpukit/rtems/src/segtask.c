@@ -397,8 +397,13 @@ rtems_extended_status_code isPriorityValid(rtems_task_priority priority) {
     }
 }
 
-rtems_extended_status_code executeNextSegment(Segmented_Task_Task* task) {
+rtems_extended_status_code executeNextSegment(Segmented_Task_Task* task, rtems_task_argument arguments) {
     // --- Argument validation ---
+    /**
+     * It is not possible to validate arguments. It is in the users
+     * responsibility, that those arguments are correct.
+     */
+
     if(task == NULL) {
         return RTEMS_EXTENDED_NULL_POINTER;
     }
@@ -409,7 +414,13 @@ rtems_extended_status_code executeNextSegment(Segmented_Task_Task* task) {
         return RTEMS_EXTENDED_FINAL_SEGMENT;
     }
 
-    task->segments[++(task->currentSegment)].function();
+    (task->currentSegment)++;
+
+    Segmented_Task_Arguments args;
+    args.currentSegment = task->currentSegment;
+    args.arguments = arguments;
+
+    task->segments[task->currentSegment].function(args);
     return RTEMS_SUCCESSFUL;
 }
 
@@ -496,7 +507,7 @@ rtems_extended_status_code fillDataIntoSegTask(Segmented_Task_Task* task,
                 rtems_name taskName, rtems_task_priority taskPriority,
                 size_t taskStackSize, rtems_mode initialModes, 
                 rtems_attribute taskAttributes, uint32_t numberOfSegments,
-                void (*functionPointer[]) (void)) {
+                void (*functionPointer[]) (Segmented_Task_Arguments)) {
     // --- Argument validation ---
     /**
      * Arguments that need to be validated will be validated in emptySegmentedTask,
@@ -567,7 +578,7 @@ rtems_extended_status_code fillGeneralDataIntoSegTask(Segmented_Task_Task* task,
 }
 
 rtems_extended_status_code fillSegmentDataIntoSegTask(Segmented_Task_Task* task,
-                uint32_t numberOfSegments, void (*functionPointer[]) (void)) {
+                uint32_t numberOfSegments, void (*functionPointer[]) (Segmented_Task_Arguments)) {
     // --- Argument validation ---
     if(task == NULL) {
         return RTEMS_EXTENDED_NULL_POINTER;
