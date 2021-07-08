@@ -12,6 +12,7 @@ a task can only be unsuspended by an external call.
 
 #include <rtems/rtems/types.h>
 #include <rtems/rtems/attr.h>
+#include <rtems/rtems/tasks.h>
 
 /*
 TODO:
@@ -97,8 +98,7 @@ extern "C" {
  */
 typedef struct {
     uint32_t currentSegment; // Starting at zero
-    void* arguments; // Workaround: TODO: Replace with rtems_task_argument
-    //rtems_task_argument arguments; // Contains always the adress which was given when creating the task. To every 
+    rtems_task_argument arguments; // Contains always the adress which was given when creating the task. To every 
 } Segmented_Task_Arguments;
 
 typedef struct {
