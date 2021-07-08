@@ -474,7 +474,7 @@ rtems_extended_status_code getSegmented_Task_Task(rtems_id id, Segmented_Task_Ta
     if(rtems_is_status_successful(status)) {
         *segmentedTaskToReturn = (Segmented_Task_Task*) slfpTask;
         return RTEMS_SUCCESSFUL;
-    } else if(status != RTEMS_INVALID_ID) {
+    } else if((rtems_status_code) status != RTEMS_INVALID_ID) {
         return status;
     } else {
         /**
