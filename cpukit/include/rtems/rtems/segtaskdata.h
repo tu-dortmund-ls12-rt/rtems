@@ -80,6 +80,26 @@ Same problem as described for CONFIGURE_MAXIMUM_SEGMENTS does also apply for CON
 extern "C" {
 #endif
 
+/**
+ * A struct to pass arguments to the segements.
+ * 
+ * currentSegment       will contain the index of the current
+ *                      starting at zero.
+ * arguments            will contain the adress given while
+ *                      creating the task.
+ * 
+ * The argument passed to the individual segments are all the
+ * same. It is up to the user to differantiate them. That's
+ * why currentSegment is also given.
+ * 
+ * TODO:
+ * Provide an example how it's done best.
+ */
+typedef struct {
+    uint32_t currentSegment; // Starting at zero
+    void* arguments; // Contains always the adress which was given when creating the task. To every 
+} SegmentArguments;
+
 typedef struct {
     void (*function) (void);
 } Segmented_Task_Segment;
