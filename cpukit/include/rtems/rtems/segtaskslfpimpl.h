@@ -175,7 +175,7 @@ rtems_extended_status_code setSLFPTaskPriority(Segmented_Task_SLFP_Task* task, r
  * - Renvame to avoid compiler warnings.
  * - Implement loop for multiple execution of a segmented slfp task.
  */
-void main(rtems_task_argument arguments);
+void mainFunction(rtems_task_argument arguments);
 
 #ifdef __cplusplus
 }

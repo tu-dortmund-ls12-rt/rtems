@@ -73,7 +73,7 @@ rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t t
          * RTEMS_EXTENDED_TOO_MANY_SEGMENTS:
          *      User dependent. Needs to be forwarded.
          */
-        if(status == RTEMS_EXTENDED_NULL_POINTER && &segmentedTask == NULL) {
+        if(status == RTEMS_EXTENDED_NULL_POINTER && segmentedTask == NULL) {
             return RTEMS_INTERNAL_ERROR;
         } else {
             return status;
@@ -99,7 +99,7 @@ rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t t
          * RTEMS_UNSATISFIED:
          *       User dependent. Needs to be forwarded.
          */
-        if(status == RTEMS_INVALID_NAME || status == RTEMS_INVALID_PRIORITY) {
+        if((rtems_status_code) status == RTEMS_INVALID_NAME || (rtems_status_code) status == RTEMS_INVALID_PRIORITY) {
             return RTEMS_INTERNAL_ERROR;
         } else {
             return status;
@@ -143,7 +143,7 @@ rtems_status_code rtems_task_start_segmented_slfp(rtems_id taskId, rtems_task_ar
     }
 
     base = (Segmented_Task_Task*) receivedSegmentedTask;
-    status = rtems_task_start(base->taskId, main, taskArguments);
+    status = rtems_task_start(base->taskId, mainFunction, taskArguments);
     if(!rtems_is_status_successful(status)) {
         /**
          * Possible errors:
@@ -156,7 +156,7 @@ rtems_status_code rtems_task_start_segmented_slfp(rtems_id taskId, rtems_task_ar
          * RTEMS_ILLEGAL_ON_REMOTE_OBJECT:
          *      User dependent. Needs to be forwarded.
          */
-        if(status == RTEMS_INVALID_ADDRESS || status == RTEMS_INVALID_ID) {
+        if((rtems_status_code) status == RTEMS_INVALID_ADDRESS || (rtems_status_code) status == RTEMS_INVALID_ID) {
             return RTEMS_INTERNAL_ERROR;
         } else {
             return status;
@@ -176,7 +176,6 @@ rtems_status_code rtems_task_resume_segmented_slfp(rtems_id taskId) {
    rtems_extended_status_code status;
    rtems_task_priority nextPriority;
    Segmented_Task_SLFP_Task* receivedTask;
-   Segmented_Task_Task* receivedBase;
    
    status = getSegmented_Task_SLFP_Task(taskId, &receivedTask);
    if(!rtems_is_status_successful(status)) {
@@ -195,8 +194,8 @@ rtems_status_code rtems_task_resume_segmented_slfp(rtems_id taskId) {
    }
 
    status = rtems_task_is_suspended(taskId);
-   if(status != RTEMS_ALREADY_SUSPENDED) {
-       if(status != RTEMS_SUCCESSFUL) {
+   if((rtems_status_code) status != RTEMS_ALREADY_SUSPENDED) {
+       if((rtems_status_code) status != RTEMS_SUCCESSFUL) {
            return status;
        } else {
            return RTEMS_INCORRECT_STATE;
@@ -362,7 +361,7 @@ rtems_extended_status_code fillDataIntoSegTaskSLFP(Segmented_Task_SLFP_Task* tas
          * RTEMS_EXTENDED_TOO_MANY_SEGMENTS:
          *      User dependent. Must be forwarded.
          */
-        if(status == RTEMS_INVALID_PRIORITY) {
+        if((rtems_status_code) status == RTEMS_INVALID_PRIORITY) {
             return RTEMS_INTERNAL_ERROR;
         } else {
             return status;
@@ -407,7 +406,7 @@ rtems_extended_status_code setSLFPTaskPriority(Segmented_Task_SLFP_Task* task, r
     return RTEMS_SUCCESSFUL;
 }
 
-void main(rtems_task_argument arguments) {
+void mainFunction(rtems_task_argument arguments) {
     // --- Argument validation ---
     
     // --- Implementation
