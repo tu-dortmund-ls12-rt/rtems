@@ -181,10 +181,28 @@ rtems_extended_status_code setSLFPTaskPriority(Segmented_Task_SLFP_Task* task, r
  * 
  * @par Notes
  * TODO:
- * - Renvame to avoid compiler warnings.
  * - Implement loop for multiple execution of a segmented slfp task.
  */
 void mainFunction(rtems_task_argument arguments);
+
+/**
+ * @brief RTEMS Segmented Task SLFP Implementation: The calling task
+ * exists with a failure message.
+ *
+ * This routine is the fall back solution in case a task "fails". It
+ * can then be exited with this routine instead of rtems_task_exit.
+ * 
+ * @param[in] taskId The ID of the calling task. Pass NULL if it's
+ *                   unknown.
+ * @param[in] errorMessage The error message to display. Pass NULL if
+ *                         no message should be displayed.
+ * 
+ * @par Notes
+ * TODO:
+ * - The removeal from the task pool and everything connect to
+ *   task deletion is missing beside RTEMS default operations.
+ */
+void rtems_exit_task_with_failure(rtems_id* taskId, char* errorMessage);
 
 #ifdef __cplusplus
 }

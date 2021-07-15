@@ -468,55 +468,22 @@ void mainFunction(rtems_task_argument arguments) {
     
     status = rtems_task_ident(RTEMS_SELF, RTEMS_SEARCH_ALL_NODES, &ownId);
     if(!rtems_is_status_successful(status)) {
-        /**
-         * When an error happens the RTEMS task must be exited with a failure.
-         * Currently a fitting method can't be found. Therefor only an information
-         * is displayed and the task is exited in a regular way.
-         * 
-         * TODO:
-         * Find a real way to exit the task with a failure.
-         */
-       printf("\n\n--- ERROR ---!\n");
-       printf("An unkown task exited with failure. Currently there is no way to exit in an irregular way.\n");
-       printf("-------");
-       printf("\n\n");
-       rtems_task_exit();
+        char* errMsg = "ID of the calling task couldn't be retrieved. Internal error.";
+        rtems_exit_task_with_failure(NULL, errMsg);
     }
 
     status = getSegmented_Task_SLFP_Task(ownId, &segmentedTask);
     if(!rtems_is_status_successful(status)) {
-        /**
-         * When an error happens the RTEMS task must be exited with a failure.
-         * Currently a fitting method can't be found. Therefor only an information
-         * is displayed and the task is exited in a regular way.
-         * 
-         * TODO:
-         * Find a real way to exit the task with a failure.
-         */
-       printf("\n\n--- ERROR ---!\n");
-       printf("Task %u exited with failure. Currently there is no way to exit in an irregular way.\n", ownId);
-       printf("-------");
-       printf("\n\n");
-       rtems_task_exit();
+        char* errMsg = "Associated task couldn't be retrieved. Internal error.";
+        rtems_exit_task_with_failure(&ownId, errMsg);
     }
 
     Segmented_Task_Task* base = (Segmented_Task_Task*) segmentedTask;
     for(uint32_t i = 0; i < base->numberOfSegments; i++) {
         status = executeNextSegment(base, arguments);
         if(!rtems_is_status_successful(status)) {
-            /**
-             * When an error happens the RTEMS task must be exited with a failure.
-             * Currently a fitting method can't be found. Therefor only an information
-             * is displayed and the task is exited in a regular way.
-             * 
-             * TODO:
-             * Find a real way to exit the task with a failure.
-             */
-            printf("\n\n--- ERROR ---!\n");
-            printf("Task %u exited with failure. Currently there is no way to exit in an irregular way.\n", ownId);
-            printf("-------");
-            printf("\n\n");
-            rtems_task_exit();
+            char* errMsg = "The next segment of the calling task couldn't be executed. Internal error.";
+            rtems_exit_task_with_failure(&ownId, errMsg);
         }
         
         // No suspension is needed after the last segment.
@@ -525,5 +492,30 @@ void mainFunction(rtems_task_argument arguments) {
         }
     }
     
+    rtems_task_exit();
+}
+
+void rtems_exit_task_with_failure(rtems_id* taskId, char* errorMessage) {
+    // --- Argument validation ---
+    
+    // --- Implementation
+    /*
+     * TODO: Implementation
+     * Printf is used here for an easy access and quick solution. This
+     * could possibly result in an unwanted behavior (unknown to me).
+     * Maybe switch this out in the future.
+     */
+    printf("\n\n--- ERROR ---!\n");
+    if(taskId == NULL) {
+        printf("Task with an unknown ID exited with failure.\n");
+    } else {
+        printf("Task %u exited with failure.\n", *taskId);
+    }
+    if(errorMessage != NULL) {
+        printf("Error message:    %s\n", errorMessage);
+    }
+    printf("--------------");
+    printf("\n\n");
+
     rtems_task_exit();
 }
