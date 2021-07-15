@@ -20,10 +20,10 @@ extern "C" {
  * 
  * @param[in] priority Priority to validate.
  * 
- * @retval RTEMS_SUCCESSFUL if successfull.
- * @retval RTEMS_INVALID_PRIORITY if priority is not invalid.
+ * @retval true if priority is valid.
+ * @retval false if priority is not invalid.
  */
-rtems_extended_status_code isPriorityValid(rtems_task_priority priority);
+bool isPriorityValid(rtems_task_priority priority);
 
 /**
  * @brief RTEMS Segmented Task Implementation: Execute the next segmented of

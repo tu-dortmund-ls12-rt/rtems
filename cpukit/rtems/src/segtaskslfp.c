@@ -336,7 +336,7 @@ rtems_extended_status_code fillDataIntoSegTaskSLFP(Segmented_Task_SLFP_Task* tas
      * Other arguments that need to be validated will be validated in fillDataIntoSegTask.
      */
     for(uint32_t i = 0; i < numberOfSegments; i++) {
-        if(!rtems_is_status_successful(isPriorityValid(priorities[i]))) {
+        if(!isPriorityValid(priorities[i])) {
             return RTEMS_INVALID_PRIORITY;
         }
     }

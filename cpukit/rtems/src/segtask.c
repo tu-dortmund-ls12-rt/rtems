@@ -385,15 +385,15 @@ rtems_status_code rtems_task_segmented_clear_communication_memory(void) {
 
 // ----- Hidden Implementation -----
 
-rtems_extended_status_code isPriorityValid(rtems_task_priority priority) {
+bool isPriorityValid(rtems_task_priority priority) {
     /*
     The priority range might be changed in the future. Maybe there is another
     way to check the validity of a priority through an existing core call?
     */
     if(priority >= 1 && priority <= 255) {
-        return RTEMS_SUCCESSFUL;
+        return true;
     } else {
-        return RTEMS_INVALID_PRIORITY;
+        return false;
     }
 }
 
@@ -563,7 +563,7 @@ rtems_extended_status_code fillGeneralDataIntoSegTask(Segmented_Task_Task* task,
         return RTEMS_INVALID_NAME;
     }
 
-    if(!rtems_is_status_successful(isPriorityValid(taskPriority))) {
+    if(!isPriorityValid(taskPriority)) {
         return RTEMS_INVALID_PRIORITY;
     }
 
