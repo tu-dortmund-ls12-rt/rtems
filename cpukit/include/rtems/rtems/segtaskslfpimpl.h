@@ -22,7 +22,7 @@ file, then there are multiple declarations of the same variable. It is therefor
 moved in the *.c file. If it's "somehow" needed in this header file or in another
 file, it needs to be declared as "extern".
 
-TODO:
+TODO: Question / Nothing to fix right now.
 Is there a disadvantage declaring it in the *.c file? It'll be still allocated on the
 heap of the RTEMS OS right? Think this through, because u don't want to let this
 variable get out of scope ever!
@@ -83,12 +83,6 @@ rtems_extended_status_code getPriorityOfSegmentByIndex(Segmented_Task_SLFP_Task*
  * For mapping on rtems_status_code see rtems_extended_status_code
  * details.
  * @retval RTEMS_INTERNAL_ERROR if an internal RTEMS inconsistency was detected.
- * 
- * @par Notes
- * TODO:
- * Currently the given segmentedTask has no effect, because there is always only
- * one segmentedTask currently possible. So therefor it won't be used. This needs
- * to be changed when a list of Segmented_TASK_SLFP_Tasks is present.
  */
 rtems_extended_status_code emptySegTaskSLFP(Segmented_Task_SLFP_Task* givenSegmentedTask);
 
@@ -157,8 +151,23 @@ rtems_extended_status_code fillDataIntoSegTaskSLFP(Segmented_Task_SLFP_Task* tas
  */
 rtems_extended_status_code getNextFreeSLFPTaskFromPool(Segmented_Task_SLFP_Task** task);
 
-// TODO: Add description
-// TODO: Handle cascading rtems_extended_status_codes in calling functions
+/**
+ * @brief RTEMS Segmented SLFP Task Implementation: Sets the priority
+ * of the given segmented task.
+ * 
+ * This routine sets the priority of the given segmented slfp task pointed
+ * to to the given priority.
+ * 
+ * @param[in] task Pointer to the segmented slfp task.
+ * @param[in] priority Priority the given segmented slfp task
+ *                     should be assigned to.
+ * 
+ * @retval RTEMS_SUCCESSFUL if successfull
+ * @retval RTEMS_EXTENDED_NULL_POINTER if the given pointer task is a null
+ *                                     pointer.
+ * @retval RTEMS_EXTENDED_INVALID_PRIORITY if the given priority is invalid.
+ * @retval RTEMS_EXTENDED_INTERNAL_ERROR if an internal error occured.
+ */
 rtems_extended_status_code setSLFPTaskPriority(Segmented_Task_SLFP_Task* task, rtems_task_priority priority);
 
 /**

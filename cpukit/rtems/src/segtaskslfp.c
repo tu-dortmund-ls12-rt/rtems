@@ -218,17 +218,17 @@ rtems_status_code rtems_task_resume_segmented_slfp(rtems_id taskId) {
    status = setSLFPTaskPriority(receivedTask, nextPriority);
    if(!rtems_is_status_successful(status)) {
        /**
-        * TODO: Change errors to fit setSLFPTaskPriority errors.
-        * 
         * Possible errors:
-        * RTEMS_INVALID_ID:
-        *      User dependent but validated beforhand. Therefor it is an internal error.
-        * RTEMS_INVALID_ADDRESS:
-        *      User independent. Therefor it is an internal error.
-        * RTEMS_INVALID_PRIORITY:
-        *      User independent. Therefor it is an internal error.
+        * RTEMS_EXTENDED_NULL_POINTER:
+        *      User dependent but validated beforehand. Therefore it is an internal error.
+        * RTEMS_EXTENDED_INVALID_PRIORITY:
+        *      User dependent, but as long as the initial validity check of the priority
+        *      was performed while creating the segmented slfp task, this should not be
+        *      possible. Therefore it is an internal error.
+        * RTEMS_EXTENDED_INTERAL_ERROR:
+        *      User independent. Muste be forwarded.
         */
-       return status;
+       return RTEMS_INTERNAL_ERROR;
    }
 
    status = rtems_task_resume(taskId);
@@ -389,19 +389,71 @@ rtems_extended_status_code getNextFreeSLFPTaskFromPool(Segmented_Task_SLFP_Task*
 
 rtems_extended_status_code setSLFPTaskPriority(Segmented_Task_SLFP_Task* task, rtems_task_priority priority) {
     // --- Argument validation ---
-    /**
-     * Other arguments that need to be validated will be validated in rtems_task_set_priority,
-     */
-
     if(task == NULL) {
         return RTEMS_EXTENDED_NULL_POINTER;
     }
 
+
+    if(!isPriorityValid(priority)) {
+        return RTEMS_INVALID_PRIORITY;
+    }
+
     // --- Implementation ---
     rtems_task_priority wildCard;
+    rtems_extended_status_code status;
+    rtems_task_priority originalPriority;
 
+    /*
+     * Segmented slfp task structure properties must be changed first,
+     * because the rtems_task_set_priority function call could result in
+     * a task switch due to the scheduler.
+     * Therefore, the validity check of the priority can not be done by
+     * the rtems_task-set_priority function call.
+     * 
+     * TODO:
+     * Thread safety. Switching the priority of the task by calling
+     * rtems_tassks_set_priority and the update of the segmented slfp
+     * task data structure must be atomic. Because otherwise it could
+     * happen, that the data structure is updated first, then an
+     * interrupt happens, switches out the task of execution, and the
+     * task is then handled by the priority in the data structure by
+     * the code, even though in reality it still has a different
+     * priority. Other than the interrupt also just a task switch could
+     * happen in between (which, in the end, is once again caused by an
+     * interrupt). So basicly: Disable interrupts for a short duration.
+     * This should also disable possible task switches, because the
+     * scheduler can only react to interrupts or direct function calls.
+     * Just ensure, the two operation are atomic together.
+     */
+
+    // --- ATOMICITY START
+    originalPriority = priority;
     task->base.taskPriority = priority;
-    rtems_task_set_priority(task->base.taskId, priority, &wildCard);
+    status = rtems_task_set_priority(task->base.taskId, priority, &wildCard);
+    if(!rtems_is_status_successful(status)) {
+        /**
+         * Possible errors:
+         * RTEMS_INVALID_ID:
+         *      Not user dependent. If task is a valid task pointer, then the underlying
+         *      structure should never be able to have an invalid id.
+         * RTEMS_INVALID_ADDRESS:
+         *      Not user dependent.
+         * RTEMS_INVALID_PRIORITY:
+         *      User dependent. Must be forwarded.
+         * RTEMS_INVALID_PRIORITY:
+         *      User dependent, but validated before hand.
+         */
+        if((rtems_status_code) status == RTEMS_INVALID_PRIORITY) {
+            /*
+             * In case the operation fails due to an internal error
+             * all changes done so far must be reverted.
+             */
+            task->base.taskPriority = originalPriority;
+        }
+
+        return RTEMS_INTERNAL_ERROR;
+    }
+    // --- ATOMICITY END (or early before a return statement)
 
     return RTEMS_SUCCESSFUL;
 }

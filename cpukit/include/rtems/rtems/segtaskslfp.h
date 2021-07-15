@@ -63,11 +63,6 @@ rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t t
  *                               state.
  * @retval RTEMS_ILLEGAL_ON_REMOTE_OBJECT if it's not possible to start a remote
  *                                        task.
- * 
- * @par Notes
- * TODO:
- * Currently can only one segmentedTask exists. So therefor the given id will have
- * effect.
  */
 rtems_status_code rtems_task_start_segmented_slfp(rtems_id taskId, rtems_task_argument taskArguments);
 
