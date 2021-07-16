@@ -143,6 +143,15 @@ rtems_status_code rtems_task_start_segmented_slfp(rtems_id taskId, rtems_task_ar
     }
 
     base = (Segmented_Task_Task*) receivedSegmentedTask;
+    /*
+     * TODO: Implementaiton: Potential bug.
+     * Is the memory, pointed to by taskArguments, copied by rtems_task_start
+     * to a memory region that will stay in scope? If not, then if the task
+     * arguments are created locally on the stack during the initial Task
+     * instead of declared as a global variable, the arguments will be out
+     * of scope as soon, as the initial Task will exit, which will happen
+     * before the execution of any other Task.
+     */
     status = rtems_task_start(base->taskId, mainFunction, taskArguments);
     if(!rtems_is_status_successful(status)) {
         /**
