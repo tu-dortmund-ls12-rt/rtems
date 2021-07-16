@@ -1,6 +1,15 @@
 #ifndef __TRISTAN_SYS_CONFIG_H
 #define __TRISTAN_SYS_CONFIG_H
 
+/**
+ * There are some header files that need to be included
+ * before the definition of the configuration.
+ * Because I want my includations to be grouped, 
+ * those includations here are duplicates, which should
+ * not be the cause of problems.
+ */
+#include <tmacros.h>
+
 #define CONFIGURE_APPLICATION_NEEDS_SIMPLE_CONSOLE_DRIVER
 #define CONFIGURE_APPLICATION_NEEDS_CLOCK_DRIVER
 #define CONFIGURE_MICROSECONDS_PER_TICK     1000
@@ -13,6 +22,13 @@
 #define CONFIGURE_MAXIMUM_SEGMENTS 20
 #define CONFIGURE_MAXIMUM_COMMUNICATION_MEMORY 512
 
+/**
+ * There are some header files that need to be included
+ * after the definition of the configuration.
+ * Because I want my includations to be grouped, 
+ * those includations here are duplicates, which should
+ * not be the cause of problems.
+ */
 #include <rtems/confdefs.h>
 
 #endif
