@@ -59,13 +59,13 @@
  *              General Information         *
  *                                          *
  ********************************************/
-const size_t taskStackSize = RTEMS_MINIMUM_STACK_SIZE;
-const rtems_mode taskModes = RTEMS_DEFAULT_MODES;
-const rtems_attribute taskAttributes = RTEMS_DEFAULT_ATTRIBUTES;
+static const size_t taskStackSize = RTEMS_MINIMUM_STACK_SIZE;
+static const rtems_mode taskModes = RTEMS_DEFAULT_MODES;
+static const rtems_attribute taskAttributes = RTEMS_DEFAULT_ATTRIBUTES;
 
-const rtems_name task1Name = rtems_build_name('T', '1', ' ', ' ');
-const rtems_name task2Name = rtems_build_name('T', '2', ' ', ' ');
-const rtems_name task3Name = rtems_build_name('T', '3', ' ', ' ');
+static const rtems_name task1Name = rtems_build_name('T', '1', ' ', ' ');
+static const rtems_name task2Name = rtems_build_name('T', '2', ' ', ' ');
+static const rtems_name task3Name = rtems_build_name('T', '3', ' ', ' ');
 
 uint32_t taskArguments[] = {10, 20, 30};
 
@@ -79,17 +79,17 @@ void task1segment2(Segmented_Task_Arguments args);
 void task1segment3(Segmented_Task_Arguments args);
 
 rtems_id task1Id;
-const uint32_t task1Segments = 3;
+static const uint32_t task1Segments = 3;
 rtems_task_priority task1Priorities[3] = {1, 1, 5};
-const uint32_t task1durations[3] = {3, 5, 2};
-const uint32_t task1ReleasedSegementsTotal = 1;
-const uint32_t task1ReleasedSegments[3] = {0, 1, 0};
+static const uint32_t task1durations[3] = {3, 5, 2};
+static const uint32_t task1ReleasedSegementsTotal = 1;
+static const uint32_t task1ReleasedSegments[3] = {0, 1, 0};
 /**
  * Syntax:
  * {Task which is to resume, When to resume it with respect to the resuming segments start time}
  */
-const uint32_t task1Releases[1][2] = {{task2Name, 2}};
-const void (*task1SegmentFunctions[]) (Segmented_Task_Arguments args) = {task1segment1, task1segment2, task1segment3};
+static const uint32_t task1Releases[1][2] = {{task2Name, 2}};
+static const void (*task1SegmentFunctions[]) (Segmented_Task_Arguments args) = {task1segment1, task1segment2, task1segment3};
 
 /********************************************
  *                                          *
@@ -100,13 +100,13 @@ void task2segment1(Segmented_Task_Arguments args);
 void task2segment2(Segmented_Task_Arguments args);
 
 rtems_id task2Id;
-const uint32_t task2Segments = 2;
+static const uint32_t task2Segments = 2;
 rtems_task_priority task2Priorities[2] = {2, 6};
-const uint32_t task2durations[2] = {1, 5};
-const uint32_t task2ReleasedSegementsTotal = 2;
-const uint32_t task2ReleasedSegments[2] = {0, 2};
-const uint32_t task2Releases[2][2] = {{task3Name, 4}, {task3Name, 5}}; // {Task which is to release, when to release}
-const void (*task2SegmentFunctions[]) (Segmented_Task_Arguments args) = {task2segment1, task2segment2};
+static const uint32_t task2durations[2] = {1, 5};
+static const uint32_t task2ReleasedSegementsTotal = 2;
+static const uint32_t task2ReleasedSegments[2] = {0, 2};
+static const uint32_t task2Releases[2][2] = {{task3Name, 4}, {task3Name, 5}}; // {Task which is to release, when to release}
+static const void (*task2SegmentFunctions[]) (Segmented_Task_Arguments args) = {task2segment1, task2segment2};
 
 /********************************************
  *                                          *
@@ -118,13 +118,13 @@ void task3segment2(Segmented_Task_Arguments args);
 void task3segment3(Segmented_Task_Arguments args);
 
 rtems_id task3Id;
-const uint32_t task3Segments = 3;
+static const uint32_t task3Segments = 3;
 rtems_task_priority task3Priorities[3] = {3, 4, 7};
-const uint32_t task3durations[3] = {4, 3, 2};
-const uint32_t task3ReleasedSegementsTotal = 2;
-const uint32_t task3ReleasedSegments[3] = {1, 1, 0};
-const uint32_t task3Releases[2][2] = {{task1Name, 2}, {task1Name, 1}}; // {Task which is to release, when to release}
-const void (*task3SegmentFunctions[]) (Segmented_Task_Arguments args) = {task3segment1, task3segment2, task3segment3};
+static const uint32_t task3durations[3] = {4, 3, 2};
+static const uint32_t task3ReleasedSegementsTotal = 2;
+static const uint32_t task3ReleasedSegments[3] = {1, 1, 0};
+static const uint32_t task3Releases[2][2] = {{task1Name, 2}, {task1Name, 1}}; // {Task which is to release, when to release}
+static const void (*task3SegmentFunctions[]) (Segmented_Task_Arguments args) = {task3segment1, task3segment2, task3segment3};
 
 /********************************************
  *                                          *
