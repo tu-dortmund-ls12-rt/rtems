@@ -92,9 +92,6 @@ extern "C" {
  * The argument passed to the individual segments are all the
  * same. It is up to the user to differantiate them. That's
  * why currentSegment is also given.
- * 
- * TODO:
- * Provide an example how it's done best.
  */
 typedef struct {
     uint32_t currentSegment; // Starting at zero
