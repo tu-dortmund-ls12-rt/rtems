@@ -144,6 +144,7 @@ void bufferTask(rtems_task_argument args) {
     }
 
     printf("[Task: Buffer Task]: Finished execution.\n");
+    rtems_task_exit();
 }
 
 /********************************************
