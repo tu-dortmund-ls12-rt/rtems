@@ -613,7 +613,7 @@ rtems_extended_status_code fillSegmentDataIntoSegTask(Segmented_Task_Task* task,
     }
 
     /**
-     * TODO:
+     * TODO: Implementation / Optimization
      * If optimization is needed, this for loop can be avoided
      * by checking during the assignment.
      */
@@ -735,9 +735,7 @@ rtems_extended_status_code rtems_task_segmented_write_communication_memory_impl(
     Just assigning the communicationMemory = content isn't enough, because the content can get out of scope.
     The informations need to be copied by value. *communicationMemory = *content is also not sufficient,
     because it's an uint8_t pointer and therefor only 1 Byte will be copied. Normally memcpy should be used,
-    but unsure how it's done in RTEMS, so therefor copy Byte for Byte.
-
-    TODO: Find a more efficient way like memcpy.
+    but unsure how it's done in RTEMS, so therefor copy Byte for Byte. Should be the same performance.
     */
     for(uint32_t i = 0; i < sizeOfContent; i++) {
         segmentedTask->communicationMemory[i] = content[i];
