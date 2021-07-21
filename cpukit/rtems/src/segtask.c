@@ -317,7 +317,16 @@ rtems_status_code rtems_task_segmented_append_communication_memory(uint8_t* cont
     
     status = rtems_task_ident(RTEMS_SELF, RTEMS_SEARCH_ALL_NODES, &ownId);
     if(!rtems_is_status_successful(status)) {
-        return status; // TODO: REAL ERROR HANDLING LIKE IN THE OTHER CASES. ALSO EXTEND DOC.
+        /**
+         * Possible errors:
+         * RTEMS_INVALID_ADDRESS:
+         *      Not user dependent. The cause must therefor be internal.
+         * RTEMS_INVALID_NAME:
+         *      Not user dependent. The cause must therefor be internal.
+         * RTEMS_INVALID_NODE:
+         *      Not user dependent. The cause must therefor be internal.
+         */
+        return RTEMS_INTERNAL_ERROR;
     }
     
     status = getSegmented_Task_Task(ownId, &correspondingTask);
