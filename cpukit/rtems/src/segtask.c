@@ -5,45 +5,12 @@
 
 rtems_status_code rtems_task_segmented_get_communication_memory_size(size_t* size) {
     // --- Argument Validation
-    /**
-     * Arguments that need to be validated will be validated in
-     * rtems_task_segmented_get_communication_memory_size_impl due to optimization.
-     */
+    if(size == NULL) {
+        return RTEMS_EXTENDED_NULL_POINTER;
+    }
 
     // --- Implementation ---
-    Segmented_Task_Task* correspondingTask = NULL;
-    rtems_extended_status_code status;
-    rtems_id ownId;
-    
-    status = rtems_task_ident(RTEMS_SELF, RTEMS_SEARCH_ALL_NODES, &ownId);
-    if(!rtems_is_status_successful(status)) {
-        return status; // TODO: REAL ERROR HANDLING LIKE IN THE OTHER CASES. ALSO EXTEND DOC.
-    }
-    
-    status = getSegmented_Task_Task(ownId, &correspondingTask);
-    if(!rtems_is_status_successful(status)) {
-        /**
-         * Possible errors:
-         * RTEMS_INVALID_ID:
-         *      Not user dependent. The cause must therefor be internal.
-         * RTEMS_EXTENDED_NULL_POINTER:
-         *      Not user dependent. The cause must therefor be internal.
-         * RTEMS_INTERNAL_ERROR:
-         *      Not user dependent. The cause must therefor be internal.
-         */
-        return RTEMS_INTERNAL_ERROR;
-    }
-
-    status = rtems_task_segmented_get_communication_memory_size_impl(correspondingTask, size);
-    if(!rtems_is_status_successful(status)) {
-        /**
-         * Possible errors:
-         * RTEMS_EXTENDED_NULL_POINTER:
-         *      Not user dependent or validated beforehand. The cause must therefor be internal.
-         */
-        return RTEMS_INTERNAL_ERROR;
-    }
-
+    *size = CONFIGURE_MAXIMUM_COMMUNICATION_MEMORY;
     return RTEMS_SUCCESSFUL;
 }
 
@@ -606,22 +573,6 @@ rtems_extended_status_code fillSegmentDataIntoSegTask(Segmented_Task_Task* task,
         task->segments[i].function = functionPointer[i];
     }
 
-    return RTEMS_SUCCESSFUL;
-}
-
-rtems_extended_status_code rtems_task_segmented_get_communication_memory_size_impl(Segmented_Task_Task* segmentedTask, size_t* size) {
-    // --- Argument validation ---
-    if(segmentedTask == NULL || size == NULL) {
-        return RTEMS_EXTENDED_NULL_POINTER;
-    }
-
-    // --- Implementation ---
-    /**
-     * TODO:
-     * So far each segmented task has the same sized communication memory. The result is therefor indepented of the given
-     * segmented task.
-     */
-    *size = CONFIGURE_MAXIMUM_COMMUNICATION_MEMORY;
     return RTEMS_SUCCESSFUL;
 }
 

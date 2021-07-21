@@ -31,7 +31,6 @@
  * 
  * @retval RTEMS_SUCCESSFUL if successfull.
  * @retval RTEMS_INVALID_ADDRESS if size is a null pointer
- * @retval RTEMS_INTERNAL_ERROR if an internal RTEMS inconsistency was detected.
  */
 rtems_status_code rtems_task_segmented_get_communication_memory_size(size_t* size);
 

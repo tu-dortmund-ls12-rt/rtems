@@ -179,26 +179,6 @@ rtems_extended_status_code fillGeneralDataIntoSegTask(Segmented_Task_Task* task,
  */
 rtems_extended_status_code fillSegmentDataIntoSegTask(Segmented_Task_Task* task,
                 uint32_t numberOfSegments, void (*functionPointer[]) (Segmented_Task_Arguments));
-/**
- * @brief RTEMS Segmented Task Implementation: Get the size of the communication memory.
- *
- * This routine returns the size of the allocated memory for the communication
- * between the segments of a task.
- * 
- * @param[in] segmentedTask Pointer to the segmented slfp task.
- * @param[out] size Size of the communication memory.
- * 
- * @retval RTEMS_SUCCESSFUL if successfull.
- * @retval RTEMS_EXTENDED_NULL_POINTER if segmentedTask or size is 
- * a null pointer.
- * 
- * @par Notes
- * TODO:
- * So far each segmented task has the same sized communication memory. The result is therefor independent
- * of the given segmented task. Make the allocated communication memory of the individual tasks variable
- * and then change this method.
- */
-rtems_extended_status_code rtems_task_segmented_get_communication_memory_size_impl(Segmented_Task_Task* segmentedTask, size_t* size);
 
 /**
  * @brief RTEMS Segmented Task Implementation: Read from the communication memory.

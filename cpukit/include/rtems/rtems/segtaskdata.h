@@ -122,6 +122,22 @@ typedef struct {
   uint32_t numberOfSegments;
   int32_t currentSegment; // -1 when first segment is yet to be executed
   Segmented_Task_Segment segments[CONFIGURE_MAXIMUM_SEGMENTS];
+  /*
+   * TODO: Implementation / Future additions
+   * Currently each task has the same amount of memory reserved for communication
+   * purposes between its segments. The amount is defined by CONFIGURE_MAXIMUM_COMMUNICATION_MEMORY.
+   * Through this, memory could be wasted, because the user does not need that much memory reserved.
+   * It would be better if, if the user could define the amount of communication memory for each
+   * task individual (or mabye even for each segment passage).
+   * This can't be done currently, because the communication memory is a property of a struct, which
+   * size must be known at compile time. Therefore, dynamicly configuring the size of the array is not
+   * possible. A working approach would be, to dynamicly allocate the wanted memory during task
+   * creation and using a pointer instead of an array in this struct. The dynamic allocation is important
+   * so the communication memory doesn't go out of scope. It would also be in need to be removed
+   * dynamicly to avoid memory leakage.
+   * The problem is, that it is currently unknown how dynamic memory allocation can be done, due to its
+   * complexity regarding individual tasks etc. It seems to be more than just a simple malloc / free call.
+   */
   uint8_t communicationMemory[CONFIGURE_MAXIMUM_COMMUNICATION_MEMORY];
   uint32_t nextByteToWrite;
 } Segmented_Task_Task;
