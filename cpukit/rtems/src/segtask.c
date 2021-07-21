@@ -579,12 +579,6 @@ rtems_extended_status_code fillGeneralDataIntoSegTask(Segmented_Task_Task* task,
                 size_t taskStackSize, rtems_mode initialModes, 
                 rtems_attribute taskAttributes) {
     // --- Argument validation ---
-    /* TODO: Validation of taskStackSize, initialModes and taskAttributes doesn't
-    * seem to be possible. Check for further intel.
-    * Potential errors will be found during the task creation.
-    * If those informations are invalid, the struct will be filled with invalid
-    * informations.
-    */
     if(task == NULL) {
         return RTEMS_EXTENDED_NULL_POINTER;
     }

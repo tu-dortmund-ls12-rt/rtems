@@ -95,6 +95,10 @@ rtems_extended_status_code getSegmented_Task_Task(rtems_id id, Segmented_Task_Ta
  * Attention: The id of the task is not changed at all, because the given
  * segmented task could have a rtems task assigned with a valid id.
  * 
+ * Attention: taskStackSize, initialModes and taskAttributes are not validated
+ * in this routine. Ensure, that the passed values are valid, otherwise the
+ * filled data structure will be flawed.
+ * 
  * @param[in] task Pointer to the segmented task.
  * @param[in] taskName Name the given task will receive.
  * @param[in] taskPriority Priority the given task will receive.
@@ -118,6 +122,13 @@ rtems_extended_status_code getSegmented_Task_Task(rtems_id id, Segmented_Task_Ta
  * greater than the maximum number configured.
  * For mapping on rtems_status_code see rtems_extended_status_code
  * details.
+ * 
+ * @par Notes:
+ * taskStackSize, initialModes and taskAttributes are not validated, because it's not
+ * possible from outside the system core. Therefore it is intended, that those values
+ * are validated within rtems_task_create for example. If the corresponding routine
+ * returns that part or all of those values are invalid, the invalid struct must be
+ * removed.
  */
 rtems_extended_status_code fillDataIntoSegTask(Segmented_Task_Task* task,
                 rtems_name taskName, rtems_task_priority taskPriority,
@@ -134,6 +145,10 @@ rtems_extended_status_code fillDataIntoSegTask(Segmented_Task_Task* task,
  * Attention: The id of the task is not changed at all, because the given
  * segmented task could have a rtems task assigned with a valid id.
  * 
+ * Attention: taskStackSize, initialModes and taskAttributes are not validated
+ * in this routine. Ensure, that the passed values are valid, otherwise the
+ * filled data structure will be flawed.
+ * 
  * @param[in] task Pointer to the segmented task.
  * @param[in] taskname Name the given task will receive.
  * @param[in] taskPriority Priority the given task will receive.
@@ -149,6 +164,13 @@ rtems_extended_status_code fillDataIntoSegTask(Segmented_Task_Task* task,
  * details.
  * @retval RTEMS_INVALID_NAME if taskName is an invalid rtems_name.
  * @retval RTEMS_INVALID_PRIORITY if taskPriority is an invalid rtems_task_priority.
+ * 
+ * @par Notes:
+ * taskStackSize, initialModes and taskAttributes are not validated, because it's not
+ * possible from outside the system core. Therefore it is intended, that those values
+ * are validated within rtems_task_create for example. If the corresponding routine
+ * returns that part or all of those values are invalid, the invalid struct must be
+ * removed.
  */
 rtems_extended_status_code fillGeneralDataIntoSegTask(Segmented_Task_Task* task,
                 rtems_name taskName, rtems_task_priority taskPriority,

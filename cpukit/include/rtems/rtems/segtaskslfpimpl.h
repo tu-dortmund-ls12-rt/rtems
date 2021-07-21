@@ -96,6 +96,10 @@ rtems_extended_status_code emptySegTaskSLFP(Segmented_Task_SLFP_Task* givenSegme
  * Attention: The id of the task is not changed at all, because the given
  * segmented task could have a rtems task assigned with a valid id.
  * 
+ * Attention: taskStackSize, initialModes and taskAttributes are not validated
+ * in this routine. Ensure, that the passed values are valid, otherwise the
+ * filled data structure will be flawed.
+ * 
  * @param[in] task Pointer to the segmented slfp task.
  * @param[in] taskName Name the given slfp task will receive.
  * @param[in] taskStackSize Size of the stack that is reserved for the
@@ -124,6 +128,13 @@ rtems_extended_status_code emptySegTaskSLFP(Segmented_Task_SLFP_Task* givenSegme
  *                                          maximum number configured. For mapping
  *                                          on rtems_status_code see rtems_extended_status_code
  *                                          details.
+ * 
+ * @par Notes:
+ * taskStackSize, initialModes and taskAttributes are not validated, because it's not
+ * possible from outside the system core. Therefore it is intended, that those values
+ * are validated within rtems_task_create for example. If the corresponding routine
+ * returns that part or all of those values are invalid, the invalid struct must be
+ * removed.
  */
 rtems_extended_status_code fillDataIntoSegTaskSLFP(Segmented_Task_SLFP_Task* task,
                 rtems_name taskName, size_t taskStackSize,
