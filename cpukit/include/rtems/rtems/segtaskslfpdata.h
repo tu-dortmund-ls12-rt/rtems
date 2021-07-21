@@ -11,9 +11,6 @@ extern "C" {
 Structure for a segmented task that shall be scheduled according to segmented level
 fixed priority scheduling. Informations in addition to the informations contained in
 a general segmented task are the priorities for each segment.
-
-TODO: How to ensure there are only as much priorities as segments? Possible without
-addition variable information.
 */
 typedef struct {
     Segmented_Task_Task base;
