@@ -55,7 +55,7 @@ void memoryTaskSegment2(Segmented_Task_Arguments args) {
     printf("[Task: Memory Task - Segment: 2]: SomeName: %s\n", cm.someName);
     printf("[Task: Memory Task - Segment: 2]: Executing function: ");
     cm.functionPtr();
-    printf("[Task: Memory Task - Segment: 2]: Finished execution of function.");
+    printf("[Task: Memory Task - Segment: 2]: Finished execution of function.\n");
 }
 
 void memoryTaskSegment3(Segmented_Task_Arguments args) {
@@ -74,7 +74,7 @@ void memoryTaskSegment3(Segmented_Task_Arguments args) {
     printf("[Task: Memory Task - Segment: 3]: SomeName: %s\n", cm.someName);
     printf("[Task: Memory Task - Segment: 3]: Executing function: ");
     cm.functionPtr();
-    printf("[Task: Memory Task - Segment: 3]: Finished execution of function.");
+    printf("[Task: Memory Task - Segment: 3]: Finished execution of function.\n");
 }
 
 void structFunction(void) {
