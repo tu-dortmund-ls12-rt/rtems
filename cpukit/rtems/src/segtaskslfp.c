@@ -386,12 +386,12 @@ rtems_extended_status_code fillDataIntoSegTaskSLFP(Segmented_Task_SLFP_Task* tas
 
 rtems_extended_status_code getNextFreeSLFPTaskFromPool(Segmented_Task_SLFP_Task** task) {
     // --- Argument validation ---
-    if(next++ == CONFIGURE_MAXIMUM_TASKS) {
+    if(next == CONFIGURE_MAXIMUM_TASKS) {
         return RTEMS_TOO_MANY;
     }
 
     // --- Implementation ---
-    *task = &(segmentedTasks[next]);
+    *task = &(segmentedTasks[next++]);
 
     return RTEMS_SUCCESSFUL;
 }
