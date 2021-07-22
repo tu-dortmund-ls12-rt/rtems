@@ -84,6 +84,22 @@ rtems_status_code rtems_task_start_segmented_slfp(rtems_id taskId, rtems_task_ar
  */
 rtems_status_code rtems_task_resume_segmented_slfp(rtems_id taskId);
 
+/**
+ * @brief RTEMS Segmented SLFP Task: Exit the calling task.
+ * 
+ * This routine exists the calling task with rtems_exit and cleans
+ * up all allocated data structures for slfp, like giving the
+ * segtaskslfpdata data structure back to the pool.
+ * 
+ * Attention:
+ * This routine must be called from a regular task context with
+ * enabled interrupts, otherwise one of the fatal errors 
+ * - INTERNAL_ERROR_BAD_THREAD_DISPATCH_DISABLE_LEVEL
+ * - INTERNAL_ERROR_BAD_THREAD_DISPATCH_ENVIRONMENT
+ * will occur.
+ */
+void rtems_task_exit_segmented_slfp(void);
+
 #ifdef __cplusplus
 }
 #endif

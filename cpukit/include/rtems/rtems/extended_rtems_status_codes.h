@@ -235,7 +235,20 @@ typedef enum {
    * When this extended status code is casted to a RTEMS_STATUS_CODE
    * it will be mapped on RTEMS_ILLEGAL_ON_SELF.
    */
-  RTEMS_EXTENDED_FINAL_SEGMENT = RTEMS_EXTENDED_ILLEGAL_ON_SELF
+  RTEMS_EXTENDED_FINAL_SEGMENT = RTEMS_EXTENDED_ILLEGAL_ON_SELF,
+
+  /**
+   * @brief This status code is used internally by the implementation
+   * when a routine is called while interrupts are still enabled.
+   *
+   * @par Notes
+   * This status will not be returned to the user.
+   * 
+   * @par Notes
+   * When this extended status code is casted to a RTEMS_STATUS_CODE
+   * it will be mapped on RTEMS_EXTENDED_CALLED_FROM_ISR.
+   */
+  RTEMS_EXTENDED_INTERRUPTS_ENABLED = RTEMS_EXTENDED_CALLED_FROM_ISR
 } rtems_extended_status_code;
 
 #endif

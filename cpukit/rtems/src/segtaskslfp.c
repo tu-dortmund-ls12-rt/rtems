@@ -256,7 +256,210 @@ rtems_status_code rtems_task_resume_segmented_slfp(rtems_id taskId) {
    return RTEMS_SUCCESSFUL;
 }
 
+void rtems_task_exit_segmented_slfp(void) {
+    // --- Implementation ---
+    rtems_extended_status_code status;
+    rtems_id ownId;
+    Segmented_Task_SLFP_Task* task = NULL;
+
+    /*
+     * Cleaning the task, giving it back and reordering the pool should be atomic
+     * to ensure the integrity of the pool.
+     * 
+     * For the rtems_task_exit() call interrupts need to be enabled, otherwise it
+     * could result in a fatal error. Therefore it cannot be part of the atomic
+     * section. But an interrupt between the atomic section and the exit call
+     * shouldn't be problematic, because nothing can really happen.
+     * 
+     * TODO: Implementation / Race conditions
+     * Check your assumtion when you focus on the race conditions.
+     */
+    // ----- Atomic section start -----
+    status = rtems_task_ident(RTEMS_SELF, RTEMS_SEARCH_ALL_NODES, &ownId);
+    if(!rtems_is_status_successful(status)) {
+        /*
+         * In case of an error, no error handling is possible. One cannot aboart
+         * the exit operation. Therefor print, that an error happend and ensure
+         * the task is actually exited. The pool will be flawed afterwards.
+         */
+        // ----- Atomic section end -----
+        char* errorMessage = "An internal error occured during the exit of the task. The pool will be flawed from here on.";
+        rtems_exit_task_with_failure(NULL, errorMessage);
+        // No return needed, task will be exited and not continue.
+    }
+
+    status = getSegmented_Task_SLFP_Task(ownId, &task);
+    if(!rtems_is_status_successful(status)) {
+        /*
+         * In case of an error, no error handling is possible. One cannot aboart
+         * the exit operation. Therefor print, that an error happend and ensure
+         * the task is actually exited. The pool will be flawed afterwards.
+         */
+        // ----- Atomic section end -----
+        char* errorMessage = "An internal error occured during the exit of the task. The pool will be flawed from here on.";
+        rtems_exit_task_with_failure(NULL, errorMessage);
+        // No return needed, task will be exited and not continue.
+    }
+
+    status = returnSLFPTaskToPool(task);
+    if(!rtems_is_status_successful(status)) {
+        /*
+         * In case of an error, no error handling is possible. One cannot aboart
+         * the exit operation. Therefor print, that an error happend and ensure
+         * the task is actually exited. The pool will be flawed afterwards.
+         */
+        // ----- Atomic section end -----
+        char* errorMessage = "An internal error occured during the exit of the task. The pool will be flawed from here on.";
+        rtems_exit_task_with_failure(NULL, errorMessage);
+        // No return needed, task will be exited and not continue.
+    }
+    // ----- Atomic section end -----
+
+    /*
+     * Has to be the last call, otherwise the rest is
+     * not executed.
+     */
+    rtems_task_exit();
+}
+
 // ----- Hidden Implementation -----
+rtems_extended_status_code returnSLFPTaskToPool(Segmented_Task_SLFP_Task* task) {
+    /*
+     * TODO: Implementation / Potential Bug
+     * The reording can cause wrong task handling if interrupt happens at bad times.
+     * Example Case:
+     * Task 1 -> Currently uses pointer to task from pool at adress 0x6
+     * Task 2 -> Interrupts Task 1 and exits, resulting in a reordering of the pool.
+     *           The task Task 1 pointed to is now at 0x5 but Task 1 still points to
+     *           0x6, resulting in working with the wrong task.
+     */
+
+    // --- Argument validation ---
+    /*
+     * TODO: Implementation / Race Conditions
+     * Can only be called while interrupts are disabled. Proposed
+     * a version in the following comment.
+     */
+    /* if(areInterruptsEnabled()) {
+     *    return RTEMS_EXTENDED_INTERRUPTS_ENABLED;
+     * }
+     */
+
+    if(task == NULL) {
+        return RTEMS_EXTENDED_NULL_POINTER;
+    }
+
+    // --- Implementation ---
+    rtems_extended_status_code status;
+    uint32_t poolIndex;
+
+    status = getPoolIndexOfSLFPTask(task, &poolIndex);
+    if(!rtems_is_status_successful(status)) {
+        /**
+         * Possible errors:
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      User dependent, but validated beforehand.
+         *      Therefore it is an internal error.
+         * RTEMS_INVALID_ID:
+         *      The user has looked for a task that is not
+         *      present. Therefore it needs to be forwarded.
+         */
+        if(status == RTEMS_EXTENDED_NULL_POINTER) {
+            return RTEMS_INTERNAL_ERROR;
+        } else {
+            return status;
+        }
+    }
+
+    status = reorderSegmentedTasks(poolIndex);
+    if(!rtems_is_status_successful(status)) {
+        /**
+         * Possible errors:
+         * RTEMS_EXTENDED_INTERRUPTS_ENABLED:
+         *      Should not be possible, because this rountine
+         *      could also only be executed if interrupts are
+         *      disabled. So therefore it is an internal error.
+         * RTEMS_EXTENDED_INTERNAL_ERROR:
+         *      Needs to be forwarded.
+         */
+        return RTEMS_INTERNAL_ERROR;
+    }
+
+    return RTEMS_SUCCESSFUL;
+}
+
+rtems_extended_status_code getPoolIndexOfSLFPTask(Segmented_Task_SLFP_Task* task, uint32_t* poolIndex) {
+    // --- Argument validation ---
+    if(task == NULL || poolIndex == NULL) {
+        return RTEMS_EXTENDED_NULL_POINTER;
+    }
+
+    // --- Implementation ---
+    Segmented_Task_Task* base = (Segmented_Task_Task*) task;
+    Segmented_Task_SLFP_Task* currentTask = NULL;
+    Segmented_Task_Task* currentBase = NULL;
+    bool taskIsPresent = false;
+
+    for(uint32_t i = 0; i < CONFIGURE_MAXIMUM_TASKS; i++) {
+        currentTask = &(segmentedTasks[i]);
+        currentBase = (Segmented_Task_Task*) currentTask;
+        if(currentBase->taskId == base->taskId) {
+            taskIsPresent = true;
+            *poolIndex = i;
+            break;
+        }
+    }
+
+    if(!taskIsPresent) {
+        return RTEMS_INVALID_ID;
+    } else {
+        return RTEMS_SUCCESSFUL;
+    }
+}
+
+rtems_extended_status_code reorderSegmentedTasks(uint32_t poolIndex) {
+    // --- Argument Validation ---
+    /*
+     * TODO: Implementation / Race Conditions
+     * Check if interrupts are still enabled. If the are
+     * return the following which is commented right now.
+     */
+    /* if(interruptsAreStillEnabled()) {
+     *     return RTEMS_EXTENDED_INTERRUPTS_ENABLED;
+     * }
+     */
+
+    if(poolIndex < 0 || poolIndex >= CONFIGURE_MAXIMUM_TASKS) {
+        return RTEMS_EXTENDED_INVALID_INDEX;
+    }
+
+    // --- Implementation ---
+    rtems_extended_status_code status;
+    uint32_t toReplace = poolIndex;
+    uint32_t toMove = toReplace + 1;
+    Segmented_Task_SLFP_Task* task;
+
+    while(toMove != next) {
+        segmentedTasks[toReplace++] = segmentedTasks[toMove++];
+    }
+
+    next = toReplace;
+    task = &(segmentedTasks[next]);
+
+    status = emptySegTaskSLFP(task);
+    if(!rtems_is_status_successful(status)) {
+        /**
+         * Possible errors:
+         * RTEMS_EXTENDED_NULL_POINTER:
+         *      Not user dependent. Therefore it is an internal error.
+         * RTEMS_INTERNAL_ERROR:
+         *      Needs to be forwarded.
+         */
+        return RTEMS_INTERNAL_ERROR;
+    }
+
+    return RTEMS_SUCCESSFUL;
+}
 
 rtems_extended_status_code getSegmented_Task_SLFP_Task(rtems_id id, Segmented_Task_SLFP_Task** segmentedTaskToReturn) {
     // --- Argument validation ---
@@ -501,7 +704,7 @@ void mainFunction(rtems_task_argument arguments) {
         }
     }
     
-    rtems_task_exit();
+    rtems_task_exit_segmented_slfp();
 }
 
 void rtems_exit_task_with_failure(rtems_id* taskId, char* errorMessage) {

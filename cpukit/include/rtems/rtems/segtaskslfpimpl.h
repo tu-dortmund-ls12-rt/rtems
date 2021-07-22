@@ -29,6 +29,64 @@ variable get out of scope ever!
 */
 
 /**
+ * @brief RTEMS Segmented Task SLFP Implementation: Returns the index
+ * of the task in the task pool.
+ *
+ * This routine returns the index of the segmented slfp task associated
+ * with the given task id in the pool of segmented slfp tasks.
+ * 
+ * @param[in] task Pointer to the segmented slfp task.
+ * @param[out] poolIndex Pointer to where the result should be stored.
+ * 
+ * @retval RTEMS_SUCCESSFUL if successfull.
+ * @retval RTEMS_EXTENDED_NULL_POINTER if task or poolIndex is a null pointer.
+ * @retval RTEMS_INVALID_ID if task is not present.
+ */
+rtems_extended_status_code getPoolIndexOfSLFPTask(Segmented_Task_SLFP_Task* task, uint32_t* poolIndex);
+
+/**
+ * @brief RTEMS Segmented Task SLFP Implementation: Reorder the task pool.
+ *
+ * This routine reorders the task pool and sets next index to the correct
+ * index.
+ * 
+ * Attention:
+ * This routine can only be called while interrupts are disabled, otherwise
+ * it will result in an error.
+ * 
+ * @param[in] poolIndex The index of the task which was given back to the
+ *                      pool which is the reason for the reordering.
+ * 
+ * @retval RTEMS_SUCCESSFUL if successfull.
+ * @retval RTEMS_EXTENDED_INTERRUPTS_ENABLED if called while interrupts are
+ * still enabled.
+ * @retval RTEMS_INTERNAL_ERROR if an internal error occured.
+ */
+rtems_extended_status_code reorderSegmentedTasks(uint32_t poolIndex);
+
+/**
+ * @brief RTEMS Segmented Task SLFP Implementation: Return the task to the pool.
+ *
+ * This routine will return the task to the pool, after which it can be resused.
+ * 
+ * Attention:
+ * This routine can only be called while interrupts are disabled, otherwise
+ * it will result in an error.
+ * 
+ * @param[in] poolIndex The index of the task which was given back to the
+ *                      pool which is the reason for the reordering.
+ * 
+ * @retval RTEMS_SUCCESSFUL if successfull.
+ * @retval RTEMS_EXTENDED_INTERRUPTS_ENABLED if called while interrupts are
+ * still enabled.
+ * @retval RTEMS_EXTENDED_NULL_POINTER if task is a null pointer.
+ * @retval RTEMS_EXTENDED_INTERNAL_ERROR if an internal error occured.
+ * @retval RTEMS_INVALID_ID if the task pointed to by task is not present in
+ *                          the task pool.
+ */
+rtems_extended_status_code returnSLFPTaskToPool(Segmented_Task_SLFP_Task* task);
+
+/**
  * @brief RTEMS Segmented Task SLFP Implementation: Get task by id.
  *
  * This routine returns the segmented slfp task that is associated
