@@ -42,18 +42,6 @@ rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t t
          *      User dependent. Needs to be forwarded.
          */
         return status;
-    } 
-
-    status = emptySegTaskSLFP(segmentedTask); // TODO: Maybe should be done if a task is given back to the pool.
-    if(!rtems_is_status_successful(status)) {
-        /**
-         * Possible errors:
-         * RTEMS_EXTENDED_NULL_POINTER:
-         *      Not user depented. Therefor it is an internal error.
-         * RTEMS_INTERNAL_ERROR:
-         *      Needs to be forwarded.
-         */
-        return RTEMS_INTERNAL_ERROR;
     }
 
     status = fillDataIntoSegTaskSLFP(segmentedTask, taskName, taskStackSize, initialModes,
