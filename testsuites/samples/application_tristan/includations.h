@@ -12,6 +12,7 @@
 #include <rtems/cpuuse.h>
 #include <math.h>
 #include <tmacros.h>
+#include "test_support.h"
 
 // Includation of modified RTEMS files
 #include <rtems/rtems/segtask.h>

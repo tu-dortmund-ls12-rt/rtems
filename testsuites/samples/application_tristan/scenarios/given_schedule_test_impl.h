@@ -13,6 +13,7 @@
  * - Three segmented tasks scheduled with slfp + one idle task
  * 
  * - First Task:
+ *    - Period: 0
  *    - 3 Segments
  *    - First Segment:
  *      - Priority: 1
@@ -28,6 +29,7 @@
  *      - Releases: Nothing
  * 
  * - Second Task:
+ *    - Period: 0
  *    - 2 Segments
  *    - First Segment:
  *      - Priority: 2
@@ -39,6 +41,7 @@
  *      - Releases: Task 3 at 4s and Task 3 at 5s
  * 
  * - Third Task:
+ *    - Period: 0
  *    - 3 Segments
  *    - First Segment:
  *      - Priority: 3
@@ -79,6 +82,8 @@ void task1segment2(Segmented_Task_Arguments args);
 void task1segment3(Segmented_Task_Arguments args);
 
 rtems_id task1Id;
+rtems_id task1PeriodId;
+rtems_interval task1Period = 0;
 static const uint32_t task1Segments = 3;
 rtems_task_priority task1Priorities[3] = {1, 1, 5};
 static const uint32_t task1durations[3] = {3, 5, 2};
@@ -100,6 +105,8 @@ void task2segment1(Segmented_Task_Arguments args);
 void task2segment2(Segmented_Task_Arguments args);
 
 rtems_id task2Id;
+rtems_id task2PeriodId;
+rtems_interval task2Period = 0;
 static const uint32_t task2Segments = 2;
 rtems_task_priority task2Priorities[2] = {2, 6};
 static const uint32_t task2durations[2] = {1, 5};
@@ -118,6 +125,8 @@ void task3segment2(Segmented_Task_Arguments args);
 void task3segment3(Segmented_Task_Arguments args);
 
 rtems_id task3Id;
+rtems_id task3PeriodId;
+rtems_interval task3Period = 0;
 static const uint32_t task3Segments = 3;
 rtems_task_priority task3Priorities[3] = {3, 4, 7};
 static const uint32_t task3durations[3] = {4, 3, 2};

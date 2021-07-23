@@ -470,6 +470,7 @@ rtems_extended_status_code emptySegmentedTask(Segmented_Task_Task* task) {
     task->taskAttributes = 0;
     task->numberOfSegments = 0;
     task->currentSegment = -1;
+    task->period = 0;
     
     for(uint32_t i = 0; i < CONFIGURE_MAXIMUM_SEGMENTS; i++) {
         task->segments[i].function = 0;
@@ -536,7 +537,7 @@ rtems_extended_status_code getSegmented_Task_Task(rtems_id id, Segmented_Task_Ta
 rtems_extended_status_code fillDataIntoSegTask(Segmented_Task_Task* task,
                 rtems_name taskName, rtems_task_priority taskPriority,
                 size_t taskStackSize, rtems_mode initialModes, 
-                rtems_attribute taskAttributes, uint32_t numberOfSegments,
+                rtems_attribute taskAttributes, rtems_interval period, uint32_t numberOfSegments,
                 void (*functionPointer[]) (Segmented_Task_Arguments)) {
     // --- Argument validation ---
     /**
@@ -555,7 +556,7 @@ rtems_extended_status_code fillDataIntoSegTask(Segmented_Task_Task* task,
         return status;
     }
 
-    status = fillGeneralDataIntoSegTask(task, taskName, taskPriority, taskStackSize, initialModes, taskAttributes);
+    status = fillGeneralDataIntoSegTask(task, taskName, taskPriority, taskStackSize, initialModes, taskAttributes, period);
     if(!rtems_is_status_successful(status)) {
         /**
          * Every possible error needs to be forwarded.
@@ -577,8 +578,12 @@ rtems_extended_status_code fillDataIntoSegTask(Segmented_Task_Task* task,
 rtems_extended_status_code fillGeneralDataIntoSegTask(Segmented_Task_Task* task,
                 rtems_name taskName, rtems_task_priority taskPriority,
                 size_t taskStackSize, rtems_mode initialModes, 
-                rtems_attribute taskAttributes) {
+                rtems_attribute taskAttributes, rtems_interval period) {
     // --- Argument validation ---
+    /*
+     * The period does not need any validation.
+     */
+
     if(task == NULL) {
         return RTEMS_EXTENDED_NULL_POINTER;
     }
@@ -597,6 +602,7 @@ rtems_extended_status_code fillGeneralDataIntoSegTask(Segmented_Task_Task* task,
     task->taskStackSize = taskStackSize;
     task->taskModes = initialModes;
     task->taskAttributes = taskAttributes;
+    task->period = period;
 
     return RTEMS_SUCCESSFUL;
 }

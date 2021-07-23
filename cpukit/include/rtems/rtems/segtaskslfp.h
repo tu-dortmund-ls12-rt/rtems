@@ -19,15 +19,21 @@ extern "C" {
  * @param[in] taskname Name the task will receive.
  * @param[in] taskStackSize Size of the stack that is reserved for the task.
  * @param[in] initialModes RTEMS modes that the task will have at the
- * beginning of it's execution.
+ *                         beginning of it's execution.
  * @param[in] taskAttributes RTEMS attributes that the task will have.
+ * @param[in] period The period in ticks with which the task should be
+ *                   executed. Pass 0 if the task should not be executed
+ *                   periodicly.
  * @param[in] numberOfSegments Number of segments the task is composed of.
  * @param[in] segmentFunctions Array that contains the functions of the segments
- * of the task. Its size must match the numberOfSegments.
+ *                             of the task. Its size must match the numberOfSegments.
  * @param[in] segmentPriorities Array that contains the priorities of the segments of
- * the the task. It is important that this is in the same order as functionPointer.
- * Its size must match the numberOfSegments.
+ *                              the the task. It is important that this is in the same
+ *                              order as functionPointer. Its size must match the
+ *                              numberOfSegments.
  * @param[out] taskId Pointer to which the id of the task will be returned.
+ * @param[out] periodId Pointer to which the id of the task will be returned if a
+ *                      period is defined.
  * 
  * @retval RTEMS_SUCCESSFUl if successful.
  * @retval RTEMS_INTERNAL_ERROR if an internal RTEMS inconsistency was detected.
@@ -36,16 +42,17 @@ extern "C" {
  *                               a null pointer.
  * @retval RTEMS_INVALID_NAME if taskName is an invalid rtems_name.
  * @retval RTEMS_TOO_MANY if numberOfSegments exceeds the maximum configuration or if
- *                        too many tasks are created or if there are too many global objects.
+ *                        too many tasks are created or if there are too many global objects
+ *                        or if too many rate monotonic periods are created.
  * @retval RTEMS_MP_NOT_CONFIGURED if multiprocessing is not configured. 
  * @retval RTEMS_UNSATISFIED if not enough memory for stack or floating point context
  *                           is present or non-preemption mode is not supported on SMP
  *                           system or interrupt level mode is not supported on SMP system.
  */
 rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t taskStackSize,
-                rtems_mode initialModes, rtems_attribute taskAttributes,
+                rtems_mode initialModes, rtems_attribute taskAttributes, rtems_interval period,
                 uint32_t numberOfSegments, void (*segmentFunctions[]) (Segmented_Task_Arguments),
-                rtems_task_priority segmentPriorities[], rtems_id* taskId);
+                rtems_task_priority segmentPriorities[], rtems_id* taskId, rtems_id* periodId);
 
 /**
  * @brief RTEMS Segmented SLFP Task: Start the segmented slfp task by id.

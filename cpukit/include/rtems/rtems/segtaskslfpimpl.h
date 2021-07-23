@@ -165,6 +165,9 @@ rtems_extended_status_code emptySegTaskSLFP(Segmented_Task_SLFP_Task* givenSegme
  * @param[in] initialModes RTEMS modes that the given slfp task will
  *                          have at the beginning of it's execution.
  * @param[in] taskAttributes RTEMS attributes that the given slfp task will have.
+ * @param[in] period The period in ticks with which the task should be
+ *                   executed. Pass 0 if the task should not be executed
+ *                   periodicly.
  * @param[in] numberOfSegments Number of segments the given slfp task is composed of.
  * @param[in] functionPointer Array that contains the functions of the segments
  *                          of the given slfp task. Its size must match the
@@ -196,7 +199,7 @@ rtems_extended_status_code emptySegTaskSLFP(Segmented_Task_SLFP_Task* givenSegme
  */
 rtems_extended_status_code fillDataIntoSegTaskSLFP(Segmented_Task_SLFP_Task* task,
                 rtems_name taskName, size_t taskStackSize,
-                rtems_mode initialModes, rtems_attribute taskAttributes,
+                rtems_mode initialModes, rtems_attribute taskAttributes, rtems_interval period,
                 uint32_t numberOfSegments, void (*functionPointer[]) (Segmented_Task_Arguments),
                 rtems_task_priority priorities[]);
 

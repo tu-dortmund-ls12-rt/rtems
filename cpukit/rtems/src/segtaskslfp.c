@@ -23,16 +23,19 @@ uint32_t next = 0; // Pointer to the next unused segmented slfp task in the pool
 // ----- RTEMS API Implementation -----
 
 rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t taskStackSize,
-                rtems_mode initialModes, rtems_attribute taskAttributes, uint32_t numberOfSegments,
-                void (*segmentFunctions[]) (Segmented_Task_Arguments), rtems_task_priority segmentPriorities[], rtems_id* taskId) {
+                rtems_mode initialModes, rtems_attribute taskAttributes, rtems_interval period, uint32_t numberOfSegments,
+                void (*segmentFunctions[]) (Segmented_Task_Arguments), rtems_task_priority segmentPriorities[], rtems_id* taskId,
+                rtems_id* periodId) {
     // --- Argument validation ---
     /**
-     * Arguments that need to be validated will be validated in fillDataIntoSegTaskSLFP and rtems_task_create.
+     * Arguments that need to be validated will be validated in fillDataIntoSegTaskSLFP, rtems_task_create and
+     * rtems_rate_monotonic_create.
      */
 
     // --- Implementation ---
     rtems_extended_status_code status;
     Segmented_Task_SLFP_Task* segmentedTask;
+    Segmented_Task_Task* base;
 
     status = getNextFreeSLFPTaskFromPool(&segmentedTask);
     if(!rtems_is_status_successful(status)) {
@@ -44,8 +47,10 @@ rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t t
         return status;
     }
 
+    base = (Segmented_Task_Task*) segmentedTask;
+
     status = fillDataIntoSegTaskSLFP(segmentedTask, taskName, taskStackSize, initialModes,
-                taskAttributes, numberOfSegments, segmentFunctions, segmentPriorities);
+                taskAttributes, period, numberOfSegments, segmentFunctions, segmentPriorities);
     if(!rtems_is_status_successful(status)) {
         /**
          * Possible errors:
@@ -94,7 +99,29 @@ rtems_status_code rtems_task_create_segmented_slfp(rtems_name taskName, size_t t
         }
     }
 
-    ((Segmented_Task_Task*)(segmentedTask))->taskId = *taskId;
+    base->taskId = *taskId;
+
+    if(period != 0) {
+        status = rtems_rate_monotonic_create(((Segmented_Task_Task*)(segmentedTask))->taskName, periodId);
+        if(!rtems_is_status_successful(status)) {
+            /**
+             * Possible errors:
+             * RTEMS_INVALID_NAME:
+             *      - Not user dependent. In this case the assumption, that the taskName
+             *        can be used as a period name is wrong. Therefore it is an internal
+             *        error.
+             * RTEMS_TOO_MANY:
+             *      - User dependent. Needs to be forwarded.
+             */
+            if((rtems_status_code) status == RTEMS_INVALID_NAME) {
+                return RTEMS_INTERNAL_ERROR;
+            } else {
+                return status;
+            }
+        }
+
+        base->periodId = *periodId;
+    }
 
     return RTEMS_SUCCESSFUL;
 }
@@ -528,7 +555,7 @@ rtems_extended_status_code emptySegTaskSLFP(Segmented_Task_SLFP_Task* givenSegme
 
 rtems_extended_status_code fillDataIntoSegTaskSLFP(Segmented_Task_SLFP_Task* task,
                 rtems_name taskName, size_t taskStackSize,
-                rtems_mode initialModes, rtems_attribute taskAttributes,
+                rtems_mode initialModes, rtems_attribute taskAttributes, rtems_interval period,
                 uint32_t numberOfSegments, void (*functionPointer[]) (Segmented_Task_Arguments),
                 rtems_task_priority priorities[]) {
     // --- Argument validation ---
@@ -544,7 +571,7 @@ rtems_extended_status_code fillDataIntoSegTaskSLFP(Segmented_Task_SLFP_Task* tas
     // --- Implementation ---
     rtems_extended_status_code status;
 
-    status = fillDataIntoSegTask((Segmented_Task_Task*) task, taskName, priorities[0], taskStackSize, initialModes, taskAttributes, numberOfSegments, functionPointer);
+    status = fillDataIntoSegTask((Segmented_Task_Task*) task, taskName, priorities[0], taskStackSize, initialModes, taskAttributes, period, numberOfSegments, functionPointer);
     if(!rtems_is_status_successful(status)) {
         /**
          * Possible errors:
@@ -663,6 +690,7 @@ void mainFunction(rtems_task_argument arguments) {
     
     // --- Implementation
     Segmented_Task_SLFP_Task* segmentedTask;
+    Segmented_Task_Task* base;
     rtems_extended_status_code status;
     rtems_id ownId;
     
@@ -678,21 +706,52 @@ void mainFunction(rtems_task_argument arguments) {
         rtems_exit_task_with_failure(&ownId, errMsg);
     }
 
-    Segmented_Task_Task* base = (Segmented_Task_Task*) segmentedTask;
+    base = (Segmented_Task_Task*) segmentedTask;
+    
+    // Actual intended execution
+    if(base->period == 0) {
+        nonPeriodicExecution(arguments, base, &ownId);
+    } else {
+        periodicExecution(arguments, base, &ownId);
+    }
+    
+    rtems_task_exit_segmented_slfp();
+}
+
+void periodicExecution(rtems_task_argument arguments, Segmented_Task_Task* base, rtems_id* ownId) {
+    rtems_status_code status;
+
+    while(true) {
+        status = rtems_rate_monotonic_period(base->periodId, base->period);
+        if(!rtems_is_status_successful(status)) {
+            printf("%u", status); // TODO: DEBBUG -> REMOVE
+            char* errMsg = "There was a problem receiving the period of the current task. Internal error.";
+            rtems_exit_task_with_failure(ownId, errMsg);
+        }
+
+        nonPeriodicExecution(arguments, base, ownId);
+    }
+}
+
+void nonPeriodicExecution(rtems_task_argument arguments, Segmented_Task_Task* base, rtems_id* ownId) {
+    rtems_extended_status_code status;
+
     for(uint32_t i = 0; i < base->numberOfSegments; i++) {
         status = executeNextSegment(base, arguments);
         if(!rtems_is_status_successful(status)) {
             char* errMsg = "The next segment of the calling task couldn't be executed. Internal error.";
-            rtems_exit_task_with_failure(&ownId, errMsg);
+            rtems_exit_task_with_failure(ownId, errMsg);
         }
         
         // No suspension is needed after the last segment.
         if(i != base->numberOfSegments - 1) {
-            rtems_task_suspend(RTEMS_SELF); // Using RTEMS_SELF is fine, because it is used as a flag.
+            status = rtems_task_suspend(RTEMS_SELF); // Using RTEMS_SELF is fine, because it is used as a flag.
+            if(!rtems_is_status_successful(status)) {
+                char* errMsg = "The calling task couldn't suspend itself. Internal error.";
+                rtems_exit_task_with_failure(ownId, errMsg);
+            }
         }
     }
-    
-    rtems_task_exit_segmented_slfp();
 }
 
 void rtems_exit_task_with_failure(rtems_id* taskId, char* errorMessage) {

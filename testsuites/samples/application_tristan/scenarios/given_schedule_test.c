@@ -742,7 +742,8 @@ void task3segment3(Segmented_Task_Arguments args) {
  *                                          *
  ********************************************/
 rtems_task idle(rtems_task_argument argument) {
-  printf("Non-Idle Task finished. It's missing out rtems_task_exit() directive so the terminal doesn't freeze and the system halts.\n");
+  printf("Idle task is executed. It runs indefently, preventing the system from halting.\n");
+  while(true);
 }
 
 /********************************************
@@ -770,19 +771,19 @@ void given_schedule_test_execute(void) {
   directive_failed(status, "Failed to set the system clock");
 
   // Task Creation
-  status = rtems_task_create_segmented_slfp(task1Name, taskStackSize, taskModes, taskAttributes,
+  status = rtems_task_create_segmented_slfp(task1Name, taskStackSize, taskModes, taskAttributes, task1Period,
                                             task1Segments, task1SegmentFunctions, task1Priorities,
-                                            &task1Id);
+                                            &task1Id, &task1PeriodId);
   directive_failed(status, "Creation of segmented task 1 failed.");
 
-  status = rtems_task_create_segmented_slfp(task2Name, taskStackSize, taskModes, taskAttributes,
+  status = rtems_task_create_segmented_slfp(task2Name, taskStackSize, taskModes, taskAttributes, task2Period,
                                             task2Segments, task2SegmentFunctions, task2Priorities,
-                                            &task2Id);
+                                            &task2Id, &task2PeriodId);
   directive_failed(status, "Creation of segmented task 2 failed.");
 
-  status = rtems_task_create_segmented_slfp(task3Name, taskStackSize, taskModes, taskAttributes,
+  status = rtems_task_create_segmented_slfp(task3Name, taskStackSize, taskModes, taskAttributes, task3Period,
                                             task3Segments, task3SegmentFunctions, task3Priorities,
-                                            &task3Id);
+                                            &task3Id, &task3PeriodId);
   directive_failed(status, "Creation of segmented task 3 failed.");
 
   status = rtems_task_create(idleTaskName, 254, RTEMS_MINIMUM_STACK_SIZE, RTEMS_DEFAULT_MODES, RTEMS_DEFAULT_ATTRIBUTES, &idleTaskId);

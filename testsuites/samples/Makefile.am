@@ -17,7 +17,8 @@ if TEST_application_tristan
 samples += application_tristan
 application_tristan_SOURCES = application_tristan/init.c \
 							  application_tristan/scenarios/custom_scenario.c \
-							  application_tristan/scenarios/given_schedule_test.c
+							  application_tristan/scenarios/given_schedule_test.c \
+							  ../support/src/spin.c
 application_tristan_CPPFLAGS = $(AM_CPPFLAGS) $(TEST_FLAGS_application_tristan) \
 	$(support_includes)
 endif

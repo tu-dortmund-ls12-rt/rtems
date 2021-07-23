@@ -112,6 +112,8 @@ typedef struct {
    rtems_mode taskModes;
    rtems_attribute taskAttributes;
    rtems_id taskId;
+   rtems_interval period;
+   rtems_id periodId;
 
    /*
    Segment specific informations

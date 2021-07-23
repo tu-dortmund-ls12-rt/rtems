@@ -52,7 +52,8 @@ rtems_extended_status_code executeNextSegment(Segmented_Task_Task* task, rtems_t
  * 
  * This routine sets all values of the given segmented task to their default
  * values. Attention: The TaskID is not changed at all, because the segmented
- * task could have a rtems task assigned with a valid id.
+ * task could have a rtems task assigned with a valid id. Same holds true for
+ * the PeriodID.
  * 
  * @param[in] task Pointer to the segmented task.
  * 
@@ -93,7 +94,8 @@ rtems_extended_status_code getSegmented_Task_Task(rtems_id id, Segmented_Task_Ta
  * beforehand.
  * 
  * Attention: The id of the task is not changed at all, because the given
- * segmented task could have a rtems task assigned with a valid id.
+ * segmented task could have a rtems task assigned with a valid id. Same
+ * holds true for the period id.
  * 
  * Attention: taskStackSize, initialModes and taskAttributes are not validated
  * in this routine. Ensure, that the passed values are valid, otherwise the
@@ -106,6 +108,8 @@ rtems_extended_status_code getSegmented_Task_Task(rtems_id id, Segmented_Task_Ta
  * @param[in] initialModes RTEMS modes that the given task will have at the
  * beginning of it's execution.
  * @param[in] taskAttributes RTEMS attributes that the given task will have.
+ * @param[in] period The period with which the task should be executed. Pass 0
+ *                   if the task should not be executed periodicly.
  * @param[in] numberOfSegments Number of segments the given task is composed of.
  * @param[in] functionPointer Array that contains the functions of the segments
  * of the given task. Its size must match the numberOfSegments.
@@ -133,7 +137,7 @@ rtems_extended_status_code getSegmented_Task_Task(rtems_id id, Segmented_Task_Ta
 rtems_extended_status_code fillDataIntoSegTask(Segmented_Task_Task* task,
                 rtems_name taskName, rtems_task_priority taskPriority,
                 size_t taskStackSize, rtems_mode initialModes, 
-                rtems_attribute taskAttributes, uint32_t numberOfSegments,
+                rtems_attribute taskAttributes, rtems_interval period, uint32_t numberOfSegments,
                 void (*functionPointer[]) (Segmented_Task_Arguments));
 
 /**
@@ -143,7 +147,8 @@ rtems_extended_status_code fillDataIntoSegTask(Segmented_Task_Task* task,
  * task.
  * 
  * Attention: The id of the task is not changed at all, because the given
- * segmented task could have a rtems task assigned with a valid id.
+ * segmented task could have a rtems task assigned with a valid id. Same
+ * holds true for the period id.
  * 
  * Attention: taskStackSize, initialModes and taskAttributes are not validated
  * in this routine. Ensure, that the passed values are valid, otherwise the
@@ -156,6 +161,8 @@ rtems_extended_status_code fillDataIntoSegTask(Segmented_Task_Task* task,
  * @param[in] initialModes RTEMS modes that the given task will have at the
  * beginning of it's execution.
  * @param[in] taskAttributes RTEMS attributes that the given task will have.
+ * @param[in] period The period with which the task should be executed. Pass 0
+ *                   if the task should not be executed periodicly.
  * 
  * @retval RTEMS_SUCCESSFUL if successfull.
  * @retval RTEMS_EXTENDED_NULL_POINTER if segmentedTaskToReturn is 
@@ -175,7 +182,7 @@ rtems_extended_status_code fillDataIntoSegTask(Segmented_Task_Task* task,
 rtems_extended_status_code fillGeneralDataIntoSegTask(Segmented_Task_Task* task,
                 rtems_name taskName, rtems_task_priority taskPriority,
                 size_t taskStackSize, rtems_mode initialModes, 
-                rtems_attribute taskAttributes);
+                rtems_attribute taskAttributes, rtems_interval period);
 
 /**
  * @brief RTEMS Segmented Task Implementation: Fill in the given segment
